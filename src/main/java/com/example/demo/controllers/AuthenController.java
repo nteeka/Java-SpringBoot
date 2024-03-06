@@ -51,11 +51,11 @@ public class AuthenController {
             	
             else {
                 m.addAttribute("loginFail", "Email hoặc mật khẩu không đúng, vui lòng đăng nhập lại!");
-                return "Login"; //validate sau
+                return "/Authen/Login"; //validate sau
             }      
         } else {
         	m.addAttribute("loginFail", "Email hoặc mật khẩu không đúng, vui lòng đăng nhập lại!");
-            return "Login"; //validate sau
+            return "/Authen/Login"; //validate sau
         }
     }
 	
@@ -68,7 +68,7 @@ public class AuthenController {
 	
 	@GetMapping("/forgotPass")
     public String showEnterEmailForm() {
-        return "forgotPass_Email";
+        return "/Authen/forgotPass_Email";
     }
 	
 	@PostMapping("/forgotPassword")
@@ -90,7 +90,7 @@ public class AuthenController {
             emailService.sendResetPasswordEmail(email, "Password Reset", emailBody);
         } else {
             model.addAttribute("emailError", "Không tìm thấy student có email vừa nhập!");
-            return "forgotPass_Email";
+            return "/Authen/forgotPass_Email";
         }
 
         return "Right";
@@ -102,7 +102,7 @@ public class AuthenController {
         
         if (student.isPresent() && !student.get().isResetTokenExpired(student.get().getResetTokenExpiration())) {
             model.addAttribute("resetToken", token);
-            return "forgotPass_Token";
+            return "/Authen/forgotPass_Token";
         } else {
 //            return "invalidTokenPage";
         	return "Wrong";
@@ -126,11 +126,11 @@ public class AuthenController {
         } else {
             model.addAttribute("passwordReset", "Thay đổi mật khẩu không thành công!");
         }
-        return "Login";
+        return "/Authen/Login";
     }
 	@GetMapping("/changePassword")
     public String showChangePasswordForm() {
-        return "changePass";
+        return "/Authen/changePass";
     }
 	
 	@PostMapping("/changePassword")
@@ -145,17 +145,17 @@ public class AuthenController {
 	    	if(!passwordEncoder.matches(oldPass,loggedInUser.getPassword()))
 	    	{
 	    		model.addAttribute("changePasswordFail", "Current password wrong");
-	    		return "changePass";
+	    		return "/Authen/changePass";
 	    	}
 	    	if(oldPass.equals(newPass))
 	    	{
 	    		model.addAttribute("changePasswordFail", "New pass have to diff old pass");
-    			return "changePass";
+    			return "/Authen/changePass";
 	    	}
 	    	if(!newPass.equals(confirmPass))
 	    	{
 	    		model.addAttribute("changePasswordFail", "New pass and confirm pass is not match");
-				return "changePass";
+				return "/Authen/changePass";
 	    	}
 	    	String hashedPassword = passwordEncoder.encode(newPass);
 			loggedInUser.setPassword(hashedPassword);	    	            
@@ -166,7 +166,7 @@ public class AuthenController {
 	    {
 	    	model.addAttribute("changePasswordFail", "Have to loginnnn");
 	    }
-        return "changePass";
+        return "/Authen/changePass";
     }
 	
 	

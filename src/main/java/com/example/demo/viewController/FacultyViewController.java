@@ -24,7 +24,7 @@ public class FacultyViewController {
 //    }
 	@GetMapping("/createFaculty")
     public String showCreateFalcultyView() {
-        return "Faculty-Create";
+        return "/Faculty/Faculty-Create";
     }
 	
 	

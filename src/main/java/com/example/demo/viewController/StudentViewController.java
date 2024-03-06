@@ -57,7 +57,7 @@ public class StudentViewController {
         List<Student> students = studentService.getAllStudents();  
         model.addAttribute("students", students);
 
-        return "Student-List";
+        return "/Student/Student-List";
         
     }
     
@@ -67,7 +67,7 @@ public class StudentViewController {
 		List<Faculty> faculties = facultyService.getAllFaculties();
 		m.addAttribute("faculties",faculties);
 		m.addAttribute("student", new Student());
-        return "Student-Create";
+        return "/Student/Student-Create";
     }	
 	
 	@GetMapping("/editStudent/{id}")    
@@ -79,7 +79,7 @@ public class StudentViewController {
         m.addAttribute("student",student);  
         m.addAttribute("imageUrl", imageUrl);
         m.addAttribute("faculties",faculties);
-        return "Student-Edit";    
+        return "/Student/Student-Edit";    
     }    
      
 	
