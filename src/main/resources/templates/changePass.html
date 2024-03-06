@@ -1,0 +1,73 @@
+<div th:replace="/ViewLayout/header.html"></div>
+<div class="container">
+	<div class="row">
+		<div class="col-sm-4">
+		<div th:if="${changePasswordSuccess}" class="alert alert-success">
+    		<p th:text="${changePasswordSuccess}"></p>
+		</div>
+		<div th:if="${changePasswordFail}" class="alert alert-danger">
+    		<p th:text="${changePasswordFail}"></p>
+		</div>
+		    <form action="/Authen/changePassword" method="post">
+		    	<label>Current Password</label>
+		    	<div class="form-group pass_show"> 
+                	<input type="password" name="old-pass" class="form-control" placeholder="Current Password"> 
+            	</div> 
+		       	<label>New Password</label>
+	            <div class="form-group pass_show"> 
+	                <input type="password" name="new-pass"  class="form-control" placeholder="New Password"> 
+	            </div> 
+		       	<label>Confirm Password</label>
+	            <div class="form-group pass_show"> 
+	                <input type="password" name="confirm-pass"   class="form-control" placeholder="Confirm Password"> 
+	            </div> 
+	            <div class="form-group pass_show"> 
+	                <button type="submit"   class="form-control">Change</button> 
+	            </div>
+		    </form>
+		    
+            
+		</div>  
+	</div>
+</div>
+<style>
+.pass_show{position: relative} 
+
+.pass_show .ptxt { 
+
+position: absolute; 
+
+top: 50%; 
+
+right: 10px; 
+
+z-index: 1; 
+
+color: #f36c01; 
+
+margin-top: -10px; 
+
+cursor: pointer; 
+
+transition: .3s ease all; 
+
+} 
+
+.pass_show .ptxt:hover{color: #333333;} 
+</style>
+<script>
+
+$(document).ready(function(){
+$('.pass_show').append('<span class="ptxt">Show</span>');  
+});
+  
+
+$(document).on('click','.pass_show .ptxt', function(){ 
+
+$(this).text($(this).text() == "Show" ? "Hide" : "Show"); 
+
+$(this).prev().attr('type', function(index, attr){return attr == 'password' ? 'text' : 'password'; }); 
+
+});  
+</script>
+<div th:replace="/ViewLayout/footer.html"></div>

@@ -1,5 +1,6 @@
 package com.example.demo.controllers;
 
+import java.io.Console;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
@@ -32,10 +33,11 @@ public class AuthenController {
 	
 	@Autowired
     private EmailService emailService;
+	@Autowired
+	private HttpSession session;
 	@PostMapping("/login")
     public String checkLogin(@RequestParam("email") String email,
     						 @RequestParam("password") String password,
-    						 HttpSession session,
     						 Model m) {	       	               
         
     	Optional<Student> existingStudent = studentRepository.findByEmail(email.trim());
@@ -120,16 +122,53 @@ public class AuthenController {
             student.get().setResetToken(null);
             student.get().setResetTokenExpiration(null);
             studentRepository.save(student.get());
-
             model.addAttribute("passwordReset", "Thay đổi mật khẩu thành công, vui lòng đăng nhập lại!");
-            return "Login";
         } else {
             model.addAttribute("passwordReset", "Thay đổi mật khẩu không thành công!");
-            return "Login";
         }
-
-//        return "resetPasswordConfirmationPage";
-//        return "redirect:/StudentView/listStudent";
+        return "Login";
+    }
+	@GetMapping("/changePassword")
+    public String showChangePasswordForm() {
+        return "changePass";
     }
 	
+	@PostMapping("/changePassword")
+    public String changePassword(@RequestParam("old-pass") String oldPass,
+    							 @RequestParam("new-pass") String newPass,
+    							 @RequestParam("confirm-pass") String confirmPass,
+    							 Model model) {
+		
+	    Student loggedInUser = (Student) session.getAttribute("loggedInUser");
+	    if(loggedInUser != null)
+	    {    	
+	    	if(!passwordEncoder.matches(oldPass,loggedInUser.getPassword()))
+	    	{
+	    		model.addAttribute("changePasswordFail", "Current password wrong");
+	    		return "changePass";
+	    	}
+	    	if(oldPass.equals(newPass))
+	    	{
+	    		model.addAttribute("changePasswordFail", "New pass have to diff old pass");
+    			return "changePass";
+	    	}
+	    	if(!newPass.equals(confirmPass))
+	    	{
+	    		model.addAttribute("changePasswordFail", "New pass and confirm pass is not match");
+				return "changePass";
+	    	}
+	    	String hashedPassword = passwordEncoder.encode(newPass);
+			loggedInUser.setPassword(hashedPassword);	    	            
+            studentRepository.save(loggedInUser);
+            model.addAttribute("changePasswordSuccess", "Change pass sucessfully");  		    	
+	    }
+	    else
+	    {
+	    	model.addAttribute("changePasswordFail", "Have to loginnnn");
+	    }
+        return "changePass";
+    }
+	
+	
+
 }
