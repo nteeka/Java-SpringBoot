@@ -13,8 +13,6 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
 
 @Entity
 @Data
@@ -42,7 +40,7 @@ public class Student {
     
     private String email;
     
-    private String password;
+//    private String password;
 	
     @ManyToOne
     @JoinColumn(name = "facultyId") // Specify the foreign key column
@@ -100,12 +98,12 @@ public class Student {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public String getPassword() {
-		return password;
-	}
-	public void setPassword(String password) {
-		this.password = password;
-	}
+//	public String getPassword() {
+//		return password;
+//	}
+//	public void setPassword(String password) {
+//		this.password = password;
+//	}
 	public Faculty getFaculty() {
 		return faculty;
 	}
@@ -135,12 +133,11 @@ public class Student {
 	public void setResetTokenExpiration(LocalDateTime resetTokenExpiration) {
 		this.resetTokenExpiration = resetTokenExpiration;
 	}
-	public Student(String name, int age, String image, String email, String password, Faculty faculty) {
+	public Student(String name, int age, String image, String email, Faculty faculty) {
 		this.name = name;
 		this.age = age;
 		this.image = image;
 		this.email = email;
-		this.password = password;
 		this.faculty = faculty;
 	}
 	public Student(String name, int age, String image, Faculty faculty) {

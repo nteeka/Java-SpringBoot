@@ -35,6 +35,7 @@
                             	<div th:if="${emailError}" class="alert alert-danger">
     								<p th:text="${emailError}"></p>
 								</div>
+								
                               </div>
                               <select name="faculty" th:field="*{faculty}" class="form-control form-control-lg" required>
                                     <option th:each="faculty : ${faculties}" th:value="${faculty.facultyId}" th:text="${faculty.facultyName}"></option>

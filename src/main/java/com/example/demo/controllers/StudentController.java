@@ -54,7 +54,7 @@ public class StudentController {
 									@RequestParam("age") int age,
 									@RequestParam("faculty") Faculty faculty,
 									@RequestParam("email") String email,
-									@RequestParam("password") String password,
+						
 									@RequestParam("image") MultipartFile img,
 									Model model)
 				
@@ -106,27 +106,14 @@ public class StudentController {
 		    
 			
 		    
-			if (password.length() < 6) {
-	            model.addAttribute("passwordError", "Password must be at least 6 characters long.");
-	            List<Faculty> faculties = facultyService.getAllFaculties();
-	            model.addAttribute("faculties", faculties);
-	            model.addAttribute("student", new Student());
-	            return "/Student/Student-Create";
-	        }
-			if (!studentService.containsUppercaseAndLowercase(password)) {
-		        model.addAttribute("passwordError", "Password must contain at least one uppercase letter and one lowercase letter.");
-		        List<Faculty> faculties = facultyService.getAllFaculties();
-		        model.addAttribute("faculties", faculties);
-		        model.addAttribute("student", new Student());
-		        return "/Student/Student-Create";
-		    }
+			
 			
 			student.setName(name);
 			student.setAge(age);
 			student.setFaculty(faculty);
 			student.setEmail(email);
-	        String hashedPassword = passwordEncoder.encode(password);
-	        student.setPassword(hashedPassword);
+//	        String hashedPassword = passwordEncoder.encode(password);
+//	        student.setPassword(hashedPassword);
 			Path path = Paths.get("uploads/");
 			try{
 				InputStream inputStream = img.getInputStream();
