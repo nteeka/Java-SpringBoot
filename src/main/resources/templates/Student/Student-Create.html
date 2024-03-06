@@ -15,18 +15,18 @@
 			</div>
             <div class="form-group">
                 <label for="name">Name:</label>
-                <input type="text" class="form-control" id="name" th:field="*{name}" required>
+                <input type="text" class="form-control" id="name" th:field="*{name}"  required>
             </div>
 			<div th:if="${ageError}" class="alert alert-danger">
     			<p th:text="${ageError}"></p>
 			</div>
             <div class="form-group">
                 <label for="age">Age:</label>
-                <input type="number" class="form-control" id="age" th:field="*{age}" required>
+                <input type="number" class="form-control" id="age" th:field="*{age}"   required>
             </div>
             <div class="form-group">
                 <label for="email">Email:</label>
-                <input class="form-control" id="email" th:field="*{email}" required>
+                <input class="form-control" id="email" th:field="*{email}"   required>
             </div>
             
 			<div class="form-group">
