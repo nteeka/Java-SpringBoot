@@ -31,7 +31,7 @@ import com.example.demo.services.StudentService;
 @RequestMapping("/Students")
 public class StudentController {
 	 @Autowired
-	    private StudentService studentService;
+	 	private StudentService studentService;
 	 @Autowired
 	    private StudentRepository studentRepository;
 	 @Autowired
@@ -67,7 +67,7 @@ public class StudentController {
 		        List<Faculty> faculties = facultyService.getAllFaculties();
 		        model.addAttribute("faculties", faculties);
 		        model.addAttribute("student", new Student());
-		        return "Student-Create";
+		        return "/Student/Student-Create";
 		    }
 			
 			 // Loại bỏ khoảng trắng ở đầu và cuối chuỗi
@@ -78,7 +78,7 @@ public class StudentController {
 		        List<Faculty> faculties = facultyService.getAllFaculties();
 		        model.addAttribute("faculties", faculties);
 		        model.addAttribute("student", new Student());
-		        return "Student-Create";
+		        return "/Student/Student-Create";
 		    }
 
 		    // Kiểm tra không chấp nhận ký tự đặc biệt và số
@@ -90,7 +90,7 @@ public class StudentController {
 		        List<Faculty> faculties = facultyService.getAllFaculties();
 		        model.addAttribute("faculties", faculties);
 		        model.addAttribute("student", new Student());
-		        return "Student-Create";
+		        return "/Student/Student-Create";
 		    }
 		    
 		    
@@ -100,7 +100,7 @@ public class StudentController {
 		        List<Faculty> faculties = facultyService.getAllFaculties();
 		        model.addAttribute("faculties", faculties);
 		        model.addAttribute("student", new Student());
-		        return "Student-Create";
+		        return "/Student/Student-Create";
 		    }
 
 		    
@@ -111,14 +111,14 @@ public class StudentController {
 	            List<Faculty> faculties = facultyService.getAllFaculties();
 	            model.addAttribute("faculties", faculties);
 	            model.addAttribute("student", new Student());
-	            return "Student-Create";
+	            return "/Student/Student-Create";
 	        }
 			if (!studentService.containsUppercaseAndLowercase(password)) {
 		        model.addAttribute("passwordError", "Password must contain at least one uppercase letter and one lowercase letter.");
 		        List<Faculty> faculties = facultyService.getAllFaculties();
 		        model.addAttribute("faculties", faculties);
 		        model.addAttribute("student", new Student());
-		        return "Student-Create";
+		        return "/Student/Student-Create";
 		    }
 			
 			student.setName(name);
@@ -179,7 +179,7 @@ public class StudentController {
 			        model.addAttribute("student",student1);  
 			        model.addAttribute("imageUrl", imageUrl);
 			        model.addAttribute("faculties",faculties);
-			        return "Student-Edit";
+			        return "/Student/Student-Edit";
 			    }
 			    // Kiểm tra không chấp nhận ký tự đặc biệt và số
 			    Pattern pattern = Pattern.compile("^[a-zA-Z ]+$");
@@ -192,7 +192,7 @@ public class StudentController {
 			        model.addAttribute("student",student1);  
 			        model.addAttribute("imageUrl", imageUrl);
 			        model.addAttribute("faculties",faculties);
-			        return "Student-Edit";			        
+			        return "/Student/Student-Edit";			        
 			    }
 			    
 	            
@@ -204,7 +204,7 @@ public class StudentController {
 			        model.addAttribute("student",student1);  
 			        model.addAttribute("imageUrl", imageUrl);
 			        model.addAttribute("faculties",faculties);
-			        return "Student-Edit";
+			        return "/Student/Student-Edit";
 			    }
 	            
 			    
@@ -217,7 +217,7 @@ public class StudentController {
 			        model.addAttribute("student",student1);  
 			        model.addAttribute("imageUrl", imageUrl);
 			        model.addAttribute("faculties",faculties);
-			        return "Student-Edit";
+			        return "/Student/Student-Edit";
 			    }	
 	            student.setName(Name);
 	            student.setEmail(Email);

@@ -20,11 +20,11 @@ public class homeViewController {
 	
 	@GetMapping("/login")
     public String showLoginPage() {
-        return "Login";       
+        return "/Authen/Login";       
     }
 	
 	@GetMapping("/register")
     public String showRegisterPage() {
-        return "Register";       
+        return "/Authen/Register";       
     }
 }
