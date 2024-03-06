@@ -66,34 +66,41 @@
 
         <div class="card bg-glass">
           <div class="card-body px-4 py-5 px-md-5">
-            <form>
+          
+            <form action="/Authen/register" method="post">
               <!-- 2 column grid layout with text inputs for the first and last names -->
-              <div class="row">
-                <div class="col-md-6 mb-4">
-                  <div class="form-outline">
-                    <input type="text" id="form3Example1" class="form-control" />
-                    <label class="form-label" for="form3Example1">First name</label>
-                  </div>
-                </div>
-                <div class="col-md-6 mb-4">
-                  <div class="form-outline">
-                    <input type="text" id="form3Example2" class="form-control" />
-                    <label class="form-label" for="form3Example2">Last name</label>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Email input -->
+              
               <div class="form-outline mb-4">
-                <input type="email" id="form3Example3" class="form-control" />
+                <select name="role" class="form-control form-control-lg" required>
+                     <option th:each="role : ${roles}" th:value="${role.roleId}" th:text="${role.roleName}"></option>
+                </select>
+                <label class="form-label" for="form3Example3">Role</label>
+              </div>
+				
+              <!-- Email input -->
+              <div th:if="${emailError}" class="alert alert-danger">
+    								<p th:text="${emailError}"></p>
+								</div>
+              <div class="form-outline mb-4">
+                <input type="email" name="email" id="form3Example3" class="form-control" />
                 <label class="form-label" for="form3Example3">Email address</label>
               </div>
 
               <!-- Password input -->
+              <div th:if="${passwordError}" class="alert alert-danger">
+    			<p th:text="${passwordError}"></p>
+				</div>
               <div class="form-outline mb-4">
-                <input type="password" id="form3Example4" class="form-control" />
+                <input name="password" type="password" id="form3Example4" class="form-control" />
                 <label class="form-label" for="form3Example4">Password</label>
               </div>
+              
+       
+              <div class="form-outline mb-4">
+                <input name="confirm-password" type="password" id="form3Example4" class="form-control" />
+                <label class="form-label" for="form3Example4">Confirm Password</label>
+              </div>
+              
 
               <!-- Checkbox -->
               <div class="form-check d-flex justify-content-center mb-4">

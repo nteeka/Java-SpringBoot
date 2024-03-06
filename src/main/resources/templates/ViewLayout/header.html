@@ -40,11 +40,11 @@
         <a class="nav-link" href="/Authen/changePassword">Change password</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link disabled" href="#">Disabled</a>
+        <a class="nav-link" href="/Role/createRole">Create Role</a>
       </li>
       <li class="nav-item" th:if="${session.loggedInUser != null}">
-        <a class="nav-link" th:href="'/profile/' + ${session.loggedInUser.id}">
-          Welcome, <span th:text="${session.loggedInUser.name}"></span>
+        <a class="nav-link" th:href="'/profile/' + ${session.loggedInUser.accountId}">
+          Welcome, <span th:text="${session.loggedInUser.email}"></span>
         </a>
       </li>
       <li class="nav-item">
