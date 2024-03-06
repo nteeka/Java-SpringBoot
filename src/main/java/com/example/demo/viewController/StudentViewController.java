@@ -45,6 +45,7 @@ public class StudentViewController {
 		List<Faculty> faculties = facultyService.getAllFaculties();
 		m.addAttribute("faculties",faculties);
 		m.addAttribute("student", new Student());
+		
         return "/Student/Student-Create";
     }	
 	

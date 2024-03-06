@@ -11,7 +11,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,8 +34,6 @@ public class StudentController {
 	 @Autowired
 	    private StudentRepository studentRepository;
 	 @Autowired
-	    private BCryptPasswordEncoder passwordEncoder;
-	 @Autowired
 	    private FacultyService facultyService;
 	 
 	    @GetMapping
@@ -51,39 +48,26 @@ public class StudentController {
 	    
 	    @PostMapping("/addNewStudent")
 		public String createStudent(@RequestParam("name") String name, 
-									@RequestParam("age") int age,
+									@RequestParam("age") String age,
 									@RequestParam("faculty") Faculty faculty,
-									@RequestParam("email") String email,
-						
+									@RequestParam("email") String email,					
 									@RequestParam("image") MultipartFile img,
 									Model model)
 				
 		{      
-			Student student = new Student();
-			
-            String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-			if (studentService.isEmailTaken(email) || !email.matches(emailRegex) ) {
-		        model.addAttribute("emailError", "Email is invalid or Email is already taken. Please choose a different one.");
-		        List<Faculty> faculties = facultyService.getAllFaculties();
-		        model.addAttribute("faculties", faculties);
-		        model.addAttribute("student", new Student());
-		        return "/Student/Student-Create";
-		    }
-			
-			 // Loại bỏ khoảng trắng ở đầu và cuối chuỗi
+			Student student = new Student();						
 			name = name.trim();
-			// Kiểm tra độ dài của tên
+			
 		    if (name.length() == 0 || name.length() > 50) {
 		        model.addAttribute("nameError", "Name must be non-empty and have a maximum length of 50 characters.");
 		        List<Faculty> faculties = facultyService.getAllFaculties();
 		        model.addAttribute("faculties", faculties);
 		        model.addAttribute("student", new Student());
+		        
 		        return "/Student/Student-Create";
 		    }
 
-		    // Kiểm tra không chấp nhận ký tự đặc biệt và số
 		    Pattern pattern = Pattern.compile("^[a-zA-Z ]+$");
-
 		    Matcher matcher = pattern.matcher(name);
 		    if (!matcher.matches()) {
 		        model.addAttribute("nameError", "Name must not contain special characters or numbers.");
@@ -92,28 +76,40 @@ public class StudentController {
 		        model.addAttribute("student", new Student());
 		        return "/Student/Student-Create";
 		    }
-		    
-		    
-		 
-		    if (age <= 0 || age > 100 ) {
-		        model.addAttribute("ageError", "Age is invalid.");
+			
+			
+            String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+			if (studentService.isEmailTaken(email) || !email.matches(emailRegex) ) {
+		        model.addAttribute("emailError", "Email is invalid or Email is already taken. Please choose a different one.");
 		        List<Faculty> faculties = facultyService.getAllFaculties();
 		        model.addAttribute("faculties", faculties);
 		        model.addAttribute("student", new Student());
 		        return "/Student/Student-Create";
-		    }
-
+		    }						
+			
+			try {		
+				int checkAge = Integer.parseInt(age);
+				if (checkAge <= 0 || checkAge > 100 ) {
+			        model.addAttribute("ageError", "Age is invalid.");
+			        List<Faculty> faculties = facultyService.getAllFaculties();
+			        model.addAttribute("faculties", faculties);
+			        model.addAttribute("student", new Student());
+			        return "/Student/Student-Create";
+			    }
+			} catch (NumberFormatException e) {
+				// TODO: handle exception
+				model.addAttribute("ageError", "Age is not a String.");
+		        List<Faculty> faculties = facultyService.getAllFaculties();
+		        model.addAttribute("faculties", faculties);
+		        model.addAttribute("student", new Student());
+		        return "/Student/Student-Create";
+			}
 		    
-			
-		    
-			
-			
 			student.setName(name);
-			student.setAge(age);
+			student.setAge(Integer.parseInt(age));
 			student.setFaculty(faculty);
 			student.setEmail(email);
-//	        String hashedPassword = passwordEncoder.encode(password);
-//	        student.setPassword(hashedPassword);
+
 			Path path = Paths.get("uploads/");
 			try{
 				InputStream inputStream = img.getInputStream();
