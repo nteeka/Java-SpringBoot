@@ -20,8 +20,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.demo.models.Classes;
 import com.example.demo.models.Faculty;
 import com.example.demo.models.Student;
+import com.example.demo.repositories.ClassRepository;
 import com.example.demo.repositories.StudentRepository;
 import com.example.demo.services.FacultyService;
 import com.example.demo.services.StudentService;
@@ -35,6 +37,9 @@ public class StudentController {
 	    private StudentRepository studentRepository;
 	 @Autowired
 	    private FacultyService facultyService;
+	 
+	 @Autowired
+	    private ClassRepository classRepository;
 	 
 	    @GetMapping
 	    public List<Student> getAllStudents() {
@@ -50,7 +55,8 @@ public class StudentController {
 		public String createStudent(@RequestParam("name") String name, 
 									@RequestParam("age") String age,
 									@RequestParam("faculty") Faculty faculty,
-									@RequestParam("email") String email,					
+									@RequestParam("email") String email,
+									@RequestParam("classes") Classes classes,
 									@RequestParam("image") MultipartFile img,
 									Model model)
 				
@@ -61,6 +67,8 @@ public class StudentController {
 		    if (name.length() == 0 || name.length() > 50) {
 		        model.addAttribute("nameError", "Name must be non-empty and have a maximum length of 50 characters.");
 		        List<Faculty> faculties = facultyService.getAllFaculties();
+		        List<Classes> classes1 = classRepository.findAll();
+		        model.addAttribute("classes", classes1);
 		        model.addAttribute("faculties", faculties);
 		        model.addAttribute("student", new Student());
 		        
@@ -72,6 +80,8 @@ public class StudentController {
 		    if (!matcher.matches()) {
 		        model.addAttribute("nameError", "Name must not contain special characters or numbers.");
 		        List<Faculty> faculties = facultyService.getAllFaculties();
+		        List<Classes> classes1 = classRepository.findAll();
+		        model.addAttribute("classes", classes1);
 		        model.addAttribute("faculties", faculties);
 		        model.addAttribute("student", new Student());
 		        return "/Student/Student-Create";
@@ -82,6 +92,8 @@ public class StudentController {
 			if (studentService.isEmailTaken(email) || !email.matches(emailRegex) ) {
 		        model.addAttribute("emailError", "Email is invalid or Email is already taken. Please choose a different one.");
 		        List<Faculty> faculties = facultyService.getAllFaculties();
+		        List<Classes> classes1 = classRepository.findAll();
+		        model.addAttribute("classes", classes1);
 		        model.addAttribute("faculties", faculties);
 		        model.addAttribute("student", new Student());
 		        return "/Student/Student-Create";
@@ -92,6 +104,8 @@ public class StudentController {
 				if (checkAge <= 0 || checkAge > 100 ) {
 			        model.addAttribute("ageError", "Age is invalid.");
 			        List<Faculty> faculties = facultyService.getAllFaculties();
+			        List<Classes> classes1 = classRepository.findAll();
+			        model.addAttribute("classes", classes1);
 			        model.addAttribute("faculties", faculties);
 			        model.addAttribute("student", new Student());
 			        return "/Student/Student-Create";
@@ -100,6 +114,8 @@ public class StudentController {
 				// TODO: handle exception
 				model.addAttribute("ageError", "Age is not a String.");
 		        List<Faculty> faculties = facultyService.getAllFaculties();
+		        List<Classes> classes1 = classRepository.findAll();
+		        model.addAttribute("classes", classes1);
 		        model.addAttribute("faculties", faculties);
 		        model.addAttribute("student", new Student());
 		        return "/Student/Student-Create";
@@ -108,8 +124,14 @@ public class StudentController {
 			student.setName(name);
 			student.setAge(Integer.parseInt(age));
 			student.setFaculty(faculty);
-			student.setEmail(email);
+			student.setClasses(classes);
+		    Optional<Classes> studentClass = classRepository.findById(classes.getClassId());		    		       
+		    studentClass.get().getStudents().add(student);
+		    
+		    classRepository.save(studentClass.get());
+		    
 
+			student.setEmail(email);
 			Path path = Paths.get("uploads/");
 			try{
 				InputStream inputStream = img.getInputStream();
@@ -143,6 +165,7 @@ public class StudentController {
 	    							@RequestParam("age") int Age,
 	    							@RequestParam("email") String Email,
 	    							@RequestParam("faculty") Faculty faculty,
+	    							@RequestParam("classes") Classes classes,
 	    							@RequestParam("image") MultipartFile multipartFile,
 	    							Model model) {	       	               
 	        
@@ -157,8 +180,10 @@ public class StudentController {
 			    if (Name.length() == 0 || Name.length() > 50) {
 			        model.addAttribute("nameError", "Name must be non-empty and have a maximum length of 50 characters.");
 			        Optional<Student> student1 = studentService.getStudentById(id);
-			        List<Faculty> faculties = facultyService.getAllFaculties();		       
+			        List<Faculty> faculties = facultyService.getAllFaculties();
 			        String imageUrl = "/image/getImage/" + student.getImage();
+			        List<Classes> classes1 = classRepository.findAll();			        
+			        model.addAttribute("classes", classes1);
 			        model.addAttribute("student",student1);  
 			        model.addAttribute("imageUrl", imageUrl);
 			        model.addAttribute("faculties",faculties);
@@ -172,6 +197,8 @@ public class StudentController {
 			        Optional<Student> student1 = studentService.getStudentById(id);
 			        List<Faculty> faculties = facultyService.getAllFaculties();		       
 			        String imageUrl = "/image/getImage/" + student.getImage();
+			        List<Classes> classes1 = classRepository.findAll();			        
+			        model.addAttribute("classes", classes1);
 			        model.addAttribute("student",student1);  
 			        model.addAttribute("imageUrl", imageUrl);
 			        model.addAttribute("faculties",faculties);
@@ -184,6 +211,8 @@ public class StudentController {
 			        Optional<Student> student1 = studentService.getStudentById(id);
 			        List<Faculty> faculties = facultyService.getAllFaculties();		       
 			        String imageUrl = "/image/getImage/" + student.getImage();
+			        List<Classes> classes1 = classRepository.findAll();			        
+			        model.addAttribute("classes", classes1);
 			        model.addAttribute("student",student1);  
 			        model.addAttribute("imageUrl", imageUrl);
 			        model.addAttribute("faculties",faculties);
@@ -197,6 +226,8 @@ public class StudentController {
 			        model.addAttribute("emailError", "Email is already taken or Email is invalid. Please choose a different one.");
 			        List<Faculty> faculties = facultyService.getAllFaculties();		       
 			        String imageUrl = "/image/getImage/" + student.getImage();
+			        List<Classes> classes1 = classRepository.findAll();			        
+			        model.addAttribute("classes", classes1);
 			        model.addAttribute("student",student1);  
 			        model.addAttribute("imageUrl", imageUrl);
 			        model.addAttribute("faculties",faculties);
@@ -206,6 +237,7 @@ public class StudentController {
 	            student.setEmail(Email);
 	            student.setAge(Age);
 	            student.setFaculty(faculty);
+	            student.setClasses(classes);
 	    		Path path = Paths.get("uploads/");
 	    		try{
 	    			InputStream inputStream = multipartFile.getInputStream();
@@ -215,10 +247,13 @@ public class StudentController {
 	    			e.printStackTrace();
 	    		}           
 	    		studentRepository.save(student);
+	    		
 	    		return "redirect:/StudentView/listStudent";       
 	        } else {
 	        	return "redirect:/StudentView/listStudent";
 	        }
 	    }
+	    
+
 	    
 }

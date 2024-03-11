@@ -20,8 +20,7 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 	Optional<Student> findByEmailAndIdNot(@Param("email") String email, @Param("currentStudentId") long currentStudentId);
 
 	
-	@Query("SELECT s FROM Student s WHERE s.resetToken = :resetToken")
-    Optional<Student> findByResetToken(@Param("resetToken") String resetToken);
+	
 	
 	
 }
