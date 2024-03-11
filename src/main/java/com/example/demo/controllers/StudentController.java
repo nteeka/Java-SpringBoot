@@ -22,8 +22,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.models.Classes;
 import com.example.demo.models.Faculty;
+import com.example.demo.models.Homework;
 import com.example.demo.models.Student;
 import com.example.demo.repositories.ClassRepository;
+import com.example.demo.repositories.HomeworkRepository;
 import com.example.demo.repositories.StudentRepository;
 import com.example.demo.services.FacultyService;
 import com.example.demo.services.StudentService;
@@ -40,6 +42,9 @@ public class StudentController {
 	 
 	 @Autowired
 	    private ClassRepository classRepository;
+	 
+	 @Autowired
+	    private HomeworkRepository homeworkRepository;
 	 
 	    @GetMapping
 	    public List<Student> getAllStudents() {
@@ -260,7 +265,9 @@ public class StudentController {
 	    }
 	    
 	    @GetMapping("/listHomeworkForm")
-	    public String listHomeWorkForm() {
+	    public String listHomeWorkForm(Model m) {
+	        List<Homework> homeworks = homeworkRepository.findAll();
+	        m.addAttribute("homeworks", homeworks);
 	        return "/Student/listHomeWork";
 	    }
 	    

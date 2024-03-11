@@ -49,7 +49,7 @@
                                 <thead>
                                 <!--Danh sách các bài chưa làm -->
                                     <tr>
-                                        <th class="text-center" scope="col">Date</th>
+                                        <th class="text-center" scope="col">Date Created</th>
                                         <th scope="col">Teacher</th>
                                         <th scope="col">Session</th>
                                         <th scope="col">Score</th>
@@ -57,12 +57,12 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr class="inner-box">
+                                    <tr th:each="homework : ${homeworks}" class="inner-box">
                                     <!--Ngày giao bài -->
                                         <th scope="row">
                                             <div class="event-date">
                                                 <span>16</span>
-                                                <p>Novembar</p>
+                                                <p th:text="${homework.dateCreated}"></p>
                                             </div>
                                         </th>
                                         <!--Ảnh teacher -->
@@ -74,18 +74,20 @@
                                         <td>
                                             <div class="event-wrap">
                                             <!--Tên bài tập -->
-                                                <h3><a href="#">Harman Kardon</a></h3>
+                                                <h3><a href="#" th:text="${homework.homeworkName}"></a></h3>
                                                 <div class="meta">
                                                     <div class="organizers">
                                                     <!--Tên teacher -->
-                                                        <a href="#">Aslan Lingker</a>
+                                                        <a  href="#">Aslan Lingker</a>
                                                     </div>
                                                     <div class="categories">
-                                                        <a href="#">Inspire</a>
+                                                        <a href="#" th:text="${homework.subject.getSubject_name()}"></a>
+                                                        <a href="#" th:text="${homework.classes.getClassName}"></a>
+                                                        
                                                     </div>
                                                     <!--Ngày kết thúc - có thể đếm ngược còn bao nhiêu ngày- giờ -->
                                                     <div class="time">
-                                                        <span>05:35 AM - 08:00 AM 2h 25'</span>
+                                                        <p>Deadline :</p><span th:text="${homework.deadline}"></span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -93,7 +95,7 @@
                                         <td>
                                         <!--Điểm, chưa làm chưa chấm thì 0/10 -->
                                             <div class="r-no">
-                                                <span>Room B3</span>
+                                                <span></span>
                                             </div>
                                         </td>
                                         <!--các action -->
