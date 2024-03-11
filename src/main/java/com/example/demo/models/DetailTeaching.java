@@ -36,4 +36,7 @@ public class DetailTeaching {
     @ManyToOne
     @JoinColumn(name = "classId") // Specify the foreign key column
     private Classes classes;
+    
+    
+    
 }
