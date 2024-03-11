@@ -11,7 +11,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
-import java.time.LocalDateTime;
 
 
 @Entity
@@ -33,27 +32,29 @@ public class Student {
 	@Column(name = "isDeleted", columnDefinition = "boolean default false")
 	private boolean isDeleted;
 	
-//	@Column(nullable = true, length = 64)
-//	private String image;
+
 	
     private String image;
     
     private String email;
     
-//    private String password;
 	
     @ManyToOne
     @JoinColumn(name = "facultyId") // Specify the foreign key column
     private Faculty faculty;
 	
-	
-    @Column(name = "resetToken")
-    private String resetToken;
-    
-    @Column(name = "resetTokenExpiration")
-    private LocalDateTime resetTokenExpiration;
+    @ManyToOne
+    @JoinColumn(name = "classId") // Specify the foreign key column
+    private Classes classes;
+
     
     
+	public Classes getClasses() {
+		return classes;
+	}
+	public void setClasses(Classes classes) {
+		this.classes = classes;
+	}
 	public long getId() {
 		return id;
 	}
@@ -91,19 +92,13 @@ public class Student {
 	}
 	
 	
-	
 	public String getEmail() {
 		return email;
 	}
 	public void setEmail(String email) {
 		this.email = email;
 	}
-//	public String getPassword() {
-//		return password;
-//	}
-//	public void setPassword(String password) {
-//		this.password = password;
-//	}
+
 	public Faculty getFaculty() {
 		return faculty;
 	}
@@ -114,25 +109,8 @@ public class Student {
 	
 	
 	
-	public String getResetToken() {
-		return resetToken;
-	}
-	public void setResetToken(String resetToken) {
-		this.resetToken = resetToken;
-	}
 	
-	public boolean isResetTokenExpired(LocalDateTime check) {
-        return LocalDateTime.now().isAfter(check);
-    }
-	
-	
-	
-	public LocalDateTime getResetTokenExpiration() {
-		return resetTokenExpiration;
-	}
-	public void setResetTokenExpiration(LocalDateTime resetTokenExpiration) {
-		this.resetTokenExpiration = resetTokenExpiration;
-	}
+
 	public Student(String name, int age, String image, String email, Faculty faculty) {
 		this.name = name;
 		this.age = age;
@@ -140,12 +118,7 @@ public class Student {
 		this.email = email;
 		this.faculty = faculty;
 	}
-	public Student(String name, int age, String image, Faculty faculty) {
-		this.name = name;
-		this.age = age;
-		this.image = image;
-		this.faculty = faculty;
-	}
+	
 	public Student(String name, int age) {
 		
 		this.name = name;
@@ -158,6 +131,15 @@ public class Student {
 		this.name = name;
 		this.age = age;
 		this.image = image;
+	}
+	public Student(String name, int age, String image, String email, Faculty faculty, Classes classes) {
+
+		this.name = name;
+		this.age = age;
+		this.image = image;
+		this.email = email;
+		this.faculty = faculty;
+		this.classes = classes;
 	}
 	
 

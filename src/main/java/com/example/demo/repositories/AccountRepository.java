@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.example.demo.models.Account;
-import com.example.demo.models.Student;
 
 public interface AccountRepository extends JpaRepository<Account, Long>{
 	@Query("SELECT s FROM Account s WHERE s.isDeleted = false")
