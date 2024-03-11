@@ -254,6 +254,16 @@ public class StudentController {
 	        }
 	    }
 	    
+	    @GetMapping("/submitHomeworkForm")
+	    public String submitHomeWorkForm() {
+	        return "/Student/submitHomeWork";
+	    }
+	    
+	    @GetMapping("/listHomeworkForm")
+	    public String listHomeWorkForm() {
+	        return "/Student/listHomeWork";
+	    }
+	    
 
 	    
 }
