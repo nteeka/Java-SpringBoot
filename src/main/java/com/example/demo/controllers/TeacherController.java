@@ -12,9 +12,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.example.demo.models.Account;
 import com.example.demo.models.Classes;
+import com.example.demo.repositories.AccountRepository;
 import com.example.demo.repositories.ClassRepository;
 import com.example.demo.repositories.DetailTeachingRepository;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 
 @Controller
@@ -26,6 +31,9 @@ public class TeacherController {
 	
 	@Autowired
     private ClassRepository classRepository;
+	
+	@Autowired
+    private AccountRepository accountRepository;
 	
 	@GetMapping("/createHomework")
     public String createHomeworkView(Model m) {
@@ -44,10 +52,15 @@ public class TeacherController {
 //        return "/Classes/Class-Create";
 //    }
 	@PostMapping("/addNewClass")
-	public String createClass(@RequestParam("className") String name)			
+	public String createClass(@RequestParam("className") String name,HttpServletRequest request)			
 	{      
 		Classes classes = new Classes();
 		classes.setClassName(name);		
+		HttpSession session = request.getSession();
+        Account loggedInUser = (Account) session.getAttribute("loggedInUser");	
+        if(loggedInUser==null)
+        	classes.setAccount(null);
+		classes.setAccount(loggedInUser);
 		classRepository.save(classes);
 	    return "redirect:/StudentView/listStudent";
 		

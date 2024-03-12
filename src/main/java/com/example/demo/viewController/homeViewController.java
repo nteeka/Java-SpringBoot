@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.example.demo.models.Role;
 import com.example.demo.services.RoleService;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 
 @Controller
 @RequestMapping("/Home")
@@ -26,7 +28,8 @@ public class homeViewController {
     }
 	
 	@GetMapping("/login")
-    public String showLoginPage() {
+    public String showLoginPage(HttpServletRequest request) {
+		
         return "/Authen/Login";       
     }
 	

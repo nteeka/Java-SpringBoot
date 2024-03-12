@@ -74,8 +74,8 @@ public class AccountController {
     	Optional<Account> existingAccount = accountRepository.findById(id);
         if (existingAccount.isPresent()) {
             Account account = existingAccount.get();
-           
- 
+            
+            
 		    
 		    
             String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";

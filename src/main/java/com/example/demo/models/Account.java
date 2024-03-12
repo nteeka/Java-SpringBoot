@@ -24,24 +24,32 @@ public class Account {
 	private long accountId;
 	
 		
-    private String image;
+    private String image;  
     
     private String email;
     
+    private String password; 
+    
     @Column(name = "isDeleted", columnDefinition = "boolean default false")
 	private boolean isDeleted;
-    
-    private String password;
-	
-    @ManyToOne
-    @JoinColumn(name = "roleId") // Specify the foreign key column
-    private Role role;
     
     @Column(name = "resetToken")
     private String resetToken;
     
     @Column(name = "resetTokenExpiration")
     private LocalDateTime resetTokenExpiration;
+    
+	
+    @ManyToOne
+    @JoinColumn(name = "roleId") // Specify the foreign key column
+    private Role role;
+    
+    
+    
+    
+    
+    
+    
 
     
     
