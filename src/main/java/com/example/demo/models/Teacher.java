@@ -21,16 +21,13 @@ public class Teacher {
 	@Column(name = "NAME")
 	private String teacher_name;
 	
-//	@Column(name = "AGE")
-//	private int age;
-	
 	@Column(name = "isDeleted", columnDefinition = "boolean default false")
 	private boolean isDeleted;
 	
 	
 //    private String image;
     
-    private String email;
+//    private String email;
 
 
 	public long getTeacher_id() {
@@ -63,21 +60,24 @@ public class Teacher {
 	}
 
 
-	public String getEmail() {
-		return email;
-	}
-
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
+//	public String getEmail() {
+//		return email;
+//	}
+//
+//
+//	public void setEmail(String email) {
+//		this.email = email;
+//	}
 	
 	public Teacher() {		
 	}
 
-	public Teacher(String teacher_name, String email) {		
+//	public Teacher(String teacher_name, String email) {		
+//		this.teacher_name = teacher_name;
+//		this.email = email;
+//	}
+	public Teacher(String teacher_name) {		
 		this.teacher_name = teacher_name;
-		this.email = email;
 	}
     
 	

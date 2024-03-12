@@ -11,6 +11,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -36,7 +38,9 @@ public class Classes {
 	@OneToMany(mappedBy = "classes")
     private List<Student> students = new ArrayList<>();
 	
-	
+	@ManyToOne
+    @JoinColumn(name = "accountId")
+    private Account account;
 	
 	
 	public List<Student> getStudents() {
@@ -70,6 +74,18 @@ public class Classes {
 	public void setDeleted(boolean isDeleted) {
 		this.isDeleted = isDeleted;
 	}
+	
+	
+	
+	
+	public Account getAccount() {
+		return account;
+	}
+
+	public void setAccount(Account account) {
+		this.account = account;
+	}
+
 	public Classes() {
 		this.classId = RandomStringUtils.randomAlphanumeric(8);
 	}
@@ -79,12 +95,19 @@ public class Classes {
 //		this.isDeleted = isDeleted;
 //	}
 
-	public Classes(String classId, String className, boolean isDeleted, List<Student> students) {
+	public Classes(String classId, String className, List<Student> students) {
 		this.classId = RandomStringUtils.randomAlphanumeric(8);
 		this.className = className;
-		this.isDeleted = isDeleted;
 		this.students = students;
 	}
+
+	public Classes(String classId, String className, List<Student> students, Account account) {
+		
+		this.classId = classId;
+		this.className = className;
+		this.students = students;
+		this.account = account;
+}
 	
 	
 	

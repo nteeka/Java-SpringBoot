@@ -23,6 +23,7 @@ import com.example.demo.services.AccountService;
 import com.example.demo.services.EmailService;
 import com.example.demo.services.RoleService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -202,7 +203,11 @@ public class AuthenController {
         return "/Authen/Login";
     }
 	@GetMapping("/changePassword")
-    public String showChangePasswordForm() {
+    public String showChangePasswordForm(HttpServletRequest request) {
+		
+//		HttpSession session = request.getSession();
+//        Account loggedInUser = (Account) session.getAttribute("loggedInUser");
+//        System.out.println(loggedInUser.getRole().getRoleName());
         return "/Authen/changePass";
     }
 	
