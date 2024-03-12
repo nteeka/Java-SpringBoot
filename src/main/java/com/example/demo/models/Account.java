@@ -23,8 +23,7 @@ public class Account {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long accountId;
 	
-	
-	
+		
     private String image;
     
     private String email;

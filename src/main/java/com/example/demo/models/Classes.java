@@ -2,6 +2,9 @@ package com.example.demo.models;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
+import org.apache.commons.lang3.RandomStringUtils;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,9 +20,12 @@ import lombok.Data;
 @Table(name="Class")
 public class Classes {
 	
+//	
+//	@GeneratedValue(strategy = GenerationType.IDENTITY)
+//	private long classId;
+	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long classId;
+	private String classId;
 	
 	private String className;
 	
@@ -41,11 +47,11 @@ public class Classes {
 		this.students = students;
 	}
 
-	public long getClassId() {
+	public String getClassId() {
 		return classId;
 	}
 
-	public void setClassId(long classId) {
+	public void setClassId(String classId) {
 		this.classId = classId;
 	}
 
@@ -65,7 +71,7 @@ public class Classes {
 		this.isDeleted = isDeleted;
 	}
 	public Classes() {
-		
+		this.classId = RandomStringUtils.randomAlphanumeric(8);
 	}
 //	public Classes(long classId, String className, boolean isDeleted) {
 //		this.classId = classId;
@@ -73,8 +79,8 @@ public class Classes {
 //		this.isDeleted = isDeleted;
 //	}
 
-	public Classes(long classId, String className, boolean isDeleted, List<Student> students) {
-		this.classId = classId;
+	public Classes(String classId, String className, boolean isDeleted, List<Student> students) {
+		this.classId = RandomStringUtils.randomAlphanumeric(8);
 		this.className = className;
 		this.isDeleted = isDeleted;
 		this.students = students;

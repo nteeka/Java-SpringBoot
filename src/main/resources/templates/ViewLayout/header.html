@@ -6,12 +6,13 @@
     <title>My Bootstrap-Thymeleaf App</title>
 
     <!-- Bootstrap CSS -->
+    
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Add any additional CSS styles here -->
 
     <!-- Bootstrap JS and Popper.js (optional) -->
+     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <style>
@@ -19,6 +20,29 @@
     height: 200px;
     background: #aaa;
   }
+  /* Custom styles for dropdown */
+    .navbar-dark .navbar-nav .nav-link.dropdown-toggle {
+        color: #fff; /* Change text color for the dropdown toggle */
+    }
+
+    .navbar-dark .navbar-nav .nav-link.dropdown-toggle:hover,
+    .navbar-dark .navbar-nav .nav-link.dropdown-toggle:focus {
+        color: #f8f9fa; /* Change text color for the dropdown toggle on hover/focus */
+    }
+
+    .navbar-dark .navbar-nav .dropdown-menu {
+        background-color: #343a40; /* Change background color for the dropdown menu */
+    }
+
+    .navbar-dark .navbar-nav .dropdown-menu .nav-item a {
+        color: #fff; /* Change text color for the dropdown items */
+    }
+
+    .navbar-dark .navbar-nav .dropdown-menu .nav-item a:hover,
+    .navbar-dark .navbar-nav .dropdown-menu .nav-item a:focus {
+        color: #f8f9fa; /* Change text color for the dropdown items on hover/focus */
+        background-color: #495057; /* Change background color for the dropdown items on hover/focus */
+    }
   </style>
 </head>
 <body>
@@ -30,27 +54,59 @@
 <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
   <div class="container-fluid">
     <ul class="navbar-nav ml-auto">
-      <li class="nav-item">
-        <a class="nav-link" href="/StudentView/listStudent">Student</a>
+    	<li class="nav-item dropdown">
+      		<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Classes
+      		</a>
+      		<ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+        		<li class="nav-item">
+        			<a href="#" class="nav-link" data-toggle="modal" data-target="#createClassModal">Create Class</a>
+        		</li>
+        		<li class="nav-item">
+          			<a class="nav-link" href="/Teacher/listClass">List Class</a>
+         		</li>
+         		<li class="nav-item">
+        			<a href="#" class="nav-link" data-toggle="modal" data-target="#joinClassModal">Join Class</a>
+         		</li>
+      		</ul>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/StudentView/createStudent">Create Student</a>
+      <li class="nav-item dropdown">
+      		<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Student
+      		</a>
+      		<ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+        		<li class="nav-item">
+        			<a class="nav-link" href="/StudentView/createStudent">Create Student</a>
+        		</li>
+        		<li class="nav-item">
+        			<a class="nav-link" href="/StudentView/listStudent">Student</a>
+         		</li>
+      		</ul>
       </li>
+      <li class="nav-item dropdown">
+      		<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Homework
+      		</a>
+      		<ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+        		<li class="nav-item">
+        			<a class="nav-link" href="/Teacher/createHomework">Create Homework</a>
+        		</li>
+        		<li class="nav-item">
+        			<a class="nav-link" href="/Students/listHomeworkForm">List Homework</a>
+         		</li>
+         		<li class="nav-item">
+        			<a class="nav-link" href="/Students/submitHomeworkForm">Submit Homework</a>
+      			</li>
+      		</ul>
+      </li>       
       <li class="nav-item">
         <a class="nav-link" href="/Authen/changePassword">Change password</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="/Role/createRole">Create Role</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/Students/listHomeworkForm">List Homework</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/Teacher/createHomework">Create Homework</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/Students/submitHomeworkForm">Submit Homework</a>
-      </li>
+      
+    
       <li class="nav-item" th:if="${session.loggedInUser != null}">
         <a class="nav-link" th:href="'/profile/' + ${session.loggedInUser.accountId}">
           Welcome, <span th:text="${session.loggedInUser.email}"></span>
@@ -62,4 +118,73 @@
       </li>
     </ul>
   </div>
+  
+  <div class="modal fade" id="createClassModal" tabindex="-1" role="dialog" aria-labelledby="createClassModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="createClassModalLabel">Create Classes</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- Form để tạo Classes -->
+        <form action="/Teacher/addNewClass" method="POST">
+        <div class="form-group">
+            <label for="className">Class Name:</label>
+            <input type="text" id="className" name="className" class="form-control" required>
+        </div>
+        <div class="d-flex justify-content-between">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Create</button>
+        </div>
+    </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="joinClassModal" tabindex="-1" role="dialog" aria-labelledby="joinClassModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="joinClassModalLabel">Join Classes</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- Form để tạo Classes -->
+        <div class="alert alert-danger" th:if="${error}">
+        <p th:text="${error}"></p>
+    </div>
+        <form action="/Teacher/joinClass" method="POST">
+        <div class="form-group">
+            <label for="classId">Class ID:</label>
+            <input type="text" id="classId" name="classId" class="form-control" required>
+        </div>
+        <div class="d-flex justify-content-between">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Join</button>
+        </div>
+    </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    /* Thymeleaf variable to check if there is an error */
+    var hasError = /*[[${error != null}]]*/ false;
+
+    /* If there is an error, show the modal again */
+    if (hasError) {
+        $(document).ready(function () {
+            $('#joinClassModal').modal('show');
+        });
+    }
+    /*]]>*/
+</script>
 </nav>
