@@ -53,7 +53,7 @@ public class StudentViewController {
         m.addAttribute("classes", classes);
 		m.addAttribute("faculties",faculties);
 		m.addAttribute("student", new Student());
-//		Optional<Classes> studentClass = classRepository.findById((long) 1);		    		       
+//		Optional<Classes> studentClass = classRepository.findById((long) 3);		    		       
 //		if (studentClass.isPresent()) {
 //		    Classes classes1 = studentClass.get();
 //		    List<Student> students = classes1.getStudents();
@@ -64,6 +64,9 @@ public class StudentViewController {
 //		        System.out.println("Student Age: " + student.getAge());
 //		        // Add other student information as needed
 //		    }
+//		    students.clear();
+//
+//		    classRepository.save(classes1);
 //		} else {
 //		    System.out.println("Classes not found with ID 1");
 //		}

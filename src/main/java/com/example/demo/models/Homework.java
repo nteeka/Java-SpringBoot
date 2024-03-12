@@ -32,6 +32,10 @@ public class Homework {
     @JoinColumn(name = "subject_id") // Specify the foreign key column
     private Subject subject;
 	
+	@ManyToOne
+    @JoinColumn(name = "teacher_id") // Specify the foreign key column
+    private Teacher teacher;
+	
 	private String description;
 	
 	private int submited = 0; // sl da nop homework cua hs mot class
@@ -42,6 +46,8 @@ public class Homework {
 	
 	@Column(name = "isDeleted", columnDefinition = "boolean default false")
 	private boolean isDeleted;
+	
+	
 
 	public long getHomeworkId() {
 		return homeworkId;
@@ -110,6 +116,16 @@ public class Homework {
 	public LocalDate getDeadline() {
 		return deadline;
 	}
+	
+	
+
+	public Teacher getTeacher() {
+		return teacher;
+	}
+
+	public void setTeacher(Teacher teacher) {
+		this.teacher = teacher;
+	}
 
 	public void setDeadline(LocalDate deadline) {
 		if (dateCreated != null && deadline != null && deadline.isBefore(dateCreated)) {
@@ -128,15 +144,21 @@ public class Homework {
 	{		
 	}
 	
-	public Homework(long homeworkId, String homeworkName, Classes classes, Subject subject, String description,
-			LocalDate deadline) {
+	
+
+	public Homework(long homeworkId, String homeworkName, Classes classes, Subject subject, Teacher teacher,
+			String description, LocalDate dateCreated, LocalDate deadline) {
 		this.homeworkId = homeworkId;
 		this.homeworkName = homeworkName;
 		this.classes = classes;
 		this.subject = subject;
+		this.teacher = null; // tạm thời
 		this.description = description;
+		this.dateCreated = LocalDate.now();
 		this.deadline = deadline;
 	}
+	
+	
 
 	
 	

@@ -1,0 +1,32 @@
+
+<div th:replace="/ViewLayout/header.html"></div>
+
+<div class="alert alert-danger" th:if="${error}">
+        <p th:text="${error}"></p>
+    </div>
+    <div class="alert alert-success" th:if="${success}">
+        <p th:text="${success}"></p>
+    </div>
+<div class="container mt-5">
+    <h1 class="mb-4">My Classes</h1>
+
+    <!-- List of Classes -->
+    <div class="row">
+        <div th:each="class : ${classes}" class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <!-- Hiển thị thông tin của từng lớp -->
+                    <h5 class="card-title" th:text="${class.className}">Class Name</h5>
+                    <p class="card-text">Description of Class.</p>
+                    <!-- Thay thế href bằng đường dẫn thích hợp cho từng lớp -->
+                    <a href="#" class="btn btn-primary">Enter Class</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add more classes as needed -->
+
+    </div>
+</div>
+
+<div th:replace="/ViewLayout/footer.html"></div>
