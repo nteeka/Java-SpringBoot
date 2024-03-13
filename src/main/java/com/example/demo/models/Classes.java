@@ -2,6 +2,7 @@ package com.example.demo.models;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -22,9 +23,6 @@ import lombok.Data;
 @Table(name="Class")
 public class Classes {
 	
-//	
-//	@GeneratedValue(strategy = GenerationType.IDENTITY)
-//	private long classId;
 	
 	@Id
 	private String classId;
@@ -37,12 +35,33 @@ public class Classes {
 	
 	@OneToMany(mappedBy = "classes")
     private List<Student> students = new ArrayList<>();
+		
+	@OneToMany(mappedBy = "classes")
+    Set<ClassAccount> classAccount;
 	
 	@ManyToOne
     @JoinColumn(name = "accountId")
     private Account account;
 	
 	
+	
+	
+//	public List<Account> getAccounts() {
+//		return accounts;
+//	}
+//
+//	public void setAccounts(List<Account> accounts) {
+//		this.accounts = accounts;
+//	}
+	
+	public Set<ClassAccount> getClassAccount() {
+		return classAccount;
+	}
+
+	public void setClassAccount(Set<ClassAccount> classAccount) {
+		this.classAccount = classAccount;
+	}
+
 	public List<Student> getStudents() {
 		return students;
 	}
@@ -108,6 +127,27 @@ public class Classes {
 		this.students = students;
 		this.account = account;
 }
+
+	public Classes(String className, boolean isDeleted, List<Student> students, Account account,
+			Set<ClassAccount> classAccount) {
+		
+		
+		this.className = className;
+		this.isDeleted = isDeleted;
+		this.students = students;
+		this.account = account;
+		this.classAccount = classAccount;
+	}
+
+//	public Classes(String classId, String className, List<Student> students, List<Account> accounts, Account account) {
+//		
+//		this.classId = classId;
+//		this.className = className;
+//		this.students = students;
+//		this.accounts = accounts;
+//		this.account = account;
+//	}
+	
 	
 	
 	
