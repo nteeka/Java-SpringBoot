@@ -2,14 +2,20 @@ package com.example.demo.models;
 
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -44,18 +50,34 @@ public class Account {
     @JoinColumn(name = "roleId") // Specify the foreign key column
     private Role role;
     
+
+    @OneToMany(mappedBy = "account")
+    Set<ClassAccount> classAccount;
     
     
-    
-    
-    
-    
+//  @ManyToOne
+//  @JoinColumn(name = "classId") // Specify the foreign key column
+//  private List<Classes> classes = new ArrayList<>();
+//  @OneToMany(mappedBy = "classId", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.)
+//  private List<Classes> classes = new ArrayList<>();
+  
+//  @ManyToOne
+//  @JoinColumn(name = "classId") // Specify the foreign key column
+//  private Classes classes;
 
     
     
 	public String getResetToken() {
 		return resetToken;
 	}
+
+//	public List<Classes> getClasses() {
+//		return classes;
+//	}
+//
+//	public void setClasses(List<Classes> classes) {
+//		this.classes = classes;
+//	}
 
 	public void setResetToken(String resetToken) {
 		this.resetToken = resetToken;
@@ -117,14 +139,48 @@ public class Account {
 	public void setDeleted(boolean isDeleted) {
 		this.isDeleted = isDeleted;
 	}
+	
+	
+	
+    
+	
 
-	public Account(String image, String email, String password, Role role) {		
+public Account(long accountId, String image, String email, String password, boolean isDeleted, String resetToken,
+			LocalDateTime resetTokenExpiration, Role role, Set<ClassAccount> classAccount) {
+		
+		this.accountId = accountId;
 		this.image = image;
 		this.email = email;
 		this.password = password;
+		this.isDeleted = isDeleted;
+		this.resetToken = resetToken;
+		this.resetTokenExpiration = resetTokenExpiration;
 		this.role = role;
+		this.classAccount = classAccount;
 	}
-    
+
+//	public Account(long accountId, String image, String email, String password, boolean isDeleted, String resetToken,
+//			LocalDateTime resetTokenExpiration, Role role, List<Classes> classes) {
+//		
+//		this.accountId = accountId;
+//		this.image = image;
+//		this.email = email;
+//		this.password = password;
+//		this.isDeleted = isDeleted;
+//		this.resetToken = resetToken;
+//		this.resetTokenExpiration = resetTokenExpiration;
+//		this.role = role;
+//		this.classes = classes;
+//	}
+
+	public Set<ClassAccount> getClassAccount() {
+		return classAccount;
+	}
+
+	public void setClassAccount(Set<ClassAccount> classAccount) {
+		this.classAccount = classAccount;
+	}
+
 	public Account() {		
 		
 	}
