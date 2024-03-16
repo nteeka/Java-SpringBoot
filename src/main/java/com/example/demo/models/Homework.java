@@ -28,17 +28,9 @@ public class Homework {
     @JoinColumn(name = "classId") // Specify the foreign key column
     private Classes classes;
 	
-	@ManyToOne
-    @JoinColumn(name = "subject_id") // Specify the foreign key column
-    private Subject subject;
-	
-	@ManyToOne
-    @JoinColumn(name = "teacher_id") // Specify the foreign key column
-    private Teacher teacher;
 	
 	private String description;
 	
-	private int submited = 0; // sl da nop homework cua hs mot class
 	
 	private LocalDate dateCreated;  
 	
@@ -47,7 +39,17 @@ public class Homework {
 	@Column(name = "isDeleted", columnDefinition = "boolean default false")
 	private boolean isDeleted;
 	
+	private String filePath;
 	
+	
+
+	public String getFilePath() {
+		return filePath;
+	}
+
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
+	}
 
 	public long getHomeworkId() {
 		return homeworkId;
@@ -73,13 +75,13 @@ public class Homework {
 		this.classes = classes;
 	}
 
-	public Subject getSubject() {
-		return subject;
-	}
-
-	public void setSubject(Subject subject) {
-		this.subject = subject;
-	}
+//	public Subject getSubject() {
+//		return subject;
+//	}
+//
+//	public void setSubject(Subject subject) {
+//		this.subject = subject;
+//	}
 
 	public String getDescription() {
 		return description;
@@ -89,13 +91,13 @@ public class Homework {
 		this.description = description;
 	}
 
-	public int getSubmited() {
-		return submited;
-	}
-
-	public void setSubmited(int submited) {
-		this.submited = submited;
-	}
+//	public int getSubmited() {
+//		return submited;
+//	}
+//
+//	public void setSubmited(int submited) {
+//		this.submited = submited;
+//	}
 
 	public LocalDate getDateCreated() {
 		return dateCreated;
@@ -119,13 +121,7 @@ public class Homework {
 	
 	
 
-	public Teacher getTeacher() {
-		return teacher;
-	}
-
-	public void setTeacher(Teacher teacher) {
-		this.teacher = teacher;
-	}
+	
 
 	public void setDeadline(LocalDate deadline) {
 		if (dateCreated != null && deadline != null && deadline.isBefore(dateCreated)) {
@@ -139,6 +135,10 @@ public class Homework {
             throw new IllegalArgumentException("Deadline must be after dateCreated.");
         }
     }
+//	@PrePersist
+//    protected void onCreate() {
+//        this.dateCreated = LocalDate.now();
+//    }
 
 	public Homework()
 	{		
@@ -146,16 +146,27 @@ public class Homework {
 	
 	
 
-	public Homework(long homeworkId, String homeworkName, Classes classes, Subject subject, Teacher teacher,
+	public Homework(long homeworkId, String homeworkName, Classes classes,
 			String description, LocalDate dateCreated, LocalDate deadline) {
 		this.homeworkId = homeworkId;
 		this.homeworkName = homeworkName;
 		this.classes = classes;
-		this.subject = subject;
-		this.teacher = null; // tạm thời
+//		this.subject = subject;
 		this.description = description;
 		this.dateCreated = LocalDate.now();
 		this.deadline = deadline;
+	}
+
+	public Homework(long homeworkId, String homeworkName, Classes classes, String description, LocalDate dateCreated,
+			LocalDate deadline, boolean isDeleted, String filePath) {
+		this.homeworkId = homeworkId;
+		this.homeworkName = homeworkName;
+		this.classes = classes;
+		this.description = description;
+		this.dateCreated = dateCreated;
+		this.deadline = deadline;
+		this.isDeleted = isDeleted;
+		this.filePath = filePath;
 	}
 	
 	

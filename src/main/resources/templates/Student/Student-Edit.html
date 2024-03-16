@@ -42,9 +42,7 @@
                                     <option th:each="faculty : ${faculties}" th:value="${faculty.facultyId}" th:text="${faculty.facultyName}"></option>
                                 </select>
                                </div>
-                              <select name="classes" th:field="*{classes}" class="form-control form-control-lg" required>
-                                    <option th:each="class : ${classes}" th:value="${class.classId}" th:text="${class.className}"></option>
-                                </select>
+                              
                               <div class="mb-3">
                                 <label for="image" class="form-label">Select Image</label>
                                	<input type="file" name="image" class="form-control form-control-lg" id="imageInput" />

@@ -21,5 +21,8 @@ public interface ClassRepository extends JpaRepository<Classes, String>{
     List<Classes> findAllNotDeleted();
 	
 	
+	
+	
+	
 
 }

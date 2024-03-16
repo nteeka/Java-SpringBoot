@@ -19,7 +19,10 @@
                     <h5 class="card-title" th:text="${class.className}">Class Name</h5>
                     <p class="card-text">Description of Class.</p>
                     <!-- Thay thế href bằng đường dẫn thích hợp cho từng lớp -->
-                    <a href="#" class="btn btn-primary">Enter Class</a>
+                    <a th:href="'/Teacher/enterClass/' + ${class.classId}" class="btn btn-primary">Enter Class</a>                    
+					<a href="#" class="btn btn-primary leave-class-btn" th:data-class-id="${class.classId}">Leave Class</a>
+
+					
                 </div>
             </div>
         </div>
@@ -28,5 +31,18 @@
 
     </div>
 </div>
-
+<script>
+					    // Lấy tất cả các phần tử có class là leave-class-btn
+					    const leaveButtons = document.querySelectorAll('.leave-class-btn');
+					    // Thêm sự kiện click cho mỗi nút
+					    leaveButtons.forEach(button => {
+					        button.addEventListener('click', function() {
+					            if (confirm("Are you sure you want to leave this class?")) {
+					                // Lấy classId từ data attribute
+					                const classId = button.getAttribute('data-class-id');
+					                window.location.href = '/Teacher/leaveClass/' + classId;
+					            }
+					        });
+					    });
+					</script>
 <div th:replace="/ViewLayout/footer.html"></div>

@@ -43,18 +43,18 @@ public class Student {
     @JoinColumn(name = "facultyId") // Specify the foreign key column
     private Faculty faculty;
 	
-    @ManyToOne
-    @JoinColumn(name = "classId") // Specify the foreign key column
-    private Classes classes;
+//    @ManyToOne
+//    @JoinColumn(name = "classId") // Specify the foreign key column
+//    private Classes classes;
 
     
     
-	public Classes getClasses() {
-		return classes;
-	}
-	public void setClasses(Classes classes) {
-		this.classes = classes;
-	}
+//	public Classes getClasses() {
+//		return classes;
+//	}
+//	public void setClasses(Classes classes) {
+//		this.classes = classes;
+//	}
 	public long getId() {
 		return id;
 	}
@@ -111,13 +111,7 @@ public class Student {
 	
 	
 
-	public Student(String name, int age, String image, String email, Faculty faculty) {
-		this.name = name;
-		this.age = age;
-		this.image = image;
-		this.email = email;
-		this.faculty = faculty;
-	}
+	
 	
 	public Student(String name, int age) {
 		
@@ -132,14 +126,13 @@ public class Student {
 		this.age = age;
 		this.image = image;
 	}
-	public Student(String name, int age, String image, String email, Faculty faculty, Classes classes) {
+	public Student(String name, int age, String image, String email, Faculty faculty) {
 
 		this.name = name;
 		this.age = age;
 		this.image = image;
 		this.email = email;
 		this.faculty = faculty;
-		this.classes = classes;
 	}
 	
 

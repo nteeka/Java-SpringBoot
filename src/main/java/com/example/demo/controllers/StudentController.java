@@ -61,7 +61,6 @@ public class StudentController {
 									@RequestParam("age") String age,
 									@RequestParam("faculty") Faculty faculty,
 									@RequestParam("email") String email,
-									@RequestParam("classes") Classes classes,
 									@RequestParam("image") MultipartFile img,
 									Model model)
 				
@@ -129,11 +128,11 @@ public class StudentController {
 			student.setName(name);
 			student.setAge(Integer.parseInt(age));
 			student.setFaculty(faculty);
-			student.setClasses(classes);
-		    Optional<Classes> studentClass = classRepository.findById(classes.getClassId());		    		       
-		    studentClass.get().getStudents().add(student);
+//			student.setClasses(classes);
+//		    Optional<Classes> studentClass = classRepository.findById(classes.getClassId());		    		       
+//		    studentClass.get().getStudents().add(student);
 		    
-		    classRepository.save(studentClass.get());
+//		    classRepository.save(studentClass.get());
 		    
 
 			student.setEmail(email);
@@ -170,7 +169,6 @@ public class StudentController {
 	    							@RequestParam("age") int Age,
 	    							@RequestParam("email") String Email,
 	    							@RequestParam("faculty") Faculty faculty,
-	    							@RequestParam("classes") Classes classes,
 	    							@RequestParam("image") MultipartFile multipartFile,
 	    							Model model) {	       	               
 	        
@@ -242,7 +240,7 @@ public class StudentController {
 	            student.setEmail(Email);
 	            student.setAge(Age);
 	            student.setFaculty(faculty);
-	            student.setClasses(classes);
+//	            student.setClasses(classes);
 	    		Path path = Paths.get("uploads/");
 	    		try{
 	    			InputStream inputStream = multipartFile.getInputStream();
