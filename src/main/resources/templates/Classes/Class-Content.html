@@ -1,0 +1,244 @@
+<div th:replace="/ViewLayout/header.html"></div>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+<div class="container-fluid">
+    <div class="row content">
+        <div class="col-sm-3 sidenav">
+            <h4>John's Blog</h4>
+            <!-- List of cards -->
+            <div class="card">
+                <div class="card-header">
+                    Featured
+                </div>
+                <ul class="list-group list-group-flush">
+                    <!-- Card 1 -->
+                    <li class="list-group-item" th:each="class : ${classes}">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${class.className}">Class Title</h5>
+                            <!-- <p class="card-text" th:text="${class.description}">Class Description</p> -->
+                            <a th:href="'/Teacher/enterClass/' + ${class.classId}" class="btn btn-primary">Enter Class</a>
+                        </div>
+                    </li>
+
+                </ul>
+            </div>
+            <!-- End list of cards -->
+
+            <!-- Search form -->
+            <div class="input-group mt-3">
+                <input type="text" class="form-control" placeholder="Search Blog..">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button">
+                        <span class="glyphicon glyphicon-search"></span>
+                    </button>
+                </span>
+            </div>
+        </div>
+
+        <div class="col-sm-9">
+            <ul class="nav nav-tabs">
+                <li class="active"><a data-toggle="tab" href="#recentPosts">Bảng tin</a></li>
+                <li><a data-toggle="tab" href="#listHomework">Bài tập trên lớp</a></li>
+                <!-- Add more tabs as needed -->
+            </ul>
+
+            <div class="tab-content">
+                <!-- Tab content for Recent Posts -->
+                <div id="recentPosts" class="tab-pane fade in active">                   
+                   <!-- Add content for recent posts -->
+                	<div class="row">                  
+        				<div class="col-md-2">        
+           				<!-- Content on the right side -->
+        					<div class="card">
+    							<div class="card-body">
+        							<h5 class="card-title">Class ID</h5>
+        							<p class="card-text" th:text="${id}" th:data-id="${id}"></p>
+        							<button class="btn btn-primary" id="copyButton">Copy ID</button>
+    							</div>
+							</div>
+							<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
+							<script>
+    							var clipboard = new ClipboardJS('#copyButton', {text: function() {
+        							var id = document.querySelector('.card-text').getAttribute('data-id');
+            						return id;
+        						}
+    							});    
+							</script>
+							<!-- Thẻ <a> để kích hoạt modal -->
+							<a href="#" id="createHomeworkBtn" class="btn btn-primary">Create Homework</a>
+
+								<!-- Modal -->
+								<div id="homeworkModal" class="modal">
+									<div class="modal-dialog">
+								    	<div class="modal-content">
+								
+								      	<!-- Modal Header -->
+								      		<div class="modal-header">
+								        		<h4 style="text-align: center" class="modal-title">Create Homework</h4>
+								        		<button type="button" class="close" data-dismiss="modal">&times;</button>
+								      		</div>
+								
+								      		<!-- Modal Body -->
+								      		<div class="modal-body">
+								        		<form action="/Teacher/createHomework" id="homeworkForm" method="post"  enctype="multipart/form-data">
+									        		<div class="form-group">
+												        <label for="classes">Class</label>
+												        <select class="form-control" id="classes" name="classes">
+												            <!-- Iterate over the classes and populate the options -->
+												            <option th:value="${c.classId}" th:text="${c.className}"></option>
+												        </select>
+												    </div>
+								          			<div class="form-group">
+								            			<label for="homeworkName">Name:</label>
+								            			<input name="homeworkName" type="text" class="form-control" id="homeworkName" required>
+								          			</div>
+								          			<div class="form-group">
+								            			<label for="description">Description:</label>
+								            			<textarea name="description" class="form-control" id="homeworkDescription" required></textarea>
+								          			</div>
+								          			<div class="form-group">
+								            			<label for="deadline">Deadline:</label>
+								            			<input name="deadline" type="date" class="form-control" id="homeworkDeadline" required>
+								          			</div>
+								          			<div class="form-group mt-3">
+											            <label class="mr-2">Upload your homework:</label>
+											            <input type="file" name="filePath">
+          											</div>
+								          			<button type="submit" class="btn btn-primary">Create</button>
+								        		</form>
+								      		</div>
+								
+								    	</div>
+								  	</div>
+								</div>
+
+								<script>
+								  // Lắng nghe sự kiện click vào thẻ <a> và hiển thị modal
+								  document.getElementById('createHomeworkBtn').addEventListener('click', function() {
+								    document.getElementById('homeworkModal').style.display = 'block';
+								  });
+								
+								  // Đóng modal khi nhấn vào nút đóng hoặc click bên ngoài modal
+								  document.querySelectorAll('.close').forEach(function(el) {
+								    el.addEventListener('click', function() {
+								      document.getElementById('homeworkModal').style.display = 'none';
+								    });
+								  });
+								
+								  // Xử lý form submit để tạo bài tập
+								  document.getElementById('homeworkForm').addEventListener('submit', function(event) {
+								    
+								    var name = document.getElementById('homeworkName').value;
+								    var description = document.getElementById('homeworkDescription').value;
+								    var deadline = document.getElementById('homeworkDeadline').value;
+								
+								    // Thực hiện các thao tác cần thiết để tạo bài tập, ví dụ: gửi dữ liệu đến server
+								   
+								
+								    // Đóng modal sau khi tạo xong
+								    document.getElementById('homeworkModal').style.display = 'none';
+								  });
+								</script>
+        				</div>
+        <div class="col-md-10">
+            <!-- Content on the right side -->
+            <h4><small>RECENT POSTS</small></h4>
+            <hr>
+            <h2>I Love Food</h2>
+            <h5><span class="glyphicon glyphicon-time"></span> Post by Jane Dane, Sep 27, 2015.</h5>
+	      <h5><span class="label label-danger">Food</span> <span class="label label-primary">Ipsum</span></h5><br>
+	      <p>Food is my passion. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+	      <br><br>
+	      <h4>Leave a Comment:</h4>
+            <form role="form">
+	        <div class="form-group">
+	          <textarea class="form-control" rows="3" required></textarea>
+	        </div>
+	        <button type="submit" class="btn btn-success">Submit</button>
+	      </form>
+	      <br><br>
+            <p><span class="badge">2</span> Comments:</p><br>
+            <div class="row">
+	        <div class="col-sm-2 text-center">
+	          <img src="bandmember.jpg" class="img-circle" height="65" width="65" alt="Avatar">
+	        </div>
+	        <div class="col-sm-10">
+	          <h4>Anja <small>Sep 29, 2015, 9:12 PM</small></h4>
+	          <p>Keep up the GREAT work! I am cheering for you!! Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+	          <br>
+	        </div>
+	        <div class="col-sm-2 text-center">
+	          <img src="bird.jpg" class="img-circle" height="65" width="65" alt="Avatar">
+	        </div>
+	        <div class="col-sm-10">
+	          <h4>John Row <small>Sep 25, 2015, 8:25 PM</small></h4>
+	          <p>I am so happy for you man! Finally. I am looking forward to read about your trendy life. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+	          <br>
+	          <p><span class="badge">1</span> Comment:</p><br>
+	          <div class="row">
+	            <div class="col-sm-2 text-center">
+	              <img src="bird.jpg" class="img-circle" height="65" width="65" alt="Avatar">
+	            </div>
+	            <div class="col-xs-10">
+	              <h4>Nested Bro <small>Sep 25, 2015, 8:28 PM</small></h4>
+	              <p>Me too! WOW!</p>
+	              <br>
+	            </div>
+	          </div>
+	        </div>
+	      </div>
+            
+        </div>
+    </div>
+                </div>
+
+                <!-- Tab content for Leave a Comment -->
+                <div id="listHomework" class="tab-pane fade">
+                    <h1>List of Homework</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Deadline</th>
+                <th>File</th>
+                <th>Date Created</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Duyệt qua danh sách Homework và hiển thị thông tin của từng Homework -->
+            <tr th:each="homework : ${hw}">
+                <td th:text="${homework.homeworkId}"></td>
+                <td th:text="${homework.homeworkName}"></td>
+                <td th:text="${homework.description}"></td>
+                <td th:text="${homework.deadline}"></td>
+                <!-- Sử dụng thẻ <a> để hiển thị đường dẫn tập tin và cho phép tải xuống -->
+                <td>
+                    <a th:href="@{'/downloadFile/' + ${homework.filePath}}" th:text="${homework.filePath}">Download</a>
+                </td>
+                <td th:text="${homework.dateCreated}"></td>
+            </tr>
+        </tbody>
+    </table>
+                </div>
+
+                <!-- Add more tab content here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
+<script>
+    var clipboard = new ClipboardJS('#copyButton', {
+        text: function() {
+            var id = document.querySelector('.card-text').getAttribute('data-id');
+            return id;
+        }
+    });
+</script>
+
+<div th:replace="/ViewLayout/footer.html"></div>
