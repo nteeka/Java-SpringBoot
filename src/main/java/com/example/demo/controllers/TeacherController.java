@@ -11,6 +11,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,12 +28,18 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.demo.models.Account;
 import com.example.demo.models.ClassAccount;
 import com.example.demo.models.Classes;
+import com.example.demo.models.Comment;
+import com.example.demo.models.Faculty;
 import com.example.demo.models.Homework;
+import com.example.demo.models.Notification;
+import com.example.demo.models.Student;
 import com.example.demo.repositories.AccountRepository;
 import com.example.demo.repositories.ClassAccountRepository;
 import com.example.demo.repositories.ClassRepository;
+import com.example.demo.repositories.CommentRepository;
 import com.example.demo.repositories.DetailTeachingRepository;
 import com.example.demo.repositories.HomeworkRepository;
+import com.example.demo.repositories.NotificationRepository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -58,15 +66,21 @@ public class TeacherController {
 	@Autowired
     private HomeworkRepository homeworkRepository;
 	
+	@Autowired
+    private NotificationRepository notifyRepository;
+	
+	@Autowired
+    private CommentRepository commentRepository;
+	
 	@PersistenceContext
 	private EntityManager entityManager;
 	
-	@GetMapping("/createHomework/{classId}")
-    public String createHomeworkView(@PathVariable("classId") String id,Model m) {
-		Optional<Classes> c = classRepository.findById(id);
-		m.addAttribute("classes", c);
-        return "/Teacher/Homework-Create";
-    }
+//	@GetMapping("/createHomework/{classId}")
+//    public String createHomeworkView(@PathVariable("classId") String id,Model m) {
+//		Optional<Classes> c = classRepository.findById(id);
+//		m.addAttribute("classes", c);
+//        return "/Teacher/Homework-Create";
+//    }
 	
 	//missing validate
 	
@@ -88,7 +102,7 @@ public class TeacherController {
 	    int lastDotIndex = originalFilename.lastIndexOf('.');
 	    String fileNameWithoutExtension = originalFilename.substring(0, lastDotIndex); // Loại bỏ phần mở rộng nếu có
 	    String fileExtension = originalFilename.substring(lastDotIndex + 1);
-	    String uniqueFileName = homeWork.getHomeworkId() + "_" + fileNameWithoutExtension + "." + fileExtension;
+	    String uniqueFileName = homeWork.getHomeworkId() + "_homework_" + fileNameWithoutExtension + "." + fileExtension;
 
 	    Path path = Paths.get("fileUploads/");
 	    try {
@@ -101,6 +115,87 @@ public class TeacherController {
 		homeworkRepository.save(homeWork);
         return "redirect:/StudentView/listStudent";
     }
+	
+	@PostMapping("/updateHomework")
+    public String updateHomework(@RequestParam("homeworkId") long id,
+    							@RequestParam("homeworkName") String name,
+    							@RequestParam("description") String description,   
+    							@RequestParam("deadline") LocalDate deadline,  
+    							@RequestParam("filePath") MultipartFile multipartFile) {	       	               
+        
+		Optional<Homework> currentHomework = homeworkRepository.findById(id);
+		Homework newHw = currentHomework.get();
+		newHw.setHomeworkName(name);
+		newHw.setLastModified(LocalDate.now());
+		newHw.setDescription(description);
+		newHw.setDeadline(deadline);
+		
+		if(multipartFile.isEmpty())
+		{
+			homeworkRepository.save(newHw);
+			return "redirect:/Teacher/enterClass/" + newHw.getClasses().getClassId();
+		}
+		String originalFilename = multipartFile.getOriginalFilename();
+	    int lastDotIndex = originalFilename.lastIndexOf('.');
+	    String fileNameWithoutExtension = originalFilename.substring(0, lastDotIndex); // Loại bỏ phần mở rộng nếu có
+	    String fileExtension = originalFilename.substring(lastDotIndex + 1);
+	    String uniqueFileName = newHw.getHomeworkId() + "_homework_" + fileNameWithoutExtension + "." + fileExtension;
+
+	    Path path = Paths.get("fileUploads/");
+	    try {
+	        InputStream inputStream = multipartFile.getInputStream();
+	        Files.copy(inputStream, path.resolve(uniqueFileName), StandardCopyOption.REPLACE_EXISTING);
+	        newHw.setFilePath(uniqueFileName.toLowerCase());       
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
+		homeworkRepository.save(newHw);
+    	return "redirect:/Teacher/enterClass/" + newHw.getClasses().getClassId();
+    }
+	
+	
+	
+	
+	@PostMapping("/createNotification")
+    public String createNotification(@RequestParam("classes") Classes classes,
+    								@RequestParam("title") String title,
+    								@RequestParam("content") String content,
+    								@RequestParam("filePath") MultipartFile multipartFile,
+    								HttpServletRequest request) {
+		
+		HttpSession session = request.getSession();
+	    Account loggedInUser = (Account) session.getAttribute("loggedInUser");
+	    if (loggedInUser == null) {
+	        return "/Authen/Login";
+	    }
+		
+		Notification notify = new Notification();
+		notify.setClasses(classes);
+		notify.setTitle(title);
+		notify.setContent(content);
+		notify.setAccount(loggedInUser);
+		notify.setDateCreated(LocalDate.now());
+		
+		// Tạo tên file duy nhất bằng cách kết hợp ID của bài tập và tên file gốc
+	    String originalFilename = multipartFile.getOriginalFilename();
+	    int lastDotIndex = originalFilename.lastIndexOf('.');
+	    String fileNameWithoutExtension = originalFilename.substring(0, lastDotIndex); // Loại bỏ phần mở rộng nếu có
+	    String fileExtension = originalFilename.substring(lastDotIndex + 1);
+	    String uniqueFileName = notify.getNotifyId() + "_notify_" + fileNameWithoutExtension + "." + fileExtension;
+
+	    Path path = Paths.get("fileUploads/");
+	    try {
+	        InputStream inputStream = multipartFile.getInputStream();
+	        Files.copy(inputStream, path.resolve(uniqueFileName), StandardCopyOption.REPLACE_EXISTING);
+	        notify.setFilePath(uniqueFileName.toLowerCase());       
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
+	    notifyRepository.save(notify);
+        return "redirect:/StudentView/listStudent";
+    }
+	
+	
 	@PostMapping("/addNewClass")
 	public String createClass(@RequestParam("className") String name,
 							@RequestParam("description") String desc,
@@ -235,8 +330,90 @@ public class TeacherController {
 	    m.addAttribute("classes",classes);
 	    
 	    List<Homework> hw = homeworkRepository.findByClassId(id);
+	    //findByClassId
+	    
 	    m.addAttribute("hw",hw);
+	    
+	    //get all account on this class
+	    List<ClassAccount> acc = classAccountRepository.findByClassId(id);
+	    List<Account> listAccount = new ArrayList<Account>();
+	    for (ClassAccount lstAcc : acc)
+	    {
+	    	//phân biệt người tạo ra lớp với người tham gia
+	    	if(lstAcc.getAccount().getAccountId() != c.get().getAccount().getAccountId())
+	    		listAccount.add(lstAcc.getAccount());
+	    }
+	    m.addAttribute("listAccount",listAccount);
+	    
+	    List<Notification> notifies = notifyRepository.findByClassId(c.get().getClassId());
+	    m.addAttribute("notifies",notifies);
+	    
+	    List<Comment> listComment = commentRepository.findAllNotDeleted();
+	    
+	    m.addAttribute("listComment",listComment);
+	    
+	    
+	    
 	    return "/Classes/Class-Content";
 	}
+	
+	
+	
+	
+	@PostMapping("/updateNoti")
+    public String updateNotification(@RequestParam("notifyId") long id,
+    							@RequestParam("title") String title,
+    							@RequestParam("content") String content,   							
+    							@RequestParam("filePath") MultipartFile multipartFile) {	       	               
+        
+		Optional<Notification> currentNoti = notifyRepository.findById(id);
+		Notification newNoti = currentNoti.get();
+		newNoti.setContent(content);
+		newNoti.setLastModifed(LocalDate.now());
+		newNoti.setTitle(title);
+		
+		if(multipartFile.isEmpty())
+		{
+			notifyRepository.save(newNoti);
+			return "redirect:/Teacher/enterClass/" + newNoti.getClasses().getClassId();
+		}
+		String originalFilename = multipartFile.getOriginalFilename();
+	    int lastDotIndex = originalFilename.lastIndexOf('.');
+	    String fileNameWithoutExtension = originalFilename.substring(0, lastDotIndex); // Loại bỏ phần mở rộng nếu có
+	    String fileExtension = originalFilename.substring(lastDotIndex + 1);
+	    String uniqueFileName = newNoti.getNotifyId() + "_notify_" + fileNameWithoutExtension + "." + fileExtension;
 
+	    Path path = Paths.get("fileUploads/");
+	    try {
+	        InputStream inputStream = multipartFile.getInputStream();
+	        Files.copy(inputStream, path.resolve(uniqueFileName), StandardCopyOption.REPLACE_EXISTING);
+	        newNoti.setFilePath(uniqueFileName.toLowerCase());       
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
+		notifyRepository.save(newNoti);
+    	return "redirect:/Teacher/enterClass/" + newNoti.getClasses().getClassId();
+    }
+	
+	
+	@GetMapping("/deleteNoti/{notifyId}")
+    public String deleteNotification(@PathVariable("notifyId") long id) {	       	               
+        
+		Optional<Notification> currentNoti = notifyRepository.findById(id);
+		Notification deletedNoti = currentNoti.get();
+		deletedNoti.setDeleted(true);	
+		notifyRepository.save(deletedNoti);
+    	return "redirect:/Teacher/enterClass/" + deletedNoti.getClasses().getClassId();
+    }
+	
+	@GetMapping("/deleteHomework/{homeworkId}")
+    public String deleteHomework(@PathVariable("homeworkId") long id) {	       	               
+        
+		Optional<Homework> currentHW = homeworkRepository.findById(id);
+		Homework deletedHW = currentHW.get();
+		deletedHW.setDeleted(true);	
+		homeworkRepository.save(deletedHW);
+    	return "redirect:/Teacher/enterClass/" + deletedHW.getClasses().getClassId();
+    }
+	
 }
