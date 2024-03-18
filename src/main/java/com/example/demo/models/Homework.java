@@ -32,7 +32,9 @@ public class Homework {
 	private String description;
 	
 	
-	private LocalDate dateCreated;  
+	private LocalDate dateCreated;
+	
+	private LocalDate lastModified;
 	
 	private LocalDate deadline; 
 	
@@ -129,6 +131,17 @@ public class Homework {
         }
 		this.deadline = deadline;
 	}
+	
+	
+	
+	public LocalDate getLastModified() {
+		return lastModified;
+	}
+
+	public void setLastModified(LocalDate lastModified) {
+		this.lastModified = lastModified;
+	}
+
 	@PrePersist
     public void prePersist() {
         if (deadline.isBefore(dateCreated)) {
@@ -158,16 +171,19 @@ public class Homework {
 	}
 
 	public Homework(long homeworkId, String homeworkName, Classes classes, String description, LocalDate dateCreated,
-			LocalDate deadline, boolean isDeleted, String filePath) {
+			LocalDate lastModified, LocalDate deadline, boolean isDeleted, String filePath) {
 		this.homeworkId = homeworkId;
 		this.homeworkName = homeworkName;
 		this.classes = classes;
 		this.description = description;
 		this.dateCreated = dateCreated;
+		this.lastModified = lastModified;
 		this.deadline = deadline;
 		this.isDeleted = isDeleted;
 		this.filePath = filePath;
 	}
+
+	
 	
 	
 
