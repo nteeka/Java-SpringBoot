@@ -37,6 +37,10 @@ public class Comment {
 	
 	@Column(name = "isDeleted", columnDefinition = "boolean default false")
 	private boolean isDeleted;
+	
+	
+	private int likeNumber;
+	
 
 	public long getCommentId() {
 		return commentId;
@@ -94,6 +98,17 @@ public class Comment {
 	public void setDeleted(boolean isDeleted) {
 		this.isDeleted = isDeleted;
 	}
+	
+	
+	
+
+	public int getLikeNumber() {
+		return likeNumber;
+	}
+
+	public void setLikeNumber(int likeNumber) {
+		this.likeNumber = likeNumber;
+	}
 
 	public Comment() {
 		
@@ -109,6 +124,20 @@ public class Comment {
 		this.lastModified = lastModified;
 		this.isDeleted = isDeleted;
 	}
+
+	public Comment(long commentId, String content, Account account, Notification notify, LocalDate dateCreated,
+			LocalDate lastModified, boolean isDeleted, int likeNumber) {
+		this.commentId = commentId;
+		this.content = content;
+		this.account = account;
+		this.notify = notify;
+		this.dateCreated = dateCreated;
+		this.lastModified = lastModified;
+		this.isDeleted = isDeleted;
+		this.likeNumber = likeNumber;
+	}
+	
+	
 	
 	
 	

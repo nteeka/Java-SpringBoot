@@ -1,6 +1,7 @@
 package com.example.demo.controllers;
 
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -80,6 +81,7 @@ public class AuthenController {
 	@PostMapping("/register")
 	public String createAccount(@RequestParam("role") Role role,
 								@RequestParam("email") String email,
+								@RequestParam("displayName") String displayName,
 								@RequestParam("password") String password,
 								@RequestParam("confirm-password") String confirmpassword,
 								Model model)
@@ -113,6 +115,8 @@ public class AuthenController {
 		
 		account.setRole(role);
 		account.setEmail(email);
+		account.setDisplayName(displayName);
+		account.setTimeCreated(LocalDate.now());
         String hashedPassword = passwordEncoder.encode(password);
         account.setPassword(hashedPassword);
 		

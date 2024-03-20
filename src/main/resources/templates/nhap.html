@@ -170,6 +170,11 @@
               
               
               
+        <div th:each="cmt : ${listComment}" th:if="${notify.notifyId == cmt.notify.notifyId }" class="comment">
+              <button th:if="" class="like-btn" th:data-comment-id="${cmt.commentId}">Like</button>
+         </div>
+              
+              
               
               
               
