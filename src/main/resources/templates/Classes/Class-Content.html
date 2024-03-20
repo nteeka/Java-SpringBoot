@@ -317,7 +317,7 @@
         	<a href="#"><i class="fa fa-thumbs-up"></i> Like</a>
             <a th:if="${cmt.account.accountId == session.loggedInUser.accountId }"  th:data-comment-id="${cmt.account.email}" href="#" class="edit-btn"><i class="fa fa-pencil"></i> Edit</a>
 			<a href="#" class="save-btn" style="display: none;" th:data-comment-id="${cmt.commentId}"><i class="fa fa-save"></i> Save</a>
-			<a th:attr="onclick='confirmDeleteComment(\'' + ${cmt.commentId} + '\')'" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Delete</a>			        
+			<a th:attr="onclick='confirmDeleteComment(\'' + ${cmt.commentId} + '\')'" class="btn btn-danger btn-xs">Delete</a>			        
         	<script>
 	        	function confirmDeleteComment(commentId) {
 	                var result = confirm("Are you sure you want to delete this homework?");

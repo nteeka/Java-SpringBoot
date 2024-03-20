@@ -50,5 +50,14 @@ Mô tả những gì đã có (vẫn đang trong quá trình phát triển và h
     <3 Nguyễn Tường Khang <3
 
 
+WHAT IS COMING :
 
+    Like cmt - count cmt each noti,...
+    show time modified cmt
+    add avatar account(cmt, noti,..)
+    manager account(by user)
+    Submit multifile (homework)
+    reply cmt
+    submit homework (by member in class)
+    validate (hw, noti, cmt,...)
 
