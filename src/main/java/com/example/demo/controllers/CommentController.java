@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,8 +22,10 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.demo.models.Account;
 import com.example.demo.models.Classes;
 import com.example.demo.models.Comment;
+import com.example.demo.models.CommentLike;
 import com.example.demo.models.Homework;
 import com.example.demo.models.Notification;
+import com.example.demo.repositories.CommentLikeRepository;
 import com.example.demo.repositories.CommentRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,6 +37,9 @@ public class CommentController {
 	
 	@Autowired
 	CommentRepository commentRepository;
+	
+	@Autowired
+	CommentLikeRepository commentLikeRepository;
 	
 	
 	@PostMapping("/createNotifyComment")
@@ -76,5 +82,21 @@ public class CommentController {
 		deletedCmt.setDeleted(true);	
 		commentRepository.save(deletedCmt);
 		return "redirect:/StudentView/listStudent";
+    }
+	
+	
+	@GetMapping("/likeComment/{commentId}")
+    public String likeComment(@PathVariable("commentId") long id, HttpServletRequest request) {	       	                      
+		HttpSession session = request.getSession();
+	    Account loggedInUser = (Account) session.getAttribute("loggedInUser");
+		Optional<Comment> currentCmt = commentRepository.findById(id);
+		CommentLike cmtLiked = new CommentLike();
+		cmtLiked.setAccount(loggedInUser);
+		cmtLiked.setComment(currentCmt.get());
+		int increaseLike = currentCmt.get().getLikeNumber();
+		currentCmt.get().setLikeNumber(increaseLike++);
+		commentRepository.save(currentCmt.get());
+		commentLikeRepository.save(cmtLiked);
+		return "redirect:/Teacher/enterClass/" + currentCmt.get().getNotify().getClasses().getClassId();
     }
 }

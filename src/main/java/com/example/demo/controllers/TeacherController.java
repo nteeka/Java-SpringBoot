@@ -29,6 +29,7 @@ import com.example.demo.models.Account;
 import com.example.demo.models.ClassAccount;
 import com.example.demo.models.Classes;
 import com.example.demo.models.Comment;
+import com.example.demo.models.CommentLike;
 import com.example.demo.models.Faculty;
 import com.example.demo.models.Homework;
 import com.example.demo.models.Notification;
@@ -36,6 +37,7 @@ import com.example.demo.models.Student;
 import com.example.demo.repositories.AccountRepository;
 import com.example.demo.repositories.ClassAccountRepository;
 import com.example.demo.repositories.ClassRepository;
+import com.example.demo.repositories.CommentLikeRepository;
 import com.example.demo.repositories.CommentRepository;
 import com.example.demo.repositories.DetailTeachingRepository;
 import com.example.demo.repositories.HomeworkRepository;
@@ -71,6 +73,9 @@ public class TeacherController {
 	
 	@Autowired
     private CommentRepository commentRepository;
+	
+	@Autowired
+    private CommentLikeRepository commentLikeRepository;
 	
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -348,12 +353,14 @@ public class TeacherController {
 	    List<Notification> notifies = notifyRepository.findByClassId(c.get().getClassId());
 	    m.addAttribute("notifies",notifies);
 	    
-	    List<Comment> listComment = commentRepository.findAllNotDeleted();
-	    
+	    List<Comment> listComment = commentRepository.findAllNotDeleted();	    
 	    m.addAttribute("listComment",listComment);
 	    
+	    List<CommentLike> listCommentLike = commentLikeRepository.findByAccountId(loggedInUser.getAccountId());
 	    
 	    
+	    m.addAttribute("listAC",listCommentLike);
+	    	    
 	    return "/Classes/Class-Content";
 	}
 	

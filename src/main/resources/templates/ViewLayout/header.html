@@ -108,7 +108,7 @@
       
     
       <li class="nav-item" th:if="${session.loggedInUser != null}">
-        <a class="nav-link" th:href="'/profile/' + ${session.loggedInUser.accountId}">
+        <a class="nav-link" th:href="@{'/Account/edit/' + ${session.loggedInUser.accountId}}">
           Welcome, <span th:text="${session.loggedInUser.email}"></span>
         </a>
       </li>

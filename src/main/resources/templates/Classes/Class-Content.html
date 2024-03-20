@@ -314,22 +314,21 @@
         <p class="original-content" th:text="${cmt.content}"></p>
         <textarea class="edit-content" style="display: none;"></textarea>
         <div class="btn-group">
-        	<a href="#"><i class="fa fa-thumbs-up"></i> Like</a>
-            <a th:if="${cmt.account.accountId == session.loggedInUser.accountId }"  th:data-comment-id="${cmt.account.email}" href="#" class="edit-btn"><i class="fa fa-pencil"></i> Edit</a>
+        	<th:block th:if="${listAC.isEmpty()}">      	       	 
+        		<a th:href="@{'/Comment/likeComment/' + ${cmt.commentId}}" th:data-comment-id="${cmt.commentId}" class="like-btn"><i class="fa fa-thumbs-up"></i>Like</a> 		
+    		</th:block>
+        	<th:block th:each="list : ${listAC}">
+        		<th:block th:if="${list.comment.commentId == cmt.commentId}">
+            		<a href="#" th:data-comment-id="${cmt.commentId}" class="like-btn"><i class="fa fa-thumbs-up"></i>Liked</a>
+        		</th:block>
+        	 	<th:block th:if="${list.comment.commentId != cmt.commentId}">
+        			<a th:href="@{'/Comment/likeComment/' + ${cmt.commentId}}" th:data-comment-id="${cmt.commentId}" class="like-btn"><i class="fa fa-thumbs-up"></i>Like</a>
+    			</th:block>
+    		</th:block>
+    		<a th:if="${cmt.account.accountId == session.loggedInUser.accountId }"  th:data-comment-id="${cmt.account.email}" href="#" class="edit-btn"><i class="fa fa-pencil"></i> Edit</a>
 			<a href="#" class="save-btn" style="display: none;" th:data-comment-id="${cmt.commentId}"><i class="fa fa-save"></i> Save</a>
-			<a th:attr="onclick='confirmDeleteComment(\'' + ${cmt.commentId} + '\')'" class="btn btn-danger btn-xs">Delete</a>			        
-        	<script>
-	        	function confirmDeleteComment(commentId) {
-	                var result = confirm("Are you sure you want to delete this homework?");
-	                if (result) {
-	                    // User clicked 'Yes', redirect to the delete URL
-	                    window.location.href = "/Comment/deleteComment/" + commentId;
-	                } else {
-	                    // User clicked 'No', do nothing
-	                }
-	            }
-        	</script>
-        </div>
+			<a href="#" th:if="${cmt.account.accountId == session.loggedInUser.accountId }" th:attr="onclick='confirmDeleteComment(\'' + ${cmt.commentId} + '\')'" >Delete</a>   	
+    	</div>
         <br>
     </div>
 </div>

@@ -1,6 +1,7 @@
 package com.example.demo.models;
 
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,10 +30,16 @@ public class Account {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long accountId;
 	
-		
+	
+	private String displayName;
+	
+	private String bio;
+	
     private String image;  
     
     private String email;
+    
+    private LocalDate timeCreated;
     
     private String password; 
     
@@ -145,6 +152,30 @@ public class Account {
     
 	
 
+public String getDisplayName() {
+		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
+	public String getBio() {
+		return bio;
+	}
+
+	public void setBio(String bio) {
+		this.bio = bio;
+	}
+
+	public LocalDate getTimeCreated() {
+		return timeCreated;
+	}
+
+	public void setTimeCreated(LocalDate timeCreated) {
+		this.timeCreated = timeCreated;
+	}
+
 public Account(long accountId, String image, String email, String password, boolean isDeleted, String resetToken,
 			LocalDateTime resetTokenExpiration, Role role, Set<ClassAccount> classAccount) {
 		
@@ -188,6 +219,23 @@ public Account(long accountId, String image, String email, String password, bool
 	public boolean isResetTokenExpired(LocalDateTime check) {
         return LocalDateTime.now().isAfter(check);
     }
+
+	public Account(long accountId, String displayName, String bio, String image, String email,
+			LocalDate timeCreated, String password, boolean isDeleted, String resetToken,
+			LocalDateTime resetTokenExpiration, Role role, Set<ClassAccount> classAccount) {
+		this.accountId = accountId;
+		this.displayName = displayName;
+		this.bio = bio;
+		this.image = image;
+		this.email = email;
+		this.timeCreated = timeCreated;
+		this.password = password;
+		this.isDeleted = isDeleted;
+		this.resetToken = resetToken;
+		this.resetTokenExpiration = resetTokenExpiration;
+		this.role = role;
+		this.classAccount = classAccount;
+	}
     
     
 	
