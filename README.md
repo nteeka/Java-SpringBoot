@@ -49,15 +49,13 @@ Mô tả những gì đã có (vẫn đang trong quá trình phát triển và h
 
     <3 Nguyễn Tường Khang <3
 
-    Like cmt
+    Like-unlike cmt
         - Show list comment đã được account in session like => liked(wait for unlike) nếu chưa like thì hiện nút like(for likeComment).
-        - Action like chưa được mượt - phải load lại trang -> tích hợp jquerry để mượt hơn
-        - Xử lý case giữa cmt and account (tương tác giữa các account với những cmt)
+        - Action like mượt - prevent reload phải load
         
     Account :
         - Hoàn thiện tác vụ lưu file (file ảnh account) : lưu với 1 path unique => để replace existing không tốn nhiều dung lượng (khác hình nhưng vẫn cùng tên)
         - Manager account (edit account by user)
-        - Thêm cột bio, timeCreated và displayName
         
 
 
@@ -65,11 +63,13 @@ Mô tả những gì đã có (vẫn đang trong quá trình phát triển và h
 WHAT IS COMING :
 
     
-    show time modified cmt
-    add avatar account(cmt, noti,..)
-    manager account(by user)
     Submit multifile (homework)
     reply cmt
-    submit homework (by member in class)
+    submit homework (by member in class) include save homework - notify to creater
     validate (hw, noti, cmt,...)
+    Smooth create cmt
+    multi file for hw, noti
+    search class (already join)
+    Complete layout
+    .....
 
