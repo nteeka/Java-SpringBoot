@@ -307,31 +307,90 @@
             <div class="row">
     			<div th:each="cmt : ${listComment}" th:if="${notify.notifyId == cmt.notify.notifyId }" class="comment">
     <div class="col-sm-2 text-center">
-        <img src="bandmember.jpg" class="img-circle" height="65" width="65" alt="Avatar">
+        <img th:src="@{'/image/getImage/' + ${cmt.account.image}}" class="img-circle" height="65" width="65" alt="Avatar">
     </div>
     <div class="col-sm-10">
         <h4><span th:text="${cmt.account.email}"></span> <small><span th:text="${cmt.dateCreated}"></span></small></h4>
         <p class="original-content" th:text="${cmt.content}"></p>
         <textarea class="edit-content" style="display: none;"></textarea>
         <div class="btn-group">
-        	<th:block th:if="${listAC.isEmpty()}">      	       	 
-        		<a th:href="@{'/Comment/likeComment/' + ${cmt.commentId}}" th:data-comment-id="${cmt.commentId}" class="like-btn"><i class="fa fa-thumbs-up"></i>Like</a> 		
-    		</th:block>
-        	<th:block th:each="list : ${listAC}">
-        		<th:block th:if="${list.comment.commentId == cmt.commentId}">
-            		<a href="#" th:data-comment-id="${cmt.commentId}" class="like-btn"><i class="fa fa-thumbs-up"></i>Liked</a>
-        		</th:block>
-        	 	<th:block th:if="${list.comment.commentId != cmt.commentId}">
-        			<a th:href="@{'/Comment/likeComment/' + ${cmt.commentId}}" th:data-comment-id="${cmt.commentId}" class="like-btn"><i class="fa fa-thumbs-up"></i>Like</a>
-    			</th:block>
-    		</th:block>
-    		<a th:if="${cmt.account.accountId == session.loggedInUser.accountId }"  th:data-comment-id="${cmt.account.email}" href="#" class="edit-btn"><i class="fa fa-pencil"></i> Edit</a>
+        	
+        	
+        	
+        
+        
+        	
+        	
+        	
+            
+            
+			
+			<a href="#" th:if="${#lists.contains(checkLikeComment, cmt.commentId)}"
+   th:id="'likeButton_' + ${cmt.commentId}" 
+   th:data-comment-id="${cmt.commentId}"
+   class="like-btn liked" 
+   th:attr="onclick='toggleLike(\'' + ${cmt.commentId} + '\', event)'">
+    <i class="fa fa-thumbs-up"></i>Liked<span th:if="${cmt.likeNumber != null or cmt.likeNumber != 0}">(</span><span th:if="${cmt.likeNumber != null or cmt.likeNumber != 0}" th:text="${cmt.likeNumber}"></span><span th:if="${cmt.likeNumber != null or cmt.likeNumber != 0}">)</span>
+</a>
+
+<a href="#" th:unless="${#lists.contains(checkLikeComment, cmt.commentId)}"
+   th:id="'likeButton_' + ${cmt.commentId}" 
+   th:data-comment-id="${cmt.commentId}"
+   class="like-btn" 
+   th:attr="onclick='toggleLike(\'' + ${cmt.commentId} + '\', event)'">
+    <i class="fa fa-thumbs-up"></i>Like<span th:if="${cmt.likeNumber != null or cmt.likeNumber != 0}">(</span><span th:if="${cmt.likeNumber != null or cmt.likeNumber != 0}" th:text="${cmt.likeNumber}"></span><span th:if="${cmt.likeNumber != null or cmt.likeNumber != 0}">)</span>
+</a>
+
+<script th:inline="javascript">
+    
+    function toggleLike(commentId, event) {
+        event.preventDefault(); // Ngăn chặn hành vi mặc định của thẻ <a>
+        
+        var likeButton = document.getElementById('likeButton_' + commentId);
+        var isLiked = likeButton.classList.contains('liked');
+        
+        fetch('/Comment/likeComment/' + commentId, { method: 'GET' })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to like/unlike comment');
+            }
+            
+            // Thay đổi nút từ Like sang Liked và ngược lại
+            if (isLiked) {
+                likeButton.innerHTML = '<i class="fa fa-thumbs-up"></i>Like';
+                likeButton.classList.remove('liked');
+            } else {
+                likeButton.innerHTML = '<i class="fa fa-thumbs-up"></i>Liked';
+                likeButton.classList.add('liked');
+            }
+            
+            // Cập nhập số lượt like (nếu cần)
+            // Ví dụ: 
+            // var likeCountSpan = likeButton.querySelector('span');
+            // likeCountSpan.textContent = parseInt(likeCountSpan.textContent) + (isLiked ? -1 : 1);
+            
+            console.log('Comment like/unlike successful');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+
+</script>
+			
+        	
+        	
+        	
+    		<a th:if="${cmt.account.accountId == session.loggedInUser.accountId}"  th:data-comment-id="${cmt.account.email}" href="#" class="edit-btn">
+                <i class="fa fa-pencil"></i> Edit
+            </a>
 			<a href="#" class="save-btn" style="display: none;" th:data-comment-id="${cmt.commentId}"><i class="fa fa-save"></i> Save</a>
 			<a href="#" th:if="${cmt.account.accountId == session.loggedInUser.accountId }" th:attr="onclick='confirmDeleteComment(\'' + ${cmt.commentId} + '\')'" >Delete</a>   	
     	</div>
         <br>
     </div>
 </div>
+
 
 <script>
 $(document).ready(function() {
@@ -377,14 +436,8 @@ $(document).ready(function() {
 
 
 
-	        <div class="col-sm-2 text-center">
-	          <img src="bandmember.jpg" class="img-circle" height="65" width="65" alt="Avatar">
-	        </div>
-	        <div class="col-sm-10">
-	          <h4>Anja <small>Sep 29, 2015, 9:12 PM</small></h4>
-	          <p>Keep up the GREAT work! I am cheering for you!! Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-	          <br>
-	        </div>
+	        
+	        
 	        <div class="col-sm-2 text-center">
 	          <img src="bird.jpg" class="img-circle" height="65" width="65" alt="Avatar">
 	        </div>

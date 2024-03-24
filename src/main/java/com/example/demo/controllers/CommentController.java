@@ -90,13 +90,31 @@ public class CommentController {
 		HttpSession session = request.getSession();
 	    Account loggedInUser = (Account) session.getAttribute("loggedInUser");
 		Optional<Comment> currentCmt = commentRepository.findById(id);
-		CommentLike cmtLiked = new CommentLike();
-		cmtLiked.setAccount(loggedInUser);
-		cmtLiked.setComment(currentCmt.get());
+		
 		int increaseLike = currentCmt.get().getLikeNumber();
-		currentCmt.get().setLikeNumber(increaseLike++);
+		
+		
+		//check like
+		Optional<CommentLike> isLiked = commentLikeRepository.checkLiked(loggedInUser.getAccountId(), id);
+		//unlike
+		if(isLiked.isPresent())
+		{
+			increaseLike = increaseLike - 1;
+			currentCmt.get().setLikeNumber(increaseLike);
+			commentLikeRepository.deleteById(isLiked.get().getCommentLikeId());
+			//return ??;
+		}
+		//like
+		else
+		{
+			CommentLike cmtLiked = new CommentLike();
+			cmtLiked.setAccount(loggedInUser);
+			cmtLiked.setComment(currentCmt.get());
+			increaseLike = increaseLike+1;
+			currentCmt.get().setLikeNumber(increaseLike);			
+			commentLikeRepository.save(cmtLiked);
+		}
 		commentRepository.save(currentCmt.get());
-		commentLikeRepository.save(cmtLiked);
 		return "redirect:/Teacher/enterClass/" + currentCmt.get().getNotify().getClasses().getClassId();
     }
 }
