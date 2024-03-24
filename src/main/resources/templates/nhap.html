@@ -177,7 +177,12 @@
               
               
               
-              
+              <a th:if="${#lists.contains(checkLikeComment, cmt.commentId)}" th:href="@{'/Comment/likeComment/' + ${cmt.commentId}}"  class="like-btn liked"><i class="fa fa-thumbs-up"></i>Liked 
+        		<span th:if="${cmt.likeNumber != null or cmt.likeNumber != 0}">(</span><span th:if="${cmt.likeNumber != null or cmt.likeNumber != 0}" th:text="${cmt.likeNumber}"></span><span th:if="${cmt.likeNumber != null or cmt.likeNumber != 0}">)</span>
+        	</a>
+            <a th:unless="${#lists.contains(checkLikeComment, cmt.commentId)}" th:href="@{'/Comment/likeComment/' + ${cmt.commentId}}" class="like-btn"><i class="fa fa-thumbs-up"></i>Like 
+            	<span th:if="${cmt.likeNumber != null or cmt.likeNumber != 0}">(</span><span th:if="${cmt.likeNumber != null or cmt.likeNumber != 0}" th:text="${cmt.likeNumber}"></span><span th:if="${cmt.likeNumber != null or cmt.likeNumber != 0}">)</span>
+            </a>
               
               
               

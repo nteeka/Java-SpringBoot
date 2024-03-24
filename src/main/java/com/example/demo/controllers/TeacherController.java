@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -356,10 +357,17 @@ public class TeacherController {
 	    List<Comment> listComment = commentRepository.findAllNotDeleted();	    
 	    m.addAttribute("listComment",listComment);
 	    
-	    List<CommentLike> listCommentLike = commentLikeRepository.findByAccountId(loggedInUser.getAccountId());
+	    List<CommentLike> checkLikeComment = commentLikeRepository.findByAccountId(loggedInUser.getAccountId());
 	    
+	    List<Long> check = new ArrayList<Long>();
+	    for (CommentLike commentLike : checkLikeComment) {
+			for (Comment cmt22 : listComment) {
+				if(commentLike.getComment().getCommentId() == cmt22.getCommentId())
+					check.add(cmt22.getCommentId());
+			}
+		}
+	    m.addAttribute("checkLikeComment",check);
 	    
-	    m.addAttribute("listAC",listCommentLike);
 	    	    
 	    return "/Classes/Class-Content";
 	}
