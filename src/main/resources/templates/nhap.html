@@ -208,6 +208,274 @@
 	            </div>
 	          </div>
 	        </div>
+	        
+	        
+	        
+	        
+	        
+<!-- detail post -->	        
+<div th:if="${#lists.isEmpty(notifies)}">
+		    <!-- Display a message if notifies is null or empty -->
+		    <div class="col-md-10">
+		        <h1>No notifications available</h1>
+		    </div>
+		</div>					
+        <div th:each="notify : ${notifies}" class="col-md-10">
+            <!-- Content on the right side -->
+            <h4><small>RECENT POSTS</small></h4>
+            <hr>
+            <h2><span th:text="${notify.title}"></span></h2>
+            <div th:if="${notify.account.accountId == session.loggedInUser.accountId }">
+            	<a href="#" class="btn btn-primary" 
+       data-toggle="modal" data-target="#updateNotifyModal"
+       th:attr="onclick='openUpdateNotifyModal(\'' + ${notify.notifyId} + '\', \'' + ${notify.title} + '\', \'' + ${notify.content} + '\')'">
+       Cập nhật thông báo
+    </a>
+    <a th:attr="onclick='confirmDelete(\'' + ${notify.notifyId} + '\')'" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Delete</a>
+            </div>
+            
+    <script>
+    function confirmDelete(notifyId) {
+        var result = confirm("Are you sure you want to delete this notify?");
+        if (result) {
+            // User clicked 'Yes', redirect to the delete URL
+            window.location.href = "/Teacher/deleteNoti/" + notifyId;
+        } else {
+            // User clicked 'No', do nothing
+        }
+    }
+</script>
+            <h5><span class="glyphicon glyphicon-time"></span> Post by <span th:text="${notify.account.displayName}"></span>, <span th:text="${notify.dateCreated}"></span>.</h5>
+            <h5 th:if="${notify.lastModifed != null}"><span class="glyphicon glyphicon-time"></span>Last modified <span th:text="${notify.lastModifed}"></span></h5>
+	      <h5><span class="label label-danger">Food</span> <span class="label label-primary">Ipsum</span></h5><br>
+	      <span th:text="${notify.content}"></span>
+	      <!-- Check if filePath is not empty -->
+    		<div th:if="${notify.filePath}">
+		        <!-- Display link to file -->
+				<a th:href="@{'/downloadFile/' + ${notify.filePath}}" th:text="${notify.filePath}">Download</a>		        <!-- You can modify the link text and URL as needed -->
+		    </div>
+	      <br><br>
+	      <h4>Leave a Comment:</h4>
+            <form role="form" action="/Comment/createNotifyComment" method="post">
+            <div class="form-group">
+	          <input name="notify" th:value="${notify.notifyId}" hidden="true" class="form-control" rows="3" required />
+	        </div>
+	        <div class="form-group">
+	          <textarea name="content" class="form-control" rows="3" required></textarea>
+	        </div>
+	        <button type="submit" class="btn btn-success">Submit</button>
+	      </form>
+	      <br><br>
+            <p><span class="badge" th:text="${notify.numComment}"></span> Comments:</p><br>
+            <div class="row">
+    			<div th:each="cmt : ${listComment}" th:if="${notify.notifyId == cmt.notify.notifyId }" class="comment">
+    <div class="col-sm-2 text-center">
+        <img th:src="@{'/image/getImage/' + ${cmt.account.image}}" class="img-circle" height="65" width="65" alt="Avatar">
+    </div>
+    <div class="col-sm-10">
+        <h4><span th:text="${cmt.account.displayName}"></span> <small><span th:text="${cmt.dateCreated}"></span></small></h4>
+        <p class="original-content" th:text="${cmt.content}"></p>
+        <textarea class="edit-content" style="display: none;"></textarea>
+        <div class="btn-group">	
+			<a href="#" th:if="${#lists.contains(checkLikeComment, cmt.commentId)}"
+			   th:id="'likeButton_' + ${cmt.commentId}" 
+			   th:data-comment-id="${cmt.commentId}"
+			   class="like-btn liked" 
+			   th:attr="onclick='toggleLike(\'' + ${cmt.commentId} + '\', event)'">
+			    <i class="fa fa-thumbs-up"></i>Liked<span th:if="${cmt.likeNumber != null or cmt.likeNumber != 0}">(</span><span th:if="${cmt.likeNumber != null or cmt.likeNumber != 0}" th:text="${cmt.likeNumber}"></span><span th:if="${cmt.likeNumber != null or cmt.likeNumber != 0}">)</span>
+			</a>
+			<a href="#" th:unless="${#lists.contains(checkLikeComment, cmt.commentId)}"
+			   th:id="'likeButton_' + ${cmt.commentId}" 
+			   th:data-comment-id="${cmt.commentId}"
+			   class="like-btn" 
+			   th:attr="onclick='toggleLike(\'' + ${cmt.commentId} + '\', event)'">
+			    <i class="fa fa-thumbs-up"></i>Like<span th:if="${cmt.likeNumber != null or cmt.likeNumber != 0}">(</span><span th:if="${cmt.likeNumber != null or cmt.likeNumber != 0}" th:text="${cmt.likeNumber}"></span><span th:if="${cmt.likeNumber != null or cmt.likeNumber != 0}">)</span>
+			</a>
+
+			<script th:inline="javascript">			    
+			    function toggleLike(commentId, event) {
+			        event.preventDefault(); // Ngăn chặn hành vi mặc định của thẻ <a>			        
+			        var likeButton = document.getElementById('likeButton_' + commentId);
+			        var isLiked = likeButton.classList.contains('liked');			        
+			        fetch('/Comment/likeComment/' + commentId, { method: 'GET' })
+			        .then(response => {
+			            if (!response.ok) {
+			                throw new Error('Failed to like/unlike comment');
+			            }			            
+			            // Thay đổi nút từ Like sang Liked và ngược lại
+			            if (isLiked) {
+			                likeButton.innerHTML = '<i class="fa fa-thumbs-up"></i>Like';
+			                likeButton.classList.remove('liked');
+			            } else {
+			                likeButton.innerHTML = '<i class="fa fa-thumbs-up"></i>Liked';
+			                likeButton.classList.add('liked');
+			            }			            
+			            console.log('Comment like/unlike successful');
+			        })
+			        .catch(error => {
+			            console.error('Error:', error);
+			        });
+			    }			
+			</script>       	
+    		<a th:if="${cmt.account.accountId == session.loggedInUser.accountId}"  th:data-comment-id="${cmt.account.email}" href="#" class="edit-btn">
+                <i class="fa fa-pencil"></i> Edit
+            </a>
+			<a href="#" class="save-btn" style="display: none;" th:data-comment-id="${cmt.commentId}"><i class="fa fa-save"></i> Save</a>
+			<a href="#" class="cancel-btn" style="display: none;">Cancel</a>
+			
+			<a href="#" th:if="${cmt.account.accountId == session.loggedInUser.accountId }" th:attr="onclick='confirmDeleteComment(\'' + ${cmt.commentId} + '\')'" >Delete</a>   	
+   			
+   			
+   			
+   			<a href="#" class="reply-btn">Reply</a>
+<form th:action="@{/Comment/createReplyComment}" method="post" class="reply-form" style="display: none;">
+   	
+   	<input name="comment" th:value="${cmt.commentId}" hidden="true" class="form-control" /> 
+    <textarea name="content" class="reply-content" rows="3" required></textarea>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+<script>
+$(document).ready(function() {
+    $('.reply-btn').click(function(event) {
+        event.preventDefault(); // Ngăn chặn hành vi mặc định của thẻ <a>
+        
+        // Hiển thị form Reply tương ứng
+        var $comment = $(this).closest('.comment');
+        $comment.find('.reply-form').show();
+        
+    });
+
+    
+});
+
+// Hàm gửi dữ liệu reply comment lên server bằng Ajax
+function createReplyComment(content, commentId) {
+    $.ajax({
+        type: 'POST',
+        url: '/Comment/createReplyComment',
+        data: { content: content, commentId: commentId },
+        success: function(response) {
+            // Xử lý sau khi reply comment được tạo thành công (nếu cần)
+            console.log('Reply comment created successfully');
+            // Có thể làm mới danh sách comment ở đây nếu cần
+        },
+        error: function(xhr, status, error) {
+            // Xử lý lỗi nếu có
+            console.error('Error creating reply comment:', error);
+        }
+    });
+}
+</script>
+
+    		
+    	</div>
+        <br>
+    </div>
+    <div style="padding-left: 100px">
+				<!-- <p><span class="badge">1</span> Comment:</p><br> -->	
+	          <div th:each="reply : ${listReply}" th:if="${reply.comment.commentId == cmt.commentId}" class="row">	          
+	            <div class="col-sm-2 text-center">
+	              <img th:src="@{'/image/getImage/' + ${reply.account.image}}" class="img-circle" height="65" width="65" alt="Avatar">
+	            </div>
+	            <div class="col-xs-10">
+	              <h4><span th:text="${reply.account.displayName}"></span> <small><span th:text="${reply.dateCreated}"></span></small></h4>
+	              <p><span th:text="${reply.content}"></span></p>
+	              <br>
+	            </div>
+	          </div>
+			</div>
+</div>
+			
+	          
+
+<script>
+$(document).ready(function() {
+    $('.edit-btn').click(function(event) {
+        event.preventDefault(); // Ngăn chặn hành vi mặc định của liên kết
+        // Ẩn nội dung ban đầu và hiển thị textarea để chỉnh sửa
+        var $comment = $(this).closest('.comment');
+        $comment.find('.original-content').hide();
+        $comment.find('.edit-content').show().val($comment.find('.original-content').text().trim());
+        $comment.find('.save-btn').show();
+        $comment.find('.cancel-btn').show();
+    });
+	
+    $('.cancel-btn').click(function(event) {
+        event.preventDefault(); // Ngăn chặn hành vi mặc định của liên kết
+        var $comment = $(this).closest('.comment');
+        $comment.find('.edit-content').hide();   
+        $comment.find('.cancel-btn').hide();
+        $comment.find('.save-btn').hide();
+    });
+    
+    
+    $('.save-btn').click(function(event) {
+        event.preventDefault(); // Ngăn chặn hành vi mặc định của liên kết
+        var $comment = $(this).closest('.comment');
+        var commentId = $(this).data('comment-id');
+        var updatedContent = $comment.find('.edit-content').val().trim();
+
+        // Gửi yêu cầu cập nhật nội dung bình luận bằng Ajax
+        $.ajax({
+            type: 'POST',
+            url: '/Comment/updateComment/' + commentId,
+            data: { content: updatedContent },
+            success: function(response) {
+                // Xử lý phản hồi từ máy chủ nếu cần
+                // Ví dụ: Hiển thị thông báo hoặc làm mới danh sách bình luận
+                console.log('Comment updated successfully');
+                // Ẩn textarea chỉnh sửa và hiển thị lại nội dung mới
+                $comment.find('.edit-content').hide();
+                $comment.find('.original-content').text(updatedContent).show();
+                // Ẩn nút Save
+                $comment.find('.save-btn').hide();
+            },
+            error: function(xhr, status, error) {
+                // Xử lý lỗi nếu cần
+                console.error('Error updating comment:', error);
+            }
+        });
+    });
+});
+</script>
+
+
+
+
+	        
+	        
+	        
+	      </div>
+            
+        </div>	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
               
               
               

@@ -57,19 +57,29 @@ Mô tả những gì đã có (vẫn đang trong quá trình phát triển và h
         - Hoàn thiện tác vụ lưu file (file ảnh account) : lưu với 1 path unique => để replace existing không tốn nhiều dung lượng (khác hình nhưng vẫn cùng tên)
         - Manager account (edit account by user)
         
+    - Multiple file
+        - Tạo bảng FileAttach kết nối liên kết với HW và Noti để có thể gửi được nhiều file một lúc
+        - Đã tối ưu - phân biệt tên file dựa trên id và loại file (tên file = id(hw hoặc noti)_(hw hoặc noti)_tên nguyên thủy)
+        - Đã modify xong create Noti
+    - Reply comment
+        - tạo bảng reply
+        - thao tác chưa mượt
+        - Chuẩn bị cho like - edit - delete
 
+    -
 
 
 WHAT IS COMING :
 
     
-    Submit multifile (homework)
-    reply cmt
     submit homework (by member in class) include save homework - notify to creater
     validate (hw, noti, cmt,...)
-    Smooth create cmt
-    multi file for hw, noti
     search class (already join)
     Complete layout
-    .....
+    Modify updateNoti
+    Like - Edit - Delete for Reply comment
+    Smooth createComment - createReply
+    Multiple file for HW
+
+    
 
