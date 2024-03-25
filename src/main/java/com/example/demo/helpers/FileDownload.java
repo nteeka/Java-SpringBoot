@@ -11,6 +11,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import org.springframework.http.HttpStatus;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.ByteArrayResource;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.nio.file.Files;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 @RestController
 public class FileDownload {
 	// Thay đổi đường dẫn đến thư mục lưu trữ file tải xuống tùy thuộc vào cấu hình của bạn
@@ -40,4 +49,5 @@ public class FileDownload {
             return ResponseEntity.status(500).build();
         }
     }
+
 }

@@ -1,6 +1,7 @@
 package com.example.demo.models;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -37,7 +38,7 @@ public class Notification {
 	@Column(name = "isDeleted", columnDefinition = "boolean default false")
 	private boolean isDeleted;
 	
-	private String filePath;
+	private List<String> filePath; // multiple file
 	
 	private LocalDate dateCreated;
 	
@@ -98,11 +99,11 @@ public class Notification {
 		this.isDeleted = isDeleted;
 	}
 
-	public String getFilePath() {
+	public List<String> getFilePath() {
 		return filePath;
 	}
 
-	public void setFilePath(String filePath) {
+	public void setFilePath(List<String> filePath) {
 		this.filePath = filePath;
 	}
 
@@ -138,7 +139,7 @@ public class Notification {
 	}
 
 	public Notification(long notifyId, String title, Classes classes, Account account, String content,
-			boolean isDeleted, String filePath, LocalDate dateCreated, LocalDate lastModifed, long numComment) {
+			boolean isDeleted, List<String> filePath, LocalDate dateCreated, LocalDate lastModifed, long numComment) {
 		this.notifyId = notifyId;
 		this.title = title;
 		this.classes = classes;

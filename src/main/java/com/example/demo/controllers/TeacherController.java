@@ -56,8 +56,7 @@ import jakarta.servlet.http.HttpSession;
 @RequestMapping("/Teacher")
 public class TeacherController {
 	
-	@Autowired
-    private DetailTeachingRepository detailTeachingRepository;
+	
 	
 	@Autowired
     private ClassRepository classRepository;
@@ -82,6 +81,9 @@ public class TeacherController {
 	
 	@Autowired
     private ReplyCommentRepository replyRepository;
+	
+	@Autowired
+	NotificationRepository notiRepository;
 	
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -166,12 +168,12 @@ public class TeacherController {
 	
 	
 	
-	
+	//chuyển qua bên NotiController đê !!
 	@PostMapping("/createNotification")
     public String createNotification(@RequestParam("classes") Classes classes,
     								@RequestParam("title") String title,
     								@RequestParam("content") String content,
-    								@RequestParam("filePath") MultipartFile multipartFile,
+    								@RequestParam("filePath") MultipartFile[] multipartFile,
     								HttpServletRequest request) {
 		
 		HttpSession session = request.getSession();
@@ -186,22 +188,31 @@ public class TeacherController {
 		notify.setContent(content);
 		notify.setAccount(loggedInUser);
 		notify.setDateCreated(LocalDate.now());
+		notifyRepository.save(notify);
 		
-		// Tạo tên file duy nhất bằng cách kết hợp ID của bài tập và tên file gốc
-	    String originalFilename = multipartFile.getOriginalFilename();
-	    int lastDotIndex = originalFilename.lastIndexOf('.');
-	    String fileNameWithoutExtension = originalFilename.substring(0, lastDotIndex); // Loại bỏ phần mở rộng nếu có
-	    String fileExtension = originalFilename.substring(lastDotIndex + 1);
-	    String uniqueFileName = notify.getNotifyId() + "_notify_" + fileNameWithoutExtension + "." + fileExtension;
+		List<String> fileNames = new ArrayList<>();
+		
+		
+		
+		Path path = Paths.get("fileUploads/");
+		for (MultipartFile files : multipartFile)
+		{
+			String originalFilename = files.getOriginalFilename();
+		    int lastDotIndex = originalFilename.lastIndexOf('.');
+		    String fileNameWithoutExtension = originalFilename.substring(0, lastDotIndex); // Loại bỏ phần mở rộng nếu có
+		    String fileExtension = originalFilename.substring(lastDotIndex + 1);
+		    String uniqueFileName = notify.getNotifyId() + "_notify_" + fileNameWithoutExtension + "." + fileExtension;
 
-	    Path path = Paths.get("fileUploads/");
-	    try {
-	        InputStream inputStream = multipartFile.getInputStream();
-	        Files.copy(inputStream, path.resolve(uniqueFileName), StandardCopyOption.REPLACE_EXISTING);
-	        notify.setFilePath(uniqueFileName.toLowerCase());       
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	    }
+		    
+		    try {	        
+		    	InputStream inputStream = files.getInputStream();
+		        Files.copy(inputStream, path.resolve(uniqueFileName), StandardCopyOption.REPLACE_EXISTING);
+		        fileNames.add(uniqueFileName.toLowerCase());       
+		    } catch (IOException e) {
+		        e.printStackTrace();
+		    }
+		}
+		notify.setFilePath(fileNames);
 	    notifyRepository.save(notify);
         return "redirect:/StudentView/listStudent";
     }
@@ -376,6 +387,9 @@ public class TeacherController {
 	    List<ReplyComment> listReply = replyRepository.findAll();
 	    
 	    m.addAttribute("listReply",listReply);
+	    
+//	    List<Notification> noti = notiRepository.findAll();  //add without deleted and by ClassId later !!
+//        m.addAttribute("noti", noti);
 	    	    
 	    return "/Classes/Class-Content";
 	}
@@ -400,20 +414,20 @@ public class TeacherController {
 			notifyRepository.save(newNoti);
 			return "redirect:/Teacher/enterClass/" + newNoti.getClasses().getClassId();
 		}
-		String originalFilename = multipartFile.getOriginalFilename();
-	    int lastDotIndex = originalFilename.lastIndexOf('.');
-	    String fileNameWithoutExtension = originalFilename.substring(0, lastDotIndex); // Loại bỏ phần mở rộng nếu có
-	    String fileExtension = originalFilename.substring(lastDotIndex + 1);
-	    String uniqueFileName = newNoti.getNotifyId() + "_notify_" + fileNameWithoutExtension + "." + fileExtension;
-
-	    Path path = Paths.get("fileUploads/");
-	    try {
-	        InputStream inputStream = multipartFile.getInputStream();
-	        Files.copy(inputStream, path.resolve(uniqueFileName), StandardCopyOption.REPLACE_EXISTING);
-	        newNoti.setFilePath(uniqueFileName.toLowerCase());       
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	    }
+//		String originalFilename = multipartFile.getOriginalFilename();
+//	    int lastDotIndex = originalFilename.lastIndexOf('.');
+//	    String fileNameWithoutExtension = originalFilename.substring(0, lastDotIndex); // Loại bỏ phần mở rộng nếu có
+//	    String fileExtension = originalFilename.substring(lastDotIndex + 1);
+//	    String uniqueFileName = newNoti.getNotifyId() + "_notify_" + fileNameWithoutExtension + "." + fileExtension;
+//
+//	    Path path = Paths.get("fileUploads/");
+//	    try {
+//	        InputStream inputStream = multipartFile.getInputStream();
+//	        Files.copy(inputStream, path.resolve(uniqueFileName), StandardCopyOption.REPLACE_EXISTING);
+//	        newNoti.setFilePath(uniqueFileName.toLowerCase());       
+//	    } catch (IOException e) {
+//	        e.printStackTrace();
+//	    }
 		notifyRepository.save(newNoti);
     	return "redirect:/Teacher/enterClass/" + newNoti.getClasses().getClassId();
     }

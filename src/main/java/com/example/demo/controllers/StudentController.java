@@ -137,14 +137,16 @@ public class StudentController {
 
 			student.setEmail(email);
 			Path path = Paths.get("uploads/");
-			try{
-				InputStream inputStream = img.getInputStream();
-				Files.copy(inputStream, path.resolve(img.getOriginalFilename()),StandardCopyOption.REPLACE_EXISTING);
-				student.setImage(img.getOriginalFilename().toLowerCase());
-			}catch (Exception e) {
-				// TODO: handle exception
-				e.printStackTrace();
-			}
+		    try {
+		        InputStream inputStream = img.getInputStream();
+		        // Tạo tên file mới với định dạng account_img_id
+		        String newFileName = "student_img_" + student.getId();
+		        Files.copy(inputStream, path.resolve(newFileName), StandardCopyOption.REPLACE_EXISTING);
+		        student.setImage(newFileName);
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		    }
+			
 		    studentService.saveStudent(student);
 		    return "redirect:/StudentView/listStudent";			
 		}
