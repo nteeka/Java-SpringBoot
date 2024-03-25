@@ -105,13 +105,16 @@
         <a class="nav-link" href="/Authen/changePassword">Change password</a>
       </li>
       <li class="nav-item">
+        <a class="nav-link" href="/Notify/listNoti">Notify</a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link" href="/Role/createRole">Create Role</a>
       </li>
       
     
       <li class="nav-item" th:if="${session.loggedInUser != null}">
         <a class="nav-link" th:href="@{'/Account/edit/' + ${session.loggedInUser.accountId}}">
-          Welcome, <span th:text="${session.loggedInUser.email}"></span>
+          Welcome, <span th:text="${session.loggedInUser.displayName}"></span>
         </a>
       </li>
       <li class="nav-item">

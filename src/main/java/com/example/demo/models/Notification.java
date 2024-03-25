@@ -42,6 +42,9 @@ public class Notification {
 	private LocalDate dateCreated;
 	
 	private LocalDate lastModifed;
+	
+	@Column(name = "numComment", columnDefinition = "bigint default 0")
+    private long numComment;
 
 	public long getNotifyId() {
 		return notifyId;
@@ -119,13 +122,23 @@ public class Notification {
 	public void setLastModifed(LocalDate lastModifed) {
 		this.lastModifed = lastModifed;
 	}
+	
+	
+
+	public long getNumComment() {
+		return numComment;
+	}
+
+	public void setNumComment(long numComment) {
+		this.numComment = numComment;
+	}
 
 	public Notification() {		
 		
 	}
 
 	public Notification(long notifyId, String title, Classes classes, Account account, String content,
-			boolean isDeleted, String filePath, LocalDate dateCreated, LocalDate lastModifed) {
+			boolean isDeleted, String filePath, LocalDate dateCreated, LocalDate lastModifed, long numComment) {
 		this.notifyId = notifyId;
 		this.title = title;
 		this.classes = classes;
@@ -135,7 +148,10 @@ public class Notification {
 		this.filePath = filePath;
 		this.dateCreated = dateCreated;
 		this.lastModifed = lastModifed;
+		this.numComment = numComment;
 	}
+	
+	
 
 	
 	

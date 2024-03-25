@@ -282,7 +282,7 @@
         }
     }
 </script>
-            <h5><span class="glyphicon glyphicon-time"></span> Post by <span th:text="${notify.account.email}"></span>, <span th:text="${notify.dateCreated}"></span>.</h5>
+            <h5><span class="glyphicon glyphicon-time"></span> Post by <span th:text="${notify.account.displayName}"></span>, <span th:text="${notify.dateCreated}"></span>.</h5>
             <h5 th:if="${notify.lastModifed != null}"><span class="glyphicon glyphicon-time"></span>Last modified <span th:text="${notify.lastModifed}"></span></h5>
 	      <h5><span class="label label-danger">Food</span> <span class="label label-primary">Ipsum</span></h5><br>
 	      <span th:text="${notify.content}"></span>
@@ -303,94 +303,128 @@
 	        <button type="submit" class="btn btn-success">Submit</button>
 	      </form>
 	      <br><br>
-            <p><span class="badge">2</span> Comments:</p><br>
+            <p><span class="badge" th:text="${notify.numComment}"></span> Comments:</p><br>
             <div class="row">
     			<div th:each="cmt : ${listComment}" th:if="${notify.notifyId == cmt.notify.notifyId }" class="comment">
     <div class="col-sm-2 text-center">
         <img th:src="@{'/image/getImage/' + ${cmt.account.image}}" class="img-circle" height="65" width="65" alt="Avatar">
     </div>
     <div class="col-sm-10">
-        <h4><span th:text="${cmt.account.email}"></span> <small><span th:text="${cmt.dateCreated}"></span></small></h4>
+        <h4><span th:text="${cmt.account.displayName}"></span> <small><span th:text="${cmt.dateCreated}"></span></small></h4>
         <p class="original-content" th:text="${cmt.content}"></p>
         <textarea class="edit-content" style="display: none;"></textarea>
-        <div class="btn-group">
-        	
-        	
-        	
-        
-        
-        	
-        	
-        	
-            
-            
-			
+        <div class="btn-group">	
 			<a href="#" th:if="${#lists.contains(checkLikeComment, cmt.commentId)}"
-   th:id="'likeButton_' + ${cmt.commentId}" 
-   th:data-comment-id="${cmt.commentId}"
-   class="like-btn liked" 
-   th:attr="onclick='toggleLike(\'' + ${cmt.commentId} + '\', event)'">
-    <i class="fa fa-thumbs-up"></i>Liked<span th:if="${cmt.likeNumber != null or cmt.likeNumber != 0}">(</span><span th:if="${cmt.likeNumber != null or cmt.likeNumber != 0}" th:text="${cmt.likeNumber}"></span><span th:if="${cmt.likeNumber != null or cmt.likeNumber != 0}">)</span>
-</a>
+			   th:id="'likeButton_' + ${cmt.commentId}" 
+			   th:data-comment-id="${cmt.commentId}"
+			   class="like-btn liked" 
+			   th:attr="onclick='toggleLike(\'' + ${cmt.commentId} + '\', event)'">
+			    <i class="fa fa-thumbs-up"></i>Liked<span th:if="${cmt.likeNumber != null or cmt.likeNumber != 0}">(</span><span th:if="${cmt.likeNumber != null or cmt.likeNumber != 0}" th:text="${cmt.likeNumber}"></span><span th:if="${cmt.likeNumber != null or cmt.likeNumber != 0}">)</span>
+			</a>
+			<a href="#" th:unless="${#lists.contains(checkLikeComment, cmt.commentId)}"
+			   th:id="'likeButton_' + ${cmt.commentId}" 
+			   th:data-comment-id="${cmt.commentId}"
+			   class="like-btn" 
+			   th:attr="onclick='toggleLike(\'' + ${cmt.commentId} + '\', event)'">
+			    <i class="fa fa-thumbs-up"></i>Like<span th:if="${cmt.likeNumber != null or cmt.likeNumber != 0}">(</span><span th:if="${cmt.likeNumber != null or cmt.likeNumber != 0}" th:text="${cmt.likeNumber}"></span><span th:if="${cmt.likeNumber != null or cmt.likeNumber != 0}">)</span>
+			</a>
 
-<a href="#" th:unless="${#lists.contains(checkLikeComment, cmt.commentId)}"
-   th:id="'likeButton_' + ${cmt.commentId}" 
-   th:data-comment-id="${cmt.commentId}"
-   class="like-btn" 
-   th:attr="onclick='toggleLike(\'' + ${cmt.commentId} + '\', event)'">
-    <i class="fa fa-thumbs-up"></i>Like<span th:if="${cmt.likeNumber != null or cmt.likeNumber != 0}">(</span><span th:if="${cmt.likeNumber != null or cmt.likeNumber != 0}" th:text="${cmt.likeNumber}"></span><span th:if="${cmt.likeNumber != null or cmt.likeNumber != 0}">)</span>
-</a>
-
-<script th:inline="javascript">
-    
-    function toggleLike(commentId, event) {
-        event.preventDefault(); // Ngăn chặn hành vi mặc định của thẻ <a>
-        
-        var likeButton = document.getElementById('likeButton_' + commentId);
-        var isLiked = likeButton.classList.contains('liked');
-        
-        fetch('/Comment/likeComment/' + commentId, { method: 'GET' })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to like/unlike comment');
-            }
-            
-            // Thay đổi nút từ Like sang Liked và ngược lại
-            if (isLiked) {
-                likeButton.innerHTML = '<i class="fa fa-thumbs-up"></i>Like';
-                likeButton.classList.remove('liked');
-            } else {
-                likeButton.innerHTML = '<i class="fa fa-thumbs-up"></i>Liked';
-                likeButton.classList.add('liked');
-            }
-            
-            // Cập nhập số lượt like (nếu cần)
-            // Ví dụ: 
-            // var likeCountSpan = likeButton.querySelector('span');
-            // likeCountSpan.textContent = parseInt(likeCountSpan.textContent) + (isLiked ? -1 : 1);
-            
-            console.log('Comment like/unlike successful');
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-    }
-
-</script>
-			
-        	
-        	
-        	
+			<script th:inline="javascript">			    
+			    function toggleLike(commentId, event) {
+			        event.preventDefault(); // Ngăn chặn hành vi mặc định của thẻ <a>			        
+			        var likeButton = document.getElementById('likeButton_' + commentId);
+			        var isLiked = likeButton.classList.contains('liked');			        
+			        fetch('/Comment/likeComment/' + commentId, { method: 'GET' })
+			        .then(response => {
+			            if (!response.ok) {
+			                throw new Error('Failed to like/unlike comment');
+			            }			            
+			            // Thay đổi nút từ Like sang Liked và ngược lại
+			            if (isLiked) {
+			                likeButton.innerHTML = '<i class="fa fa-thumbs-up"></i>Like';
+			                likeButton.classList.remove('liked');
+			            } else {
+			                likeButton.innerHTML = '<i class="fa fa-thumbs-up"></i>Liked';
+			                likeButton.classList.add('liked');
+			            }			            
+			            console.log('Comment like/unlike successful');
+			        })
+			        .catch(error => {
+			            console.error('Error:', error);
+			        });
+			    }			
+			</script>       	
     		<a th:if="${cmt.account.accountId == session.loggedInUser.accountId}"  th:data-comment-id="${cmt.account.email}" href="#" class="edit-btn">
                 <i class="fa fa-pencil"></i> Edit
             </a>
 			<a href="#" class="save-btn" style="display: none;" th:data-comment-id="${cmt.commentId}"><i class="fa fa-save"></i> Save</a>
+			<a href="#" class="cancel-btn" style="display: none;">Cancel</a>
+			
 			<a href="#" th:if="${cmt.account.accountId == session.loggedInUser.accountId }" th:attr="onclick='confirmDeleteComment(\'' + ${cmt.commentId} + '\')'" >Delete</a>   	
+   			
+   			
+   			
+   			<a href="#" class="reply-btn">Reply</a>
+<form th:action="@{/Comment/createReplyComment}" method="post" class="reply-form" style="display: none;">
+   	
+   	<input name="comment" th:value="${cmt.commentId}" hidden="true" class="form-control" /> 
+    <textarea name="content" class="reply-content" rows="3" required></textarea>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+<script>
+$(document).ready(function() {
+    $('.reply-btn').click(function(event) {
+        event.preventDefault(); // Ngăn chặn hành vi mặc định của thẻ <a>
+        
+        // Hiển thị form Reply tương ứng
+        var $comment = $(this).closest('.comment');
+        $comment.find('.reply-form').show();
+        
+    });
+
+    
+});
+
+// Hàm gửi dữ liệu reply comment lên server bằng Ajax
+function createReplyComment(content, commentId) {
+    $.ajax({
+        type: 'POST',
+        url: '/Comment/createReplyComment',
+        data: { content: content, commentId: commentId },
+        success: function(response) {
+            // Xử lý sau khi reply comment được tạo thành công (nếu cần)
+            console.log('Reply comment created successfully');
+            // Có thể làm mới danh sách comment ở đây nếu cần
+        },
+        error: function(xhr, status, error) {
+            // Xử lý lỗi nếu có
+            console.error('Error creating reply comment:', error);
+        }
+    });
+}
+</script>
+
+    		
     	</div>
         <br>
     </div>
+    <div style="padding-left: 100px">
+				<!-- <p><span class="badge">1</span> Comment:</p><br> -->	
+	          <div th:each="reply : ${listReply}" th:if="${reply.comment.commentId == cmt.commentId}" class="row">	          
+	            <div class="col-sm-2 text-center">
+	              <img th:src="@{'/image/getImage/' + ${reply.account.image}}" class="img-circle" height="65" width="65" alt="Avatar">
+	            </div>
+	            <div class="col-xs-10">
+	              <h4><span th:text="${reply.account.displayName}"></span> <small><span th:text="${reply.dateCreated}"></span></small></h4>
+	              <p><span th:text="${reply.content}"></span></p>
+	              <br>
+	            </div>
+	          </div>
+			</div>
 </div>
-
+			
+	          
 
 <script>
 $(document).ready(function() {
@@ -401,8 +435,18 @@ $(document).ready(function() {
         $comment.find('.original-content').hide();
         $comment.find('.edit-content').show().val($comment.find('.original-content').text().trim());
         $comment.find('.save-btn').show();
+        $comment.find('.cancel-btn').show();
     });
-
+	
+    $('.cancel-btn').click(function(event) {
+        event.preventDefault(); // Ngăn chặn hành vi mặc định của liên kết
+        var $comment = $(this).closest('.comment');
+        $comment.find('.edit-content').hide();   
+        $comment.find('.cancel-btn').hide();
+        $comment.find('.save-btn').hide();
+    });
+    
+    
     $('.save-btn').click(function(event) {
         event.preventDefault(); // Ngăn chặn hành vi mặc định của liên kết
         var $comment = $(this).closest('.comment');
@@ -438,25 +482,7 @@ $(document).ready(function() {
 
 	        
 	        
-	        <div class="col-sm-2 text-center">
-	          <img src="bird.jpg" class="img-circle" height="65" width="65" alt="Avatar">
-	        </div>
-	        <div class="col-sm-10">
-	          <h4>John Row <small>Sep 25, 2015, 8:25 PM</small></h4>
-	          <p>I am so happy for you man! Finally. I am looking forward to read about your trendy life. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-	          <br>
-	          <p><span class="badge">1</span> Comment:</p><br>
-	          <div class="row">
-	            <div class="col-sm-2 text-center">
-	              <img src="bird.jpg" class="img-circle" height="65" width="65" alt="Avatar">
-	            </div>
-	            <div class="col-xs-10">
-	              <h4>Nested Bro <small>Sep 25, 2015, 8:28 PM</small></h4>
-	              <p>Me too! WOW!</p>
-	              <br>
-	            </div>
-	          </div>
-	        </div>
+	        
 	      </div>
             
         </div>
@@ -796,15 +822,44 @@ $(document).ready(function() {
     
                 </div>
                 <div id="listMembers" class="tab-pane fade">
-                <h1>Created by : <span th:text="${c.account.email}"> ></span></h1>
+                <h1>Created by : <span th:text="${c.account.displayName}"> ></span></h1>
                     <h1>List of Member</h1>
-    <div>
-    <!-- Duyệt qua danh sách Homework và hiển thị tên của từng người -->
-	    <div th:each="acc : ${listAccount}">
-	        <span th:text="${acc.email}"></span><br>
-	    </div>
-	</div>
     
+    
+    <div class="container">
+  <h2>Filterable Table</h2>
+  <p>Type something in the input field to search the table for first names, last names or emails:</p>  
+  <input class="form-control" id="myInput" type="text" placeholder="Search..">
+  <br>
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr>        
+        <th>Display name</th>
+        <th>Email</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="myTable">     
+      <tr th:each="acc : ${listAccount}">
+        <td th:text="${acc.displayName}"></td>
+        <td th:text="${acc.email}"></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+</div>
+
+<script>
+$(document).ready(function(){
+  $("#myInput").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#myTable tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+});
+</script>
     
     
     
