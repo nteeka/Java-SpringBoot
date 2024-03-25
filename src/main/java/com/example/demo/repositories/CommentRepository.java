@@ -12,8 +12,10 @@ import com.example.demo.models.Notification;
 
 public interface CommentRepository extends JpaRepository<Comment, Long>{
 
-	@Query("SELECT s FROM Notification s WHERE s.notifyId = :notifyId and s.isDeleted = false")
-    List<Notification> findByNotifyId(@Param("notifyId") long notifyId);
+//	@Query("SELECT s FROM Notification s WHERE s.notifyId = :notifyId and s.isDeleted = false")
+//    List<Notification> findByNotifyId(@Param("notifyId") long notifyId);
 	@Query("SELECT s FROM Comment s WHERE s.isDeleted = false")
 	List<Comment> findAllNotDeleted();
+	@Query("SELECT s FROM Comment s WHERE s.notify.notifyId = :notifyId and s.isDeleted = false")
+    List<Comment> findByNotifyId(@Param("notifyId") long notifyId);
 }

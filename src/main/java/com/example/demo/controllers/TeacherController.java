@@ -34,6 +34,7 @@ import com.example.demo.models.CommentLike;
 import com.example.demo.models.Faculty;
 import com.example.demo.models.Homework;
 import com.example.demo.models.Notification;
+import com.example.demo.models.ReplyComment;
 import com.example.demo.models.Student;
 import com.example.demo.repositories.AccountRepository;
 import com.example.demo.repositories.ClassAccountRepository;
@@ -43,6 +44,7 @@ import com.example.demo.repositories.CommentRepository;
 import com.example.demo.repositories.DetailTeachingRepository;
 import com.example.demo.repositories.HomeworkRepository;
 import com.example.demo.repositories.NotificationRepository;
+import com.example.demo.repositories.ReplyCommentRepository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -77,6 +79,9 @@ public class TeacherController {
 	
 	@Autowired
     private CommentLikeRepository commentLikeRepository;
+	
+	@Autowired
+    private ReplyCommentRepository replyRepository;
 	
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -368,6 +373,9 @@ public class TeacherController {
 		}
 	    m.addAttribute("checkLikeComment",check);
 	    
+	    List<ReplyComment> listReply = replyRepository.findAll();
+	    
+	    m.addAttribute("listReply",listReply);
 	    	    
 	    return "/Classes/Class-Content";
 	}
