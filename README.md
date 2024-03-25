@@ -1,5 +1,9 @@
 Website Studyroom - xây dựng dựa theo Google Classroom
 
+- Cách chạy bài :
+    Tạo database tên Demo bằng xampp
+    chỉnh sửa java jdk tương thích (hình như em-mình đang sử dụng SDK 21)
+ 
 Mô tả những gì đã có (vẫn đang trong quá trình phát triển và hoàn thiện) :
 
 
