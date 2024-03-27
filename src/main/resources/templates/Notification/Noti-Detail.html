@@ -225,6 +225,16 @@
 								                        <textarea class="form-control" id="updateNotifyContent" name="content"></textarea>
 								                    </div>
 								                    <div class="form-group mt-3">
+												        <label class="mr-2">Current Files:</label>
+												        <div>
+												            <ul>
+														        <li th:each="fileName : ${noti.filePath}">
+														            <a th:href="@{'/downloadFile/' + ${fileName}}" th:text="${fileName}">Download</a>
+														        </li>
+												    		</ul>
+												        </div>
+												    </div>
+								                    <div class="form-group mt-3">
 													<label class="mr-2">Upload your file(Optional):</label>
 														<input type="file" name="filePath">
 								          			</div>
