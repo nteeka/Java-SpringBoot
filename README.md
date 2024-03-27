@@ -1,8 +1,11 @@
 Website Studyroom - xây dựng dựa theo Google Classroom
 
 - Cách chạy bài :
+    Cài đặt xampp -> bật phpadmin và mysql 
     Tạo database tên Demo bằng xampp
     chỉnh sửa java jdk tương thích (hình như em-mình đang sử dụng SDK 21)
+    Chạy project 
+    truy cập http://localhost:8080/Home/login để bắt đầu
  
 Mô tả những gì đã có (vẫn đang trong quá trình phát triển và hoàn thiện) :
 
@@ -70,20 +73,40 @@ Mô tả những gì đã có (vẫn đang trong quá trình phát triển và h
         - thao tác chưa mượt
         - Chuẩn bị cho like - edit - delete
 
-    -
+    - Submit homework
+        - Đã nộp được bài (member)
+        - phân biệt đã nộp - chưa nộp
+        - phân biệt dealine trễ và còn hạn (trễ - > close, còn hạn hoặc không có hạn nộp -> open)
+        - Block submit khi đã quá hạn (deadline before now).
+        - Giao diện xấu - Chưa tách biệt creater and member (fuction used in submit)
+
+    - Homework :
+        Set deadline (or not) for hw(dealine allway before now).
+        Lọc hw chưa nộp - đã nộp - tất cả
 
 
 WHAT IS COMING :
 
     
-    submit homework (by member in class) include save homework - notify to creater
-    validate (hw, noti, cmt,...)
-    search class (already join)
-    Complete layout
-    Modify updateNoti
-    Like - Edit - Delete for Reply comment
-    Smooth createComment - createReply
-    Multiple file for HW
-
+    - doing
+        validate mọi thứ (hw, noti, cmt,...)
+        search class (already join)
+        Like - Edit - Delete for Reply comment
+        Smooth createComment - createReply
+        edit hw with file
+        xem lại thông tin bài tập đã nộp (member)
+        Giao diện chi tiết bài tập
+        Giao diện và backend xử lý việc nộp bài(hiển thị danh sách member nộp bài)
+        Chấm điểm( class creater) - bảng điểm member
+        Hủy nộp bài - edit bài nộp
+        Phân chia quyền hạn tốt hơn - tối ưu hơn trong Submit and list homework
+        Quản lý member trong class(view list - filter - search,...)
+        Thông báo (Member) khi có bài tập - thông báo mới từ class creater
+    
+    - Advance - will try
+        Complete layout
+        Clear dư thừa - tối ưu code (DRY)       
+        Xem xét nâng cấp lưu file trên một phương tiện nền tảng khác(ggdrive, cloud, ....)
+        gửi mail real( không còn gửi sandbox qua mail trap)
     
 

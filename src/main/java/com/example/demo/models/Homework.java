@@ -1,6 +1,7 @@
 package com.example.demo.models;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -41,15 +42,25 @@ public class Homework {
 	@Column(name = "isDeleted", columnDefinition = "boolean default false")
 	private boolean isDeleted;
 	
-	private String filePath;
+	private List<String> filePath;
+	@Column(name = "status", columnDefinition = "boolean default false")
+	private boolean status;
 	
 	
 
-	public String getFilePath() {
+	public boolean isStatus() {
+		return status;
+	}
+
+	public void setStatus(boolean status) {
+		this.status = status;
+	}
+
+	public List<String> getFilePath() {
 		return filePath;
 	}
 
-	public void setFilePath(String filePath) {
+	public void setFilePath(List<String> filePath) {
 		this.filePath = filePath;
 	}
 
@@ -123,14 +134,16 @@ public class Homework {
 	
 	
 
-	
-
 	public void setDeadline(LocalDate deadline) {
-		if (dateCreated != null && deadline != null && deadline.isBefore(dateCreated)) {
-            throw new IllegalArgumentException("Deadline must be after dateCreated.");
-        }
 		this.deadline = deadline;
 	}
+
+//	public void setDeadline(LocalDate deadline) {
+//		if (dateCreated != null && deadline != null && deadline.isBefore(dateCreated)) {
+//            throw new IllegalArgumentException("Deadline must be after dateCreated.");
+//        }
+//		this.deadline = deadline;
+//	}
 	
 	
 	
@@ -142,12 +155,12 @@ public class Homework {
 		this.lastModified = lastModified;
 	}
 
-	@PrePersist
-    public void prePersist() {
-        if (deadline.isBefore(dateCreated)) {
-            throw new IllegalArgumentException("Deadline must be after dateCreated.");
-        }
-    }
+//	@PrePersist
+//    public void prePersist() {
+//        if (deadline.isBefore(dateCreated)) {
+//            throw new IllegalArgumentException("Deadline must be after dateCreated.");
+//        }
+//    }
 //	@PrePersist
 //    protected void onCreate() {
 //        this.dateCreated = LocalDate.now();
@@ -159,19 +172,10 @@ public class Homework {
 	
 	
 
-	public Homework(long homeworkId, String homeworkName, Classes classes,
-			String description, LocalDate dateCreated, LocalDate deadline) {
-		this.homeworkId = homeworkId;
-		this.homeworkName = homeworkName;
-		this.classes = classes;
-//		this.subject = subject;
-		this.description = description;
-		this.dateCreated = LocalDate.now();
-		this.deadline = deadline;
-	}
+
 
 	public Homework(long homeworkId, String homeworkName, Classes classes, String description, LocalDate dateCreated,
-			LocalDate lastModified, LocalDate deadline, boolean isDeleted, String filePath) {
+			LocalDate lastModified, LocalDate deadline, boolean isDeleted, List<String> filePath, boolean status) {
 		this.homeworkId = homeworkId;
 		this.homeworkName = homeworkName;
 		this.classes = classes;
@@ -181,6 +185,7 @@ public class Homework {
 		this.deadline = deadline;
 		this.isDeleted = isDeleted;
 		this.filePath = filePath;
+		this.status = status;
 	}
 
 	
