@@ -1,29 +1,20 @@
 package com.example.demo.controllers;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+
 import java.time.LocalDate;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.models.Account;
-import com.example.demo.models.Classes;
 import com.example.demo.models.Comment;
 import com.example.demo.models.CommentLike;
-import com.example.demo.models.Homework;
 import com.example.demo.models.Notification;
 import com.example.demo.models.ReplyComment;
 import com.example.demo.repositories.CommentLikeRepository;
