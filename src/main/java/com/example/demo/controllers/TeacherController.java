@@ -9,15 +9,11 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,18 +27,13 @@ import com.example.demo.models.ClassAccount;
 import com.example.demo.models.Classes;
 import com.example.demo.models.Comment;
 import com.example.demo.models.CommentLike;
-import com.example.demo.models.Faculty;
 import com.example.demo.models.Homework;
 import com.example.demo.models.Notification;
 import com.example.demo.models.ReplyComment;
-import com.example.demo.models.Student;
-import com.example.demo.models.SubmitHomework;
-import com.example.demo.repositories.AccountRepository;
 import com.example.demo.repositories.ClassAccountRepository;
 import com.example.demo.repositories.ClassRepository;
 import com.example.demo.repositories.CommentLikeRepository;
 import com.example.demo.repositories.CommentRepository;
-import com.example.demo.repositories.DetailTeachingRepository;
 import com.example.demo.repositories.HomeworkRepository;
 import com.example.demo.repositories.NotificationRepository;
 import com.example.demo.repositories.ReplyCommentRepository;
@@ -63,8 +54,6 @@ public class TeacherController {
 	@Autowired
     private ClassRepository classRepository;
 	
-	@Autowired
-    private AccountRepository accountRepository;
 	
 	@Autowired
     private ClassAccountRepository classAccountRepository;

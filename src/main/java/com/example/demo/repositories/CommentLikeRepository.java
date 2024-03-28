@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.example.demo.models.CommentLike;
-import com.example.demo.models.Notification;
 
 public interface CommentLikeRepository extends JpaRepository<CommentLike, Long>{
 	

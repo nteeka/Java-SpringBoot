@@ -9,24 +9,19 @@ import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.models.Account;
-import com.example.demo.models.Classes;
 import com.example.demo.models.Homework;
 import com.example.demo.models.SubmitHomework;
 import com.example.demo.repositories.HomeworkRepository;
-import com.example.demo.repositories.NotificationRepository;
 import com.example.demo.repositories.SubmitHomeworkRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
