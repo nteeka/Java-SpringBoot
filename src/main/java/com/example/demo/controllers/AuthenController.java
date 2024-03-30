@@ -58,7 +58,7 @@ public class AuthenController {
             if(passwordEncoder.matches(password,account.getPassword() ))
             {
                 session.setAttribute("loggedInUser", account);
-                return "redirect:/StudentView/listStudent";
+                return "redirect:/Teacher/listClass";
             }
             	
             else {

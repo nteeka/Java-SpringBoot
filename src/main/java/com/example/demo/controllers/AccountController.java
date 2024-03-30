@@ -100,11 +100,11 @@ public class AccountController {
     @GetMapping("/edit/{id}")
     public String editAccountForm(@PathVariable Long id,Model m,HttpServletRequest request) {
     	
-//    	HttpSession session = request.getSession();
-//	    Account loggedInUser = (Account) session.getAttribute("loggedInUser");
-//	    if (loggedInUser == null) {
-//	        return "/Authen/Login";
-//	    }
+    	HttpSession session = request.getSession();
+	    Account loggedInUser = (Account) session.getAttribute("loggedInUser");
+	    if (loggedInUser == null) {
+	        return "/Authen/Login";
+	    }
     	Optional<Account> acc = accountRepository.findById(id);
     	m.addAttribute("account",acc.get()); 
         return "/Account/Account-Edit";
