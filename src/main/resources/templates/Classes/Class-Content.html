@@ -442,20 +442,22 @@
 										<li class="nav-item"><a class="nav-link active show"
 											id="home-taThursday" data-toggle="tab" href="#all" role="tab"
 											aria-controls="home" aria-selected="true">Tất cả</a></li>
-										<li class="nav-item"><a class="nav-link" id="profile-tab"
+										<li th:if="${c.account.accountId != session.loggedInUser.accountId}" class="nav-item"><a class="nav-link" id="profile-tab"
 											data-toggle="tab" href="#done" role="tab"
 											aria-controls="profile" aria-selected="false">Đã làm</a></li>
-										<li class="nav-item"><a class="nav-link" id="contact-tab"
+										<li th:if="${c.account.accountId != session.loggedInUser.accountId}" class="nav-item"><a class="nav-link" id="contact-tab"
 											data-toggle="tab" href="#notDone" role="tab"
 											aria-controls="contact" aria-selected="false">Chưa làm</a></li>
 
 									</ul>
 
+
+								
 									<div class="tab-content" id="myTabContent">
 										<div class="tab-pane fade active show" id="all"
 											role="tabpanel">
 
-
+											<!-- Modal edit Homework -->
 											<div id="updateHomeworkModal" class="modal">
 												<div class="modal-dialog">
 													<div class="modal-content">
@@ -496,6 +498,7 @@
 													</div>
 												</div>
 											</div>
+											
 											<script>
 												function openUpdateHomeworkModal(
 														homeworkId,
@@ -539,7 +542,7 @@
 
 												<table class="table custom-table">
 													<thead>
-														<!--Danh sách tất cả -->
+														<!--Danh sách tất cả bài tập -->
 														<tr>
 															<th scope="col">Information</th>
 															<th scope="col">Status</th>
@@ -582,33 +585,31 @@
 																	<span
 																		th:text="${(homework.deadline == null || homework.deadline.isAfter(T(java.time.LocalDate).now())) ? 'Open' : 'Close'}"></span>
 																	<!-- Sử dụng biểu thức điều kiện để kiểm tra xem Homework đã nộp hay chưa -->
-																	<span
-																		th:if="${listSubmit.contains(homework.homeworkId)}">Đã
-																		nộp</span> <span
-																		th:unless="${listSubmit.contains(homework.homeworkId)}">Chưa
-																		nộp</span>
-
-
+																	<div th:if= "${homework.classes.account.accountId != session.loggedInUser.accountId }">
+																		<span th:if="${listSubmit.contains(homework.homeworkId)}">Đã nộp</span>
+																		<span th:unless="${listSubmit.contains(homework.homeworkId)}">Chưa nộp</span>
+																	</div>
+																	
 
 																</div>
 															</td>
 															<!--các action -->
 															<td>
 																<div class="btn-group">
-																	<a href="#" class="btn btn-primary" data-toggle="modal"
+																	<a th:if="${c.account.accountId == session.loggedInUser.accountId}" href="#" class="btn btn-primary" data-toggle="modal"
 																		data-target="#updateHomeworkModal"
 																		th:attr="onclick='openUpdateHomeworkModal(\'' + ${homework.homeworkId} + '\', \'' + ${homework.homeworkName} + '\', \'' + ${homework.description} + '\', \'' + ${homework.deadline} + '\')'">
 																		<span class="fa fa-pencil"></span> Edit
 																	</a> <a
-																		th:attr="onclick='confirmDeleteHomework(\'' + ${homework.homeworkId} + '\')'"
+																		th:if="${c.account.accountId == session.loggedInUser.accountId}" th:attr="onclick='confirmDeleteHomework(\'' + ${homework.homeworkId} + '\')'"
 																		class="btn btn-danger"> <span class="fa fa-trash"></span>
 																		Delete
-																	</a> <a th:if="${listSubmit.contains(homework.homeworkId)}"
+																	</a> <a th:if="${listSubmit.contains(homework.homeworkId) && c.account.accountId != session.loggedInUser.accountId }"
 																		th:href="@{'/Teacher/submitHomeWorkView/' + ${homework.homeworkId}}"
 																		class="btn btn-primary">Xem lại bài đã nộp</a> <a
 																		id="submitHomeworkButton"
 																		th:data-deadline="${homework.deadline}"
-																		th:if="${!listSubmit.contains(homework.homeworkId)}"
+																		th:if="${!listSubmit.contains(homework.homeworkId) && c.account.accountId != session.loggedInUser.accountId }"
 																		th:href="@{'/Teacher/submitHomeWorkView/' + ${homework.homeworkId}}"
 																		class="btn btn-primary">Nộp bài</a> <a
 																		class="btn btn-primary" href="#">Read More</a>
