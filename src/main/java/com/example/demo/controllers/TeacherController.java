@@ -517,10 +517,10 @@ public class TeacherController {
 		
 		Optional<Homework> homework = homeworkRepository.findById(homeworkId);
 		//Kiểm tra deadline
-		if (homework.get().getDeadline().isBefore(LocalDate.now())) {
-		    model.addAttribute("lateDeadline", "You have your chance, but time is over! You cannot submit anymore.");
-			return enterClassView(homework.get().getClasses().getClassId(),model,request);
-		}
+//		if (homework.get().getDeadline().isBefore(LocalDate.now())) {
+//		    model.addAttribute("lateDeadline", "You have your chance, but time is over! You cannot submit anymore.");
+//			return enterClassView(homework.get().getClasses().getClassId(),model,request);
+//		}
 
 		model.addAttribute("homework", homework.get());
 		return "/Homework/submitHomework";

@@ -40,8 +40,9 @@ public class SubmitHomework {
 	
 //	private String message;
 	
-	@Column(name = "submited", columnDefinition = "boolean default false")
-	private boolean submited;
+	//đã nộp - nộp muộn
+	@Column(name = "status", columnDefinition = "boolean default true")
+	private boolean status;
 
 	public long getSubmitHomeworkId() {
 		return submitHomeworkId;
@@ -83,12 +84,12 @@ public class SubmitHomework {
 		this.filePath = filePath;
 	}
 
-	public boolean isSubmited() {
-		return submited;
+	public boolean isStatus() {
+		return status;
 	}
 
-	public void setSubmited(boolean submited) {
-		this.submited = submited;
+	public void setStatus(boolean status) {
+		this.status = status;
 	}
 	
 	
@@ -115,14 +116,14 @@ public class SubmitHomework {
 	}
 	
 	public SubmitHomework(long submitHomeworkId, Account account, Homework homework, String description,
-			List<String> filePath, boolean submited) {
+			List<String> filePath, boolean status) {
 		
 		this.submitHomeworkId = submitHomeworkId;
 		this.account = account;
 		this.homework = homework;
 		this.description = description;
 		this.filePath = filePath;
-		this.submited = submited;
+		this.status = status;
 	}
 	
 	

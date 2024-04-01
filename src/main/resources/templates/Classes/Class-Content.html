@@ -612,7 +612,7 @@
 																		th:if="${!listSubmit.contains(homework.homeworkId) && c.account.accountId != session.loggedInUser.accountId }"
 																		th:href="@{'/Teacher/submitHomeWorkView/' + ${homework.homeworkId}}"
 																		class="btn btn-primary">Nộp bài</a> <a
-																		class="btn btn-primary" href="#">Read More</a>
+																		class="btn btn-primary" th:href="'/Homework/listMemberSubmited/' + ${homework.homeworkId}">Read More</a>
 																</div>
 
 
