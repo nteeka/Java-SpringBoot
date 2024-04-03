@@ -188,165 +188,11 @@ public class TeacherController {
 	    }
 	}
 	
-	//chuyển qua bên NotiController đê !!
-	@PostMapping("/createNotification")
-    public String createNotification(@RequestParam("classes") Classes classes,
-    								@RequestParam("title") String title,
-    								@RequestParam("content") String content,
-    								@RequestParam("filePath") MultipartFile[] multipartFile,
-    								HttpServletRequest request) {
-		
-		HttpSession session = request.getSession();
-	    Account loggedInUser = (Account) session.getAttribute("loggedInUser");
-	    if (loggedInUser == null) {
-	        return "/Authen/Login";
-	    }
-		
-		Notification notify = new Notification();
-		notify.setClasses(classes);
-		notify.setTitle(title);
-		notify.setContent(content);
-		notify.setAccount(loggedInUser);
-		notify.setDateCreated(LocalDate.now());
-		notifyRepository.save(notify);
-		
-		List<String> fileNames = new ArrayList<>();
-		
-		Path path = Paths.get("fileUploads/");
-		for (MultipartFile files : multipartFile)
-		{
-			String originalFilename = files.getOriginalFilename();
-		    int lastDotIndex = originalFilename.lastIndexOf('.');
-		    String fileNameWithoutExtension = originalFilename.substring(0, lastDotIndex); // Loại bỏ phần mở rộng nếu có
-		    String fileExtension = originalFilename.substring(lastDotIndex + 1);
-		    String uniqueFileName = notify.getNotifyId() + "_notify_" + fileNameWithoutExtension + "." + fileExtension;
+	
 
-		    
-		    try {	        
-		    	InputStream inputStream = files.getInputStream();
-		        Files.copy(inputStream, path.resolve(uniqueFileName), StandardCopyOption.REPLACE_EXISTING);
-		        fileNames.add(uniqueFileName.toLowerCase());       
-		    } catch (IOException e) {
-		        e.printStackTrace();
-		    }
-		}
-		notify.setFilePath(fileNames);
-	    notifyRepository.save(notify);
-        return "redirect:/StudentView/listStudent";
-    }
 	
 	
-	@PostMapping("/addNewClass")
-	public String createClass(@RequestParam("className") String name,
-							@RequestParam("description") String desc,
-								HttpServletRequest request)			
-	{      
-		Classes classes = new Classes();
-		classes.setClassName(name);		
-		classes.setDescription(desc);
-		HttpSession session = request.getSession();
-        Account loggedInUser = (Account) session.getAttribute("loggedInUser");	
-        if(loggedInUser==null)
-        	classes.setAccount(null);
-		classes.setAccount(loggedInUser);
-		classRepository.save(classes);
-		
-		
-		//người tạo đc add vào lớp
-		ClassAccount classAccount = new ClassAccount();
-        classAccount.setClasses(classes);
-        classAccount.setAccount(loggedInUser);
-        classAccount.setNum(1); // Set số lượng hoặc các thuộc tính khác nếu cần
-        classAccountRepository.save(classAccount);
-		
-	    return "redirect:/StudentView/listStudent";
-		
-	}
-	@GetMapping("/listClass")
-	public String listClassView(Model m,HttpServletRequest request) {	
-		HttpSession session = request.getSession();
-	    Account loggedInUser = (Account) session.getAttribute("loggedInUser");
 
-	    // Kiểm tra xem tài khoản đã đăng nhập chưa
-	    if (loggedInUser == null) {
-	        // Xử lý khi tài khoản chưa đăng nhập
-	        return "/Authen/Login";
-	    }
-	    List<ClassAccount> account = classAccountRepository.findByAccountId(loggedInUser.getAccountId());  
-	    List<Classes> classes = new ArrayList<Classes>();
-	    for (ClassAccount classes2 : account) {
-	    	classes.add(classes2.getClasses());
-	    }
-	    //sẽ thấy được toàn bộ lớp mà người trong session login đã tạo
-//	    List<Classes> c = classRepository.findByAccountId(loggedInUser.getAccountId());
-//	    classes.addAll(c);
-	    m.addAttribute("classes",classes);
-	    return "/Classes/Class-List";
-	}
-		
-
-	@PostMapping("/joinClass")
-	public String joinClass(@RequestParam("classId") String id,Model model,HttpServletRequest request) {
-	    HttpSession session = request.getSession();
-	    Account loggedInUser = (Account) session.getAttribute("loggedInUser");
-
-	    // Kiểm tra xem tài khoản đã đăng nhập chưa
-	    if (loggedInUser == null) {
-	        // Xử lý khi tài khoản chưa đăng nhập
-	        return "/Authen/Login";
-	    }
-
-	    // Tìm lớp học dựa trên ID
-	    Optional<Classes> optionalClass = classRepository.findById(id);
-//	    Optional<ClassAccount> optional = classAccountRepository.findByClassId(id);
-	    List<ClassAccount> optional = classAccountRepository.findByClassId(id);
-
-	    if (optionalClass.isPresent()) {
-	        Classes classes = optionalClass.get();
-	        // Kiểm tra xem tài khoản đã tham gia lớp học chưa
-	        for (ClassAccount classAccount : optional) {
-	            if (classAccount.getAccount().getAccountId() == loggedInUser.getAccountId()) {
-	                // Xử lý khi tài khoản đã tham gia lớp học
-	            	model.addAttribute("error", "already join class with ID: " + id);
-	    	        return "/Classes/Class-List";
-	            }
-	        }
-
-	        // Tạo một đối tượng ClassAccount mới và lưu vào cơ sở dữ liệu
-	        ClassAccount classAccount = new ClassAccount();
-	        classAccount.setClasses(classes);
-	        classAccount.setAccount(loggedInUser);
-	        classAccount.setNum(1); // Set số lượng hoặc các thuộc tính khác nếu cần
-
-	        classAccountRepository.save(classAccount);
-	        
-	        // Xử lý khi tham gia lớp học thành công
-	        model.addAttribute("success", "Join class with ID: " + id + " successfull");
-	        return "redirect:/Teacher/listClass";
-	    } else {
-	    	model.addAttribute("error", "Class not found with ID: " + id);
-	        return "/Classes/Class-List";
-	    }
-	}
-	
-	
-	
-	@GetMapping("/leaveClass/{classId}")
-	public String leaveClass(@PathVariable("classId") String id,Model model,HttpServletRequest request) {
-	    HttpSession session = request.getSession();
-	    Account loggedInUser = (Account) session.getAttribute("loggedInUser");
-
-	    if (loggedInUser == null) {
-	        return "/Authen/Login";
-	    }
-	    ClassAccount deleteClassAccount = classAccountRepository.findByClassIdAndAccountId(id.trim(), loggedInUser.getAccountId());
-	    classAccountRepository.delete(deleteClassAccount);
-	    model.addAttribute("success", "Leave class with ID: " + id + " successfull");
-        return "/Classes/Class-List";
-	    	        
-	     
-	}
-	
 	
 	@GetMapping("/enterClass/{classId}")
 	public String enterClassView(@PathVariable("classId") String id,Model m,HttpServletRequest request) {	
@@ -376,9 +222,6 @@ public class TeacherController {
 	    //check done or not done
 	    List<Long> listSubmit = submitHomeworkRepository.listHomeworkByAccountId(loggedInUser.getAccountId());	    
 	    m.addAttribute("listSubmit",listSubmit);
-	    
-	    
-	    
 	    
 	    //get all account on this class
 	    List<ClassAccount> acc = classAccountRepository.findByClassId(id);
@@ -416,12 +259,7 @@ public class TeacherController {
 	    m.addAttribute("listReply",listReply);
 	    
 	    
-	    
-	    
-	    
 	    m.addAttribute("checkLikeComment",check);
-	    
-	    
 	    
 	    	    
 	    return "/Classes/Class-Content";
@@ -429,70 +267,8 @@ public class TeacherController {
 	
 	
 	
-	
-	@PostMapping("/updateNoti")
-    public String updateNotification(@RequestParam("notifyId") long id,
-    							@RequestParam("title") String title,
-    							@RequestParam("content") String content,   							
-    							@RequestParam("filePath") MultipartFile[] multipartFile) {	       	               
-        
-		Optional<Notification> currentNoti = notifyRepository.findById(id);
-		Notification newNoti = currentNoti.get();
-		newNoti.setContent(content);
-		newNoti.setLastModifed(LocalDate.now());
-		newNoti.setTitle(title);
-		notifyRepository.save(newNoti);
-		if(multipartFile.length == 0)
-		{
-			notifyRepository.save(newNoti);
-			return "redirect:/Teacher/enterClass/" + newNoti.getClasses().getClassId();
-		}
-
-		deleteOldFilesNoti(newNoti);
-		List<String> fileNames = new ArrayList<>();
 		
-		Path path = Paths.get("fileUploads/");
-		for (MultipartFile files : multipartFile)
-		{
-			String originalFilename = files.getOriginalFilename();
-		    int lastDotIndex = originalFilename.lastIndexOf('.');
-		    String fileNameWithoutExtension = originalFilename.substring(0, lastDotIndex); // Loại bỏ phần mở rộng nếu có
-		    String fileExtension = originalFilename.substring(lastDotIndex + 1);
-		    String uniqueFileName = newNoti.getNotifyId() + "_notify_" + fileNameWithoutExtension + "." + fileExtension;
-
-		    
-		    try {	        
-		    	InputStream inputStream = files.getInputStream();
-		        Files.copy(inputStream, path.resolve(uniqueFileName), StandardCopyOption.REPLACE_EXISTING);
-		        fileNames.add(uniqueFileName.toLowerCase());       
-		    } catch (IOException e) {
-		        e.printStackTrace();
-		    }
-		}
-		newNoti.setFilePath(fileNames);
-		notifyRepository.save(newNoti);
-    	return "redirect:/Teacher/enterClass/" + newNoti.getClasses().getClassId();
-    }
-	private void deleteOldFilesNoti(Notification noti) {
-	    Path path = Paths.get("fileUploads/");
-	    for (String fileName : noti.getFilePath()) {
-	        try {
-	            Files.deleteIfExists(path.resolve(fileName));
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	        }
-	    }
-	}
 	
-	@GetMapping("/deleteNoti/{notifyId}")
-    public String deleteNotification(@PathVariable("notifyId") long id) {	       	               
-        
-		Optional<Notification> currentNoti = notifyRepository.findById(id);
-		Notification deletedNoti = currentNoti.get();
-		deletedNoti.setDeleted(true);	
-		notifyRepository.save(deletedNoti);
-    	return "redirect:/Teacher/enterClass/" + deletedNoti.getClasses().getClassId();
-    }
 	
 	@GetMapping("/deleteHomework/{homeworkId}")
     public String deleteHomework(@PathVariable("homeworkId") long id) {	       	               
@@ -501,7 +277,7 @@ public class TeacherController {
 		Homework deletedHW = currentHW.get();
 		deletedHW.setDeleted(true);	
 		homeworkRepository.save(deletedHW);
-    	return "redirect:/Teacher/enterClass/" + deletedHW.getClasses().getClassId();
+    	return "redirect:/Class/enterClass/" + deletedHW.getClasses().getClassId();
     }
 	
 	

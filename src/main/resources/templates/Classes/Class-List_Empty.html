@@ -1,0 +1,246 @@
+<div th:replace="/ViewLayout/header.html"></div>
+
+<div style="margin-top: 90px" class="top">
+  <!-- <h1>Bạn chưa tham gia lớp học nào cả !!</h1> -->
+  <h3>Tham gia hoặc tạo một lớp học để bắt đầu !!</h3>
+</div>
+<div class="container">
+  <div class="ghost-copy">
+    <div class="one"></div>
+    <div class="two"></div>
+    <div class="three"></div>
+    <div class="four"></div>
+  </div>
+  <div class="ghost">
+    <div class="face">
+      <div class="eye"></div>
+      <div class="eye-right"></div>
+      <div class="mouth"></div>
+    </div>
+  </div>
+  <div class="shadow"></div>
+</div>
+<div class="bottom">
+  <!-- <p>Tham gia hoặc tạo một lớp học để bắt đầu !!</p> -->
+  <form class="search">
+    <input type="text" class="search-bar" placeholder="Search">
+    <button type="submit" class="search-btn">
+      <i class="fa fa-search"></i>
+    </button>
+  </form>
+  <div class="buttons">
+  	<a class="btn" href="#" data-toggle="modal" data-target="#joinClassModal">Tham gia lớp học</a>
+   	<a class="btn" href="#" data-toggle="modal" data-target="#createClassModal">Tạo lớp học</a>
+  </div>
+</div>
+
+<div class="modal fade" id="createClassModal" tabindex="-1" role="dialog" aria-labelledby="createClassModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="createClassModalLabel">Create Classes</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- Form để tạo Classes -->
+        <form action="/Class/addNewClass" method="POST">
+        <div class="form-group">
+            <label for="className">Class Name:</label>
+            <input type="text" id="className" name="className" class="form-control" required>
+            <label for="description">Class Description:</label>
+            <input type="text" id="description" name="description" class="form-control" required>
+        </div>
+        <div class="d-flex justify-content-between">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Create</button>
+        </div>
+    </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="modal fade" id="joinClassModal" tabindex="-1" role="dialog" aria-labelledby="joinClassModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="joinClassModalLabel">Join Classes</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- Form để tạo Classes -->
+        <div class="alert alert-danger" th:if="${error}">
+        <p th:text="${error}"></p>
+    </div>
+        <form action="/Class/joinClass" method="POST">
+        <div class="form-group">
+            <label for="classId">Class ID:</label>
+            <input type="text" id="classId" name="classId" class="form-control" required>
+        </div>
+        <div class="d-flex justify-content-between">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Join</button>
+        </div>
+    </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    /* Thymeleaf variable to check if there is an error */
+    var hasError = /*[[${error != null}]]*/ false;
+
+    /* If there is an error, show the modal again */
+    if (hasError) {
+        $(document).ready(function () {
+            $('#joinClassModal').modal('show');
+        });
+    }
+    /*]]>*/
+</script>
+
+<style>
+    
+
+@import url('https://fonts.googleapis.com/css?family=Abril+Fatface|Lato');
+
+
+
+
+
+
+
+.container {
+  margin: 0 auto;
+  position: relative;
+
+}
+
+
+
+
+
+
+
+
+@keyframes scale {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes float {
+  50% {
+     transform: translateY(15px);
+  }
+}
+
+.bottom {
+  margin-top: 10px;
+}
+
+/*text styling*/
+h1 {
+  font-family: big;
+  color: white;
+  text-align: center;
+  font-size: 9em;
+  margin: 0;
+  text-shadow: -1px 0 gray, 0 1px gray, 1px 0 gray, 0 -1px gray;
+}
+h3 {
+  font-family: body;
+  font-size: 2em;
+  text-transform: uppercase;
+  text-align: center;
+  color:gray;
+  margin-top: -20px;
+  font-weight: 900;
+}
+p {
+  text-align: center;
+  font-family: body;
+  color: dark;
+  font-size: .6em;
+  margin-top: -20px;
+  text-transform: uppercase;
+}
+
+.search {
+  text-align: center;
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+/*search style*/
+
+.search-bar {
+  border: 1px solid gray;
+  padding: 5px;
+  height: 20px;
+  margin-left: -30px;
+  width: 200px;
+  outline: none;
+  &:focus {
+    border: 1px solid light;
+  }
+}
+
+.search-btn {
+  position: absolute;  
+  width: 30px;
+  height: 32px;
+  border: 1px solid gray;
+  background: gray;
+  text-align: center;
+  color: white;
+  cursor: pointer;
+  font-size: 1em;
+  outline: none;
+  &:hover {
+    background: white;
+    border: 1px solid white;
+    color: gray;
+    transition: all .2s ease;
+  }
+}
+
+.btn {
+  background: white;
+  padding: 15px 20px;
+  margin: 5px;
+  color: dark;
+  font-family: body;
+  text-transform: uppercase;
+  font-size: .6em;
+  letter-spacing: 1px;
+  border: 0;
+  &:hover {
+    background: gray;
+    transition: all .4s ease-out;
+  }
+}
+
+
+</style>
+
+
+<div th:replace="/ViewLayout/footer.html"></div>

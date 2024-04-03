@@ -182,7 +182,7 @@
 
 									<!-- Modal Body -->
 									<div class="modal-body">
-										<form action="/Teacher/createNotification" id="notifyForm"
+										<form action="/Notify/createNotification" id="notifyForm"
 											method="post" enctype="multipart/form-data">
 											<div class="form-group">
 												<label for="classes">Class</label> <select
@@ -288,9 +288,8 @@
 						<p style="text-align: center;" th:text="${lateDeadline}"></p>
 					</div>
 					<div class="container">
-						<h2>Card Image Overlay</h2>
-						<p>Turn an image into a card background and use
-							.card-img-overlay to overlay the card's text:</p>
+						<h2>Danh sách thông báo</h2>
+						<p>Ở đây là các danh sách thông báo của người tạo lớp muốn thông báo cho tất cả các thành viên đang có trong lớp !</p>
 						<div class="row">
 							<!-- Thay đổi ở đây -->
 							<div th:each="noti : ${notifies}" class="col-md-6 mb-3">
@@ -311,7 +310,7 @@
 											th:if="${noti.account.accountId == session.loggedInUser.accountId }"
 											href="#" class="btn btn-primary btn-sm" data-toggle="modal"
 											data-target="#updateNotifyModal"
-											th:attr="onclick='openUpdateNotifyModal(\'' + ${noti.notifyId} + '\', \'' + ${noti.title} + '\', \'' + ${noti.content} + '\')'">
+											th:attr="onclick='openUpdateNotifyModal(\'' + ${noti.notifyId} + '\', \'' + ${noti.title} + '\', \'' + ${noti.content} + '\',\'' + ${noti.filePath} + '\')'">
 
 											<span class="fa fa-pencil"></span> Edit
 
@@ -327,7 +326,7 @@
 												var result = confirm("Are you sure you want to delete this notify?");
 												if (result) {
 													// User clicked 'Yes', redirect to the delete URL
-													window.location.href = "/Teacher/deleteNoti/"
+													window.location.href = "/Notify/deleteNoti/"
 															+ notifyId;
 												} else {
 													// User clicked 'No', do nothing
@@ -346,7 +345,7 @@
 											</div>
 											<!-- Modal Body -->
 											<div class="modal-body">
-												<form id="updateNotifyForm" action="/Teacher/updateNoti"
+												<form id="updateNotifyForm" action="/Notify/updateNoti"
 													method="post" enctype="multipart/form-data">
 													<input type="hidden" id="updateNotifyId" name="notifyId">
 													<div class="form-group">
@@ -362,16 +361,16 @@
 													<div class="form-group mt-3">
 														<label class="mr-2">Current Files:</label>
 														<div>
-															<ul>
-																<li th:each="fileName : ${noti.filePath}"><a
-																	th:href="@{'/downloadFile/' + ${fileName}}"
-																	th:text="${fileName}">Download</a></li>
+															<ul id="listFile">
+																
 															</ul>
 														</div>
 													</div>
 													<div class="form-group mt-3">
-														<label class="mr-2">Upload your file :</label> <input
-															type="file" name="filePath" multiple="multiple">
+														<label class="mr-2">Upload your file :</label> 
+														
+														<input
+														type="file" name="filePath" multiple="multiple">
 													</div>
 													<button type="submit" class="btn btn-primary">Update</button>
 												</form>
@@ -380,35 +379,47 @@
 									</div>
 								</div>
 								<script>
-									function openUpdateNotifyModal(notifyId,
-											notifyTitle, notifyContent) {
-										// Điền dữ liệu vào các trường trong modal
-										document
-												.getElementById('updateNotifyId').value = notifyId;
-										document
-												.getElementById('updateNotifyTitle').value = notifyTitle;
-										document
-												.getElementById('updateNotifyContent').value = notifyContent;
+								function openUpdateNotifyModal(notifyId, notifyTitle, notifyContent, file) {
+								    // Điền dữ liệu vào các trường trong modal
+								    document.getElementById('updateNotifyId').value = notifyId;
+								    document.getElementById('updateNotifyTitle').value = notifyTitle;
+								    document.getElementById('updateNotifyContent').value = notifyContent;
 
-										// Mở modal
-										$('#updateNotifyModal').modal('show');
+								    // Kiểm tra xem biến file có giá trị hợp lệ không
+								    if (file && file.trim() !== '') {
+								        // Process the filePath to extract individual file names or paths
+								        const filePaths = file.split(';'); // Assuming file paths are separated by semicolons (adjust if needed)
+								        
+								        // Create and append list items (LIs) for each file
+								        const fileList = document.getElementById('listFile');
+								        fileList.innerHTML = ''; // Clear existing content (if any)
+								        for (const filePath of filePaths) {
+								            const cleanFileName = filePath.replace(/[\[\]]/g, "");
+								            const listItem = document.createElement('li');
+								            const anchor = document.createElement('a');
+								            anchor.href = `/downloadFile/${cleanFileName}`; // Adjust URL as needed
+								            const cutFileName = cleanFileName.slice(10);
+								            anchor.textContent = cutFileName;
+								            listItem.appendChild(anchor);
+								            fileList.appendChild(listItem);
+								        }
+								    } else {
+								        // Thực hiện một hành động phù hợp khi biến file không hợp lệ, ví dụ như hiển thị một thông báo
+								        console.log('Không có file được tải lên.');
+								        // Hoặc thực hiện một hành động khác
+								    }
 
-										document
-												.querySelectorAll('.close')
-												.forEach(
-														function(el) {
-															el
-																	.addEventListener(
-																			'click',
-																			function() {
-																				$(
-																						'#updateNotifyModal')
-																						.modal(
-																								'hide');
-																			});
-														});
+								    // Mở modal
+								    $('#updateNotifyModal').modal('show');
 
-									};
+								    // Đóng modal khi nhấp vào nút close
+								    document.querySelectorAll('.close').forEach(function (el) {
+								        el.addEventListener('click', function () {
+								            $('#updateNotifyModal').modal('hide');
+								        });
+								    });
+								}
+
 								</script>
 							</div>
 							<!-- Kết thúc thay đổi -->

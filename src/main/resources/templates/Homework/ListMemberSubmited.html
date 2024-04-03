@@ -38,9 +38,10 @@
                         </a>
                         <div class="dropdown-menu dropdown-menu-right bg-white" role="menu">
                            	<a class="dropdown-item" href="#" data-abc="true" data-toggle="modal" data-target="#homeworkInfoModal"
-								th:attr="onclick='openHomeworkInfoModal()'">
+								th:attr="onclick='openHomeworkInfoModal(\'' + ${submit.homework.homeworkName} + '\', \'' + ${submit.account.displayName} + '\' ,\'' + ${submit.homework.description} + '\', \'' + ${submit.filePath} + '\')'">
 								See detail
-							</a>                       
+							</a>   
+							                   
                            <a class="dropdown-item download" data-abc="true">Download </a>
                            <a class="dropdown-item edit" data-abc="true">Edit</a>
                            <div class="dropdown-divider"></div>
@@ -61,22 +62,20 @@
                 <form>
                     <div class="form-group">
                         <label for="homeworkId">Homework Name:</label>
-                        <input type="text" class="form-control" th:value="${submit.homework.homeworkName}" readonly>
+                        <input type="text" class="form-control" name="homeworkName" id="homeworkName" readonly>
                     </div>
                     <div class="form-group">
-                        <label for="homeworkTitle">Member:</label>
-                        <input type="text" class="form-control" th:value="${submit.account.displayName}" readonly>
+                        <label for="member">Member:</label>
+                        <input type="text" class="form-control" name="member" id="member" readonly>
                     </div>
                     <div class="form-group">
-                        <label for="homeworkTitle">Description:</label>
-                        <input type="text" class="form-control" th:value="${submit.description}" readonly>
+                        <label for="description">Description:</label>
+                        <input type="text" class="form-control" name="description" id="homeworkDescription"  readonly>
                     </div>
                     <div class="form-group">
                         <label for="fileList">File List:</label>
-                        <ul>
-							<li th:each="fileName : ${submit.filePath}">
-								<a th:href="@{'/downloadFile/' + ${fileName}}" th:text="${fileName}">Download</a>
-							</li>
+                        <ul id="filelist">
+							
 						</ul>
                     </div>
                 </form>
@@ -84,6 +83,7 @@
         </div>
     </div>
 </div>
+                  
                </div>
               
                
@@ -97,19 +97,35 @@
 								
 
 
-<script>
-    function openHomeworkInfoModal() {
-        
-        // Mở modal
-        $('#homeworkInfoModal').modal('show');
 
-        // Đóng modal khi nhấp vào nút close
-        document.querySelectorAll('.close').forEach(function(el) {
-            el.addEventListener('click', function() {
-                $('#homeworkInfoModal').modal('hide');
-            });
-        });
-    };
+<script>
+    function openHomeworkInfoModal(homeworkName, displayName, description, file) {
+        // Lấy thông tin của submit được nhấp
+            // Đặt giá trị cho các trường trong modal
+		document.getElementById('homeworkName').value = homeworkName;
+        document.getElementById('member').value = displayName;
+		document.getElementById('homeworkDescription').value = description;
+		
+		// Process the filePath to extract individual file names or paths
+	    const filePaths = file.split(';'); // Assuming file paths are separated by semicolons (adjust if needed)
+		
+	    // Create and append list items (LIs) for each file
+	    const fileList = document.getElementById('filelist');
+	    fileList.innerHTML = ''; // Clear existing content (if any)
+	    for (const filePath of filePaths) {
+	    	const cleanFileName = filePath.replace(/[\[\]]/g, "");
+	        const listItem = document.createElement('li');
+	        const anchor = document.createElement('a');
+	        anchor.href = `/downloadFile/${cleanFileName}`; // Adjust URL as needed
+	        anchor.textContent = cleanFileName;
+	        listItem.appendChild(anchor);
+	        fileList.appendChild(listItem);
+	    }
+	
+            // Hiển thị modal
+            $('#homeworkInfoModal').modal('show');
+        
+    }
 </script>
 <style>
 
@@ -276,5 +292,7 @@ list-item{
 
     </style>
 </style>
+
+
 
 <div th:replace="/ViewLayout/footer.html"></div>

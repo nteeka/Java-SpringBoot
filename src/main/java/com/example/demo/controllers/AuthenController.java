@@ -58,23 +58,28 @@ public class AuthenController {
             if(passwordEncoder.matches(password,account.getPassword() ))
             {
                 session.setAttribute("loggedInUser", account);
-                return "redirect:/Teacher/listClass";
+                return "redirect:/Class/listClass";
             }
             	
             else {
                 m.addAttribute("loginFail", "Email hoặc mật khẩu không đúng, vui lòng đăng nhập lại!");
+                m.addAttribute("currentEmail", email);
                 return "/Authen/Login";
             }      
         } else {
         	m.addAttribute("loginFail", "Email hoặc mật khẩu không đúng, vui lòng đăng nhập lại!");
+        	m.addAttribute("currentEmail", email);
             return "/Authen/Login";
         }
     }
 	
 	@GetMapping("/logout")
-    public String logout(HttpSession session) {
+    public String logout(HttpSession session,Model m) {
+	    Account loggedInUser = (Account) session.getAttribute("loggedInUser");
+	    if(loggedInUser != null)
+	    	m.addAttribute("currentEmail", loggedInUser.getEmail());
         session.invalidate();
-        return "redirect:/Home/login";
+        return "/Authen/Login";
     }
 	
 	
@@ -122,7 +127,9 @@ public class AuthenController {
 		
         //set image default...
 	    accountService.saveAccount(account);
-	    return "redirect:/Home/login";			
+	    model.addAttribute("currentEmail", account.getEmail());
+	    model.addAttribute("currentPassword", password);
+	    return "/Authen/Login";			
 	}
 	
 	

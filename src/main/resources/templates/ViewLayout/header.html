@@ -148,17 +148,18 @@
         <div id="nav" class="container">
             <div class="nav__left">
                 <i class="fa-solid fa-bars"></i>
-                <a href="#">
+                <a href="/Class/listClass">
                 	<img src="https://www.gstatic.com/images/branding/googlelogo/svg/googlelogo_clr_74x24px.svg"
                     	alt="Google logo">
                 </a>
+                
                	<span>Classroom</span>
                 
                 
             </div>
             <div class="nav__right">
                 <div class="dropdown">
-                    <a href="#" class="dropbtn"><i class="fa-solid fa-plus"></i></a>
+                    <a th:if="${session.loggedInUser != null}" href="#" class="dropbtn"><i class="fa-solid fa-plus"></i></a>
                     <div class="dropdown-content">
                         <a href="#" data-toggle="modal" data-target="#joinClassModal">Tham gia lớp học</a>
                         <a href="#" data-toggle="modal" data-target="#createClassModal">Tạo lớp học</a>
@@ -202,7 +203,7 @@
       </div>
       <div class="modal-body">
         <!-- Form để tạo Classes -->
-        <form action="/Teacher/addNewClass" method="POST">
+        <form action="/Class/addNewClass" method="POST">
         <div class="form-group">
             <label for="className">Class Name:</label>
             <input type="text" id="className" name="className" class="form-control" required>
@@ -235,7 +236,7 @@
         <div class="alert alert-danger" th:if="${error}">
         <p th:text="${error}"></p>
     </div>
-        <form action="/Teacher/joinClass" method="POST">
+        <form action="/Class/joinClass" method="POST">
         <div class="form-group">
             <label for="classId">Class ID:</label>
             <input type="text" id="classId" name="classId" class="form-control" required>
