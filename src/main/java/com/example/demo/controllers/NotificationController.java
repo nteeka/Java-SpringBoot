@@ -121,57 +121,60 @@ public class NotificationController {
     public String updateNotification(@RequestParam("notifyId") long id,
     							@RequestParam("title") String title,
     							@RequestParam("content") String content,   							
-    							@RequestParam("filePath") Optional<MultipartFile[]> multipartFileOptional) {	       	               
+    							@RequestParam("filePath") MultipartFile[] file) {	       	               
         
 		Optional<Notification> currentNoti = notifyRepository.findById(id);
 		Notification newNoti = currentNoti.get();
 		newNoti.setContent(content);
 		newNoti.setLastModifed(LocalDate.now());
-		newNoti.setTitle(title);
+		newNoti.setTitle(title);		
 		notifyRepository.save(newNoti);
-		
-		
-		if (!multipartFileOptional.isPresent())
+		if(file.length != 0)
 		{
-//			newNoti.setFilePath(currentNoti.get().getFilePath());
-			notifyRepository.save(newNoti);
-	    	return "redirect:/Class/enterClass/" + newNoti.getClasses().getClassId();			
-		}		
-		List<String> fileNames = new ArrayList<>();
-			
-		Path path = Paths.get("fileUploads/");
-		for (MultipartFile files : multipartFileOptional.get())
-		{
-			String originalFilename = files.getOriginalFilename();
-			   int lastDotIndex = originalFilename.lastIndexOf('.');
-			   String fileNameWithoutExtension = originalFilename.substring(0, lastDotIndex); // Loại bỏ phần mở rộng nếu có
-			   String fileExtension = originalFilename.substring(lastDotIndex + 1);
-			   String uniqueFileName = newNoti.getNotifyId() + "_notify_" + fileNameWithoutExtension + "." + fileExtension;
+			deleteOldFilesNoti(newNoti);
+		 	List<String> fileNames = new ArrayList<>();	
+			Path path = Paths.get("fileUploads/");
+			for (MultipartFile files : file)
+			{
+				String originalFilename = files.getOriginalFilename();
+				  if (originalFilename == null || originalFilename.isEmpty()) {				        
+					  return "redirect:/Class/enterClass/" + newNoti.getClasses().getClassId();
+				    }
+			    int lastDotIndex = originalFilename.lastIndexOf('.');
+			    if (lastDotIndex == -1 || lastDotIndex == originalFilename.length() - 1) {
+			    	return "redirect:/Class/enterClass/" + newNoti.getClasses().getClassId();
+			    	//return "/Authen/Login"; // Hoặc bất kỳ giá trị mặc định nào phù hợp
+			    }
+			    String fileNameWithoutExtension = originalFilename.substring(0, lastDotIndex); // Loại bỏ phần mở rộng nếu có
+			    String fileExtension = originalFilename.substring(lastDotIndex + 1);
+			    String uniqueFileName = newNoti.getNotifyId() + "_notify_" + fileNameWithoutExtension + "." + fileExtension;
 
 			    
-			   try {	        
-			   	InputStream inputStream = files.getInputStream();
-			       Files.copy(inputStream, path.resolve(uniqueFileName), StandardCopyOption.REPLACE_EXISTING);
-			       fileNames.add(uniqueFileName.toLowerCase());       
+			    try {	        
+			    	InputStream inputStream = files.getInputStream();
+			        Files.copy(inputStream, path.resolve(uniqueFileName), StandardCopyOption.REPLACE_EXISTING);
+			        fileNames.add(uniqueFileName.toLowerCase());       
 			    } catch (IOException e) {
 			        e.printStackTrace();
 			    }
 			}
 			newNoti.setFilePath(fileNames);
+			notifyRepository.save(newNoti);
+		}
+
 		
-		notifyRepository.save(newNoti);
     	return "redirect:/Class/enterClass/" + newNoti.getClasses().getClassId();
     }
-//	private void deleteOldFilesNoti(Notification noti) {
-//	    Path path = Paths.get("fileUploads/");
-//	    for (String fileName : noti.getFilePath()) {
-//	        try {
-//	            Files.deleteIfExists(path.resolve(fileName));
-//	        } catch (IOException e) {
-//	            e.printStackTrace();
-//	        }
-//	    }
-//	}
+	private void deleteOldFilesNoti(Notification noti) {
+	    Path path = Paths.get("fileUploads/");
+	    for (String fileName : noti.getFilePath()) {
+	        try {
+	            Files.deleteIfExists(path.resolve(fileName));
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+	    }
+	}
 	
 	
 	
@@ -181,6 +184,7 @@ public class NotificationController {
 		Optional<Notification> currentNoti = notifyRepository.findById(id);
 		Notification deletedNoti = currentNoti.get();
 		deletedNoti.setDeleted(true);	
+		deleteOldFilesNoti(deletedNoti);
 		notifyRepository.save(deletedNoti);
     	return "redirect:/Class/enterClass/" + deletedNoti.getClasses().getClassId();
     }
