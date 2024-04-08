@@ -2,6 +2,7 @@ package com.example.demo.controllers;
 
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +55,7 @@ public class CommentController {
 		Comment cmt = new Comment();
 		cmt.setAccount(loggedInUser);
 		cmt.setContent(content);
-		cmt.setDateCreated(LocalDate.now());		
+		cmt.setDateCreated(LocalDateTime.now());		
 		cmt.setNotify(notify);	
 		Optional<Notification> noti = notifyRepository.findById(notify.getNotifyId());
 		if(noti.isPresent())
@@ -77,7 +78,7 @@ public class CommentController {
 		Optional<Comment> currentCmt = commentRepository.findById(id);
 		Comment newCmt = currentCmt.get();
 		newCmt.setContent(content);	
-		newCmt.setLastModified(LocalDate.now());
+		newCmt.setLastModified(LocalDateTime.now());
 		commentRepository.save(newCmt);
 		return "redirect:/StudentView/listStudent";
     }
@@ -143,7 +144,7 @@ public class CommentController {
 		ReplyComment reply = new ReplyComment();
 		reply.setAccount(loggedInUser);
 		reply.setContent(content);
-		reply.setDateCreated(LocalDate.now());		
+		reply.setDateCreated(LocalDateTime.now());		
 		reply.setComment(comment);	
 		//count numReply each cmt
 //		Optional<Notification> noti = notifyRepository.findById(notify.getNotifyId());

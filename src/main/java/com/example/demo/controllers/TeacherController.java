@@ -83,110 +83,11 @@ public class TeacherController {
 	private EntityManager entityManager;
 	
 	
-	//missing validate
 	
-	@PostMapping("/createHomework")
-    public String createHomework(@RequestParam("homeworkName") String homeworkName,
-    								@RequestParam("classes") Classes classes,
-    								@RequestParam("description") String description,
-    								
-    								@RequestParam(value = "deadline", required = false) LocalDate deadline,
-    								@RequestParam("filePath") MultipartFile[] multipartFile,
-    								Model m,
-    								HttpServletRequest request) {
-		Homework homeWork = new Homework();
-		homeWork.setClasses(classes);
-		homeWork.setHomeworkName(homeworkName);
-		homeWork.setDescription(description);
-		
-		if(deadline != null && !deadline.isAfter(LocalDate.now()))
-		{
-			m.addAttribute("errorDeadline", "Dealine is invalid");
-			return enterClassView(classes.getClassId(),m,request);
-		}
-		homeWork.setDeadline(deadline);
-		homeWork.setDateCreated(LocalDate.now());
-		homeworkRepository.save(homeWork);
-		
-		List<String> fileNames = new ArrayList<>();
-		
-		Path path = Paths.get("fileUploads/");
-		for (MultipartFile files : multipartFile)
-		{
-			String originalFilename = files.getOriginalFilename();
-		    int lastDotIndex = originalFilename.lastIndexOf('.');
-		    String fileNameWithoutExtension = originalFilename.substring(0, lastDotIndex); // Loại bỏ phần mở rộng nếu có
-		    String fileExtension = originalFilename.substring(lastDotIndex + 1);
-		    String uniqueFileName = homeWork.getHomeworkId() + "_homework_" + fileNameWithoutExtension + "." + fileExtension;
-
-		    
-		    try {	        
-		    	InputStream inputStream = files.getInputStream();
-		        Files.copy(inputStream, path.resolve(uniqueFileName), StandardCopyOption.REPLACE_EXISTING);
-		        fileNames.add(uniqueFileName.toLowerCase());       
-		    } catch (IOException e) {
-		        e.printStackTrace();
-		    }
-		}
-		homeWork.setFilePath(fileNames);
-		homeworkRepository.save(homeWork);
-        return "redirect:/StudentView/listStudent";
-    }
 	
-	@PostMapping("/updateHomework")
-    public String updateHomework(@RequestParam("homeworkId") long id,
-    							@RequestParam("homeworkName") String name,
-    							@RequestParam("description") String description,   
-    							@RequestParam("deadline") LocalDate deadline,  
-    							@RequestParam("filePath") MultipartFile[] multipartFile) {	       	               
-        
-		Optional<Homework> currentHomework = homeworkRepository.findById(id);
-		Homework newHw = currentHomework.get();
-		newHw.setHomeworkName(name);
-		newHw.setLastModified(LocalDate.now());
-		newHw.setDescription(description);
-		newHw.setDeadline(deadline);
-		
-		if(multipartFile.length == 0)
-		{
-			homeworkRepository.save(newHw);
-			return "redirect:/Teacher/enterClass/" + newHw.getClasses().getClassId();
-		}
-		deleteOldFiles(newHw);
-		List<String> fileNames = new ArrayList<>();	
-		Path path = Paths.get("fileUploads/");
-		for (MultipartFile files : multipartFile)
-		{
-			String originalFilename = files.getOriginalFilename();
-		    int lastDotIndex = originalFilename.lastIndexOf('.');
-		    String fileNameWithoutExtension = originalFilename.substring(0, lastDotIndex); // Loại bỏ phần mở rộng nếu có
-		    String fileExtension = originalFilename.substring(lastDotIndex + 1);
-		    String uniqueFileName = newHw.getHomeworkId() + "_homework_" + fileNameWithoutExtension + "." + fileExtension;
-
-		    
-		    try {	        
-		    	InputStream inputStream = files.getInputStream();
-		        Files.copy(inputStream, path.resolve(uniqueFileName), StandardCopyOption.REPLACE_EXISTING);
-		        fileNames.add(uniqueFileName.toLowerCase());       
-		    } catch (IOException e) {
-		        e.printStackTrace();
-		    }
-		}
-		newHw.setFilePath(fileNames);
-		homeworkRepository.save(newHw);
-    	return "redirect:/Teacher/enterClass/" + newHw.getClasses().getClassId();
-    }
 	
-	private void deleteOldFiles(Homework homework) {
-	    Path path = Paths.get("fileUploads/");
-	    for (String fileName : homework.getFilePath()) {
-	        try {
-	            Files.deleteIfExists(path.resolve(fileName));
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	        }
-	    }
-	}
+	
+	
 	
 	
 

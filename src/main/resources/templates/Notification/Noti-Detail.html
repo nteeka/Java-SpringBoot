@@ -294,8 +294,9 @@
 	        }
 	    }
 	</script>
-    <h5><span class="glyphicon glyphicon-time"></span> Post by <span th:text="${noti.account.displayName}"></span>, <span th:text="${noti.dateCreated}"></span>.</h5>
-    <h5 th:if="${noti.lastModifed != null}"><span class="glyphicon glyphicon-time"></span>Last modified <span th:text="${noti.lastModifed}"></span></h5>
+    <h5><span class="glyphicon glyphicon-time"></span> Post by <span th:text="${noti.account.displayName}"></span>, <span th:text="${#temporals.format(noti.dateCreated, 'dd/MM/yyyy HH:mm')}"></span>
+    .</h5>
+    <h5 th:if="${noti.lastModifed != null}"><span class="glyphicon glyphicon-time"></span> Last modified <span th:text="${#temporals.format(noti.lastModifed, 'dd/MM/yyyy HH:mm')}"></span></h5>
 	<h5><span class="label label-danger">Food</span> <span class="label label-primary">Ipsum</span></h5><br>
 	<span th:text="${noti.content}"></span>
 	<!-- Check if filePath is not empty -->
@@ -326,7 +327,7 @@
         	<img th:src="@{'/image/getImage/' + ${cmt.account.image}}" class="img-circle" height="65" width="65" alt="Avatar">
     	</div>
   		<div class="col-sm-10">
-        	<h4><span th:text="${cmt.account.displayName}"></span> <small><span th:text="${cmt.dateCreated}"></span></small></h4>
+        	<h4><span th:text="${cmt.account.displayName}"></span> <small><span th:text="${#temporals.format(cmt.dateCreated, 'dd/MM/yyyy HH:mm')}"></span></small></h4>
         	<p class="original-content" th:text="${cmt.content}"></p>
         	<textarea class="edit-content" style="display: none;"></textarea>
         	<div class="btn-group">	
@@ -435,7 +436,7 @@
 		          	<img th:src="@{'/image/getImage/' + ${reply.account.image}}" class="img-circle" height="65" width="65" alt="Avatar">
 		          </div>
 		           <div class="col-xs-10">
-		             <h4><span th:text="${reply.account.displayName}"></span> <small><span th:text="${reply.dateCreated}"></span></small></h4>
+		             <h4><span th:text="${reply.account.displayName}"></span> <small><span th:text="${#temporals.format(reply.dateCreated, 'dd/MM/yyyy HH:mm')}"></span></small></h4>
 		             <p><span th:text="${reply.content}"></span></p>
 		             
 		             <div th:if="${reply.account.accountId == session.loggedInUser.accountId }" class="btn-group">
@@ -644,17 +645,22 @@
                                         <td>
                                         <!--Trạng thái: đã nộp - chưa nộp -->
                                             <div class="r-no">
-                                                <span></span>
+                                                <span th:text="${(homework.deadline == null || homework.deadline.isAfter(T(java.time.LocalDate).now())) ? 'Open' : 'Close'}"></span>
+												<!-- Sử dụng biểu thức điều kiện để kiểm tra xem Homework đã nộp hay chưa -->
+												<div th:if= "${homework.classes.account.accountId != session.loggedInUser.accountId }">
+													<span th:if="${listSubmit.contains(homework.homeworkId)}">Đã nộp</span>
+													<span th:unless="${listSubmit.contains(homework.homeworkId)}">Chưa nộp</span>
+												</div>
                                             </div>
                                         </td>
                                         <!--các action -->
                                         <td> 
-                                        <a href="#" class="btn btn-primary" 
+                                        <a href="#" class="btn btn-primary" th:if="${noti.account.accountId == session.loggedInUser.accountId }"
        data-toggle="modal" data-target="#updateHomeworkModal"
        th:attr="onclick='openUpdateHomeworkModal(\'' + ${homework.homeworkId} + '\', \'' + ${homework.homeworkName} + '\', \'' + ${homework.description} + '\', \'' + ${homework.deadline} + '\')'">
        Cập nhật bài tập
     </a>
-    <a th:attr="onclick='confirmDeleteHomework(\'' + ${homework.homeworkId} + '\')'" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Delete</a>
+    <a th:if="${noti.account.accountId == session.loggedInUser.accountId }" th:attr="onclick='confirmDeleteHomework(\'' + ${homework.homeworkId} + '\')'" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Delete</a>
             
             
     <script>
@@ -669,6 +675,11 @@
     }
 </script>
                                         	<a  th:if="${c.account.accountId == session.loggedInUser.accountId }" th:href="@{'/Teacher/editHomework/' + ${homework.homeworkId}}" class="btn btn-primary">Edit</a>                                         
+                                            <a 	id="submitHomeworkButton"
+												th:data-deadline="${homework.deadline}"
+												th:if="${!listSubmit.contains(homework.homeworkId) && c.account.accountId != session.loggedInUser.accountId }"
+												th:href="@{'/Teacher/submitHomeWorkView/' + ${homework.homeworkId}}"
+												class="btn btn-primary">Nộp bài</a>
                                             <a class="btn btn-primary" href="#">Read More</a>                                           
                                         </td>
                                     </tr>
@@ -708,7 +719,7 @@
                                 </thead>
                                 <tbody>
                                 <!--Danh sách các bài đã làm  -->
-                                    <tr th:each="homework : ${hw}" class="inner-box">
+                                    <tr th:each="homework : ${hw}" th:if="${listSubmit.contains(homework.homeworkId)}" class="inner-box">
                                     <!--Ngày giao bài -->
                                         <th style="text-align: center;" scope="row">
                                             <div class="event-date">
@@ -733,7 +744,7 @@
                                                     </div>
                                                     <!--Ngày kết thúc - có thể đếm ngược còn bao nhiêu ngày- giờ -->
                                                     <div class="time">
-                                                        <p>Deadline :</p><span th:text="${homework.deadline}"></span>
+                                                        <p>Deadline :</p><span th:text="${homework.deadline}"></span> 
                                                     </div>
                                                 </div>
                                             </div>
@@ -741,7 +752,12 @@
                                         <td>
                                         <!--Điểm, chưa làm chưa chấm thì 0/10 -->
                                             <div class="r-no">
-                                                <span></span>
+                                               <span th:text="${(homework.deadline == null || homework.deadline.isAfter(T(java.time.LocalDate).now())) ? 'Open' : 'Close'}"></span>
+												<!-- Sử dụng biểu thức điều kiện để kiểm tra xem Homework đã nộp hay chưa -->
+												<div th:if= "${homework.classes.account.accountId != session.loggedInUser.accountId }">
+													<span th:if="${listSubmit.contains(homework.homeworkId)}">Đã nộp</span>
+													<span th:unless="${listSubmit.contains(homework.homeworkId)}">Chưa nộp</span>
+												</div>
                                             </div>
                                         </td>
                                         <!--các action -->
@@ -771,7 +787,7 @@
                                 </thead>
                                 <tbody>
                                 <!--danh sách các bài tập chưa làm -->
-                                    <tr th:each="homework : ${hw}" class="inner-box">
+                                    <tr th:each="homework : ${hw}" th:if="${!listSubmit.contains(homework.homeworkId)}" class="inner-box">
                                     <!--Ngày giao bài -->
                                         <th style="text-align: center;" scope="row">
                                             <div class="event-date">
@@ -804,12 +820,22 @@
                                         <td>
                                         <!--Điểm, chưa làm chưa chấm thì 0/10 -->
                                             <div class="r-no">
-                                                <span></span>
+                                                <span th:text="${(homework.deadline == null || homework.deadline.isAfter(T(java.time.LocalDate).now())) ? 'Open' : 'Close'}"></span>
+												<!-- Sử dụng biểu thức điều kiện để kiểm tra xem Homework đã nộp hay chưa -->
+												<div th:if= "${homework.classes.account.accountId != session.loggedInUser.accountId }">
+													<span th:if="${listSubmit.contains(homework.homeworkId)}">Đã nộp</span>
+													<span th:unless="${listSubmit.contains(homework.homeworkId)}">Chưa nộp</span>
+												</div>
                                             </div>
                                         </td>
                                         <!--các action -->
                                         <td>
                                             <div class="primary-btn">
+                                            <a 	id="submitHomeworkButton"
+												th:data-deadline="${homework.deadline}"
+												th:if="${!listSubmit.contains(homework.homeworkId) && c.account.accountId != session.loggedInUser.accountId }"
+												th:href="@{'/Teacher/submitHomeWorkView/' + ${homework.homeworkId}}"
+												class="btn btn-primary">Nộp bài</a>
                                                 <a class="btn btn-primary" href="#">Read More</a>
                                             </div>
                                         </td>

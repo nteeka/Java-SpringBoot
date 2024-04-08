@@ -43,6 +43,7 @@
 					<button class="btn btn-primary" id="copyButton">Copy ID</button>
 				</div>
 			</div>
+			
 			<script
 				src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
 			<script>
@@ -94,7 +95,7 @@
 										<div class="alert alert-danger" th:if="${errorDeadline}">
 											<p th:text="${errorDeadline}"></p>
 										</div>
-										<form action="/Teacher/createHomework" id="homeworkForm"
+										<form action="/Homework/createHomework" id="homeworkForm"
 											method="post" enctype="multipart/form-data">
 											<div class="form-group">
 												<label for="classes">Class</label> <select
@@ -282,17 +283,12 @@
 														.getElementById('notifyModal').style.display = 'none';
 											});
 						</script>
-					</div>
-					<div id="lateDeadlineAlert" class="alert alert-danger"
-						th:if="${lateDeadline}">
-						<p style="text-align: center;" th:text="${lateDeadline}"></p>
-					</div>
-					<div class="container">
+						<div class="container">
 						<h2>Danh sách thông báo</h2>
 						<p>Ở đây là các danh sách thông báo của người tạo lớp muốn thông báo cho tất cả các thành viên đang có trong lớp !</p>
 						<div class="row">
 							<!-- Thay đổi ở đây -->
-							<div th:each="noti : ${notifies}" class="col-md-6 mb-3">
+							<div th:each="noti : ${notifies}" class="col-md-5 mb-3">
 								<div class="card img-fluid"
 									style="width: 400px; position: relative;">
 									<img class="card-img-top"
@@ -424,6 +420,15 @@
 							<!-- Kết thúc thay đổi -->
 						</div>
 					</div>
+					
+					</div>
+					
+					
+					<div id="lateDeadlineAlert" class="alert alert-danger"
+						th:if="${lateDeadline}">
+						<p style="text-align: center;" th:text="${lateDeadline}"></p>
+					</div>
+					
 				</div>
 				<div id="listHomework" class="tab-pane fade">
 					<div class="event-schedule-area-two bg-color pad100">
@@ -479,7 +484,7 @@
 														<!-- Modal Body -->
 														<div class="modal-body">
 															<form id="updateHomeworkForm"
-																action="/Teacher/updateHomework" method="post"
+																action="/Homework/updateHomework" method="post"
 																enctype="multipart/form-data">
 																<input type="hidden" id="updateHomeworkId"
 																	name="homeworkId">
@@ -499,6 +504,14 @@
 																		id="updateHomeworkDeadline" name="deadline">
 																</div>
 																<div class="form-group mt-3">
+																	<label class="mr-2">Current Files:</label>
+																	<div>
+																		<ul id="listCurrentHW">
+																			
+																		</ul>
+																	</div>
+																</div>
+																<div class="form-group mt-3">
 																	<label class="mr-2">Upload your file(Optional):</label>
 																	<input type="file" name="filePath" multiple="multiple">
 																</div>
@@ -514,7 +527,7 @@
 														homeworkId,
 														homeworkName,
 														homeworkDescription,
-														deadline) {
+														deadline, file) {
 													// Điền dữ liệu vào các trường trong modal
 													document
 															.getElementById('updateHomeworkId').value = homeworkId;
@@ -524,7 +537,29 @@
 															.getElementById('updateHomeworkDescription').value = homeworkDescription;
 													document
 															.getElementById('updateHomeworkDeadline').value = deadline;
-
+													// Kiểm tra xem biến file có giá trị hợp lệ không
+												    if (file && file.trim() !== '') {
+												        // Process the filePath to extract individual file names or paths
+												        const filePaths = file.split(';'); // Assuming file paths are separated by semicolons (adjust if needed)
+												        
+												        // Create and append list items (LIs) for each file
+												        const fileList = document.getElementById('listCur');
+												        fileList.innerHTML = ''; // Clear existing content (if any)
+												        for (const filePath of filePaths) {
+												            const cleanFileName = filePath.replace(/[\[\]]/g, "");
+												            const listItem = document.createElement('li');
+												            const anchor = document.createElement('a');
+												            anchor.href = `/downloadFile/${cleanFileName}`; // Adjust URL as needed
+												            const cutFileName = cleanFileName.slice(10);
+												            anchor.textContent = cutFileName;
+												            listItem.appendChild(anchor);
+												            fileList.appendChild(listItem);
+												        }
+												    } else {
+												        // Thực hiện một hành động phù hợp khi biến file không hợp lệ, ví dụ như hiển thị một thông báo
+												        console.log('Không có file được tải lên.');
+												        // Hoặc thực hiện một hành động khác
+												    }
 													// Mở modal
 													$('#updateHomeworkModal').modal('show');
 													document.querySelectorAll('.close')
@@ -608,7 +643,7 @@
 																<div class="btn-group">
 																	<a th:if="${c.account.accountId == session.loggedInUser.accountId}" href="#" class="btn btn-primary" data-toggle="modal"
 																		data-target="#updateHomeworkModal"
-																		th:attr="onclick='openUpdateHomeworkModal(\'' + ${homework.homeworkId} + '\', \'' + ${homework.homeworkName} + '\', \'' + ${homework.description} + '\', \'' + ${homework.deadline} + '\')'">
+																		th:attr="onclick='openUpdateHomeworkModal(\'' + ${homework.homeworkId} + '\', \'' + ${homework.homeworkName} + '\', \'' + ${homework.description} + '\', \'' + ${homework.deadline} + '\', \'' + ${homework.filePath} + '\')'">
 																		<span class="fa fa-pencil"></span> Edit
 																	</a> <a
 																		th:if="${c.account.accountId == session.loggedInUser.accountId}" th:attr="onclick='confirmDeleteHomework(\'' + ${homework.homeworkId} + '\')'"
@@ -671,7 +706,7 @@
 															<th style="text-align: center;" scope="row">
 																<div class="event-date">
 																	<span>16</span>
-																	<p th:text="${homework.dateCreated}"></p>
+																	<p th:text="${#temporals.format(homework.dateCreated, 'dd/MM/yyyy HH:mm')}"></p>
 																</div>
 															</th>
 
@@ -748,7 +783,7 @@
 															<th style="text-align: center;" scope="row">
 																<div class="event-date">
 																	<span>16</span>
-																	<p th:text="${homework.dateCreated}"></p>
+																	<p th:text="${#temporals.format(homework.dateCreated, 'dd/MM/yyyy HH:mm')}"></p>
 																</div>
 															</th>
 
@@ -876,4 +911,8 @@
 						});
 					</script>
 					</div>
+			</div>
+		</div>
+	</div>
+</div>
 <div th:replace="/ViewLayout/footer.html"></div>

@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -36,6 +37,7 @@ import com.example.demo.repositories.CommentRepository;
 import com.example.demo.repositories.HomeworkRepository;
 import com.example.demo.repositories.NotificationRepository;
 import com.example.demo.repositories.ReplyCommentRepository;
+import com.example.demo.repositories.SubmitHomeworkRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -68,7 +70,8 @@ public class NotificationController {
 	@Autowired
 	NotificationRepository notifyRepository;
 	
-	
+	@Autowired
+	SubmitHomeworkRepository submitHomeworkRepository;
 	
 	@PostMapping("/createNotification")
     public String createNotification(@RequestParam("classes") Classes classes,
@@ -88,7 +91,7 @@ public class NotificationController {
 		notify.setTitle(title);
 		notify.setContent(content);
 		notify.setAccount(loggedInUser);
-		notify.setDateCreated(LocalDate.now());
+		notify.setDateCreated(LocalDateTime.now());
 		notifyRepository.save(notify);
 		
 		List<String> fileNames = new ArrayList<>();
@@ -126,9 +129,9 @@ public class NotificationController {
 		Optional<Notification> currentNoti = notifyRepository.findById(id);
 		Notification newNoti = currentNoti.get();
 		newNoti.setContent(content);
-		newNoti.setLastModifed(LocalDate.now());
+		newNoti.setLastModifed(LocalDateTime.now());
 		newNoti.setTitle(title);		
-		notifyRepository.save(newNoti);
+		
 		if(file.length != 0)
 		{
 			deleteOldFilesNoti(newNoti);
@@ -137,11 +140,13 @@ public class NotificationController {
 			for (MultipartFile files : file)
 			{
 				String originalFilename = files.getOriginalFilename();
-				  if (originalFilename == null || originalFilename.isEmpty()) {				        
+				  if (originalFilename == null || originalFilename.isEmpty()) {	
+					  notifyRepository.save(newNoti);
 					  return "redirect:/Class/enterClass/" + newNoti.getClasses().getClassId();
 				    }
 			    int lastDotIndex = originalFilename.lastIndexOf('.');
 			    if (lastDotIndex == -1 || lastDotIndex == originalFilename.length() - 1) {
+			    	notifyRepository.save(newNoti);
 			    	return "redirect:/Class/enterClass/" + newNoti.getClasses().getClassId();
 			    	//return "/Authen/Login"; // Hoặc bất kỳ giá trị mặc định nào phù hợp
 			    }
@@ -229,6 +234,9 @@ public class NotificationController {
 	    
 	    m.addAttribute("hw",hw);
 	    
+	    
+	    
+	    
 	    //get all account on this class
 	    List<ClassAccount> acc = classAccountRepository.findByClassId(currentNoti.getClasses().getClassId());
 	    List<Account> listAccount = new ArrayList<Account>();
@@ -243,7 +251,9 @@ public class NotificationController {
 	    List<Notification> notifies = notifyRepository.findByClassId(c.get().getClassId());
 	    m.addAttribute("notifies",notifies);
 	    
-	    
+	    //check done or not done
+	    List<Long> listSubmit = submitHomeworkRepository.listHomeworkByAccountId(loggedInUser.getAccountId());	    
+	    m.addAttribute("listSubmit",listSubmit);
        
         
         List<Comment> listComment = commentRepository.findAllNotDeleted();	    

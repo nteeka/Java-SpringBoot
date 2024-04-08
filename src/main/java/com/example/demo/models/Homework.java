@@ -1,6 +1,7 @@
 package com.example.demo.models;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import jakarta.persistence.Column;
@@ -32,9 +33,9 @@ public class Homework {
 	private String description;
 	
 	
-	private LocalDate dateCreated;
+	private LocalDateTime dateCreated;
 	
-	private LocalDate lastModified;
+	private LocalDateTime lastModified;
 	
 	private LocalDate deadline; 
 	
@@ -42,6 +43,7 @@ public class Homework {
 	private boolean isDeleted;
 	
 	private List<String> filePath;
+	
 	@Column(name = "status", columnDefinition = "boolean default false")
 	private boolean status;
 	
@@ -111,11 +113,11 @@ public class Homework {
 //		this.submited = submited;
 //	}
 
-	public LocalDate getDateCreated() {
+	public LocalDateTime getDateCreated() {
 		return dateCreated;
 	}
 
-	public void setDateCreated(LocalDate dateCreated) {
+	public void setDateCreated(LocalDateTime dateCreated) {
 		this.dateCreated = dateCreated;
 	}
 
@@ -146,11 +148,11 @@ public class Homework {
 	
 	
 	
-	public LocalDate getLastModified() {
+	public LocalDateTime getLastModified() {
 		return lastModified;
 	}
 
-	public void setLastModified(LocalDate lastModified) {
+	public void setLastModified(LocalDateTime lastModified) {
 		this.lastModified = lastModified;
 	}
 
@@ -173,8 +175,8 @@ public class Homework {
 
 
 
-	public Homework(long homeworkId, String homeworkName, Classes classes, String description, LocalDate dateCreated,
-			LocalDate lastModified, LocalDate deadline, boolean isDeleted, List<String> filePath, boolean status) {
+	public Homework(long homeworkId, String homeworkName, Classes classes, String description, LocalDateTime dateCreated,
+			LocalDateTime lastModified, LocalDate deadline, boolean isDeleted, List<String> filePath, boolean status) {
 		this.homeworkId = homeworkId;
 		this.homeworkName = homeworkName;
 		this.classes = classes;

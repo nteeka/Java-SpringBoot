@@ -1,6 +1,7 @@
 package com.example.demo.models;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,9 +31,9 @@ public class ReplyComment {
     private Account account;
 	
 	
-	private LocalDate dateCreated;
+	private LocalDateTime dateCreated;
 	
-	private LocalDate lastModified;
+	private LocalDateTime lastModified;
 	
 	@Column(name = "isDeleted", columnDefinition = "boolean default false")
 	private boolean isDeleted;
@@ -64,19 +65,19 @@ public class ReplyComment {
 		this.account = account;
 	}
 
-	public LocalDate getDateCreated() {
+	public LocalDateTime getDateCreated() {
 		return dateCreated;
 	}
 
-	public void setDateCreated(LocalDate dateCreated) {
+	public void setDateCreated(LocalDateTime dateCreated) {
 		this.dateCreated = dateCreated;
 	}
 
-	public LocalDate getLastModified() {
+	public LocalDateTime getLastModified() {
 		return lastModified;
 	}
 
-	public void setLastModified(LocalDate lastModified) {
+	public void setLastModified(LocalDateTime lastModified) {
 		this.lastModified = lastModified;
 	}
 
@@ -101,8 +102,8 @@ public class ReplyComment {
 	
 	}
 
-	public ReplyComment(long replyCommentId, Comment comment, Account account, LocalDate dateCreated,
-			LocalDate lastModified, boolean isDeleted, String content) {
+	public ReplyComment(long replyCommentId, Comment comment, Account account, LocalDateTime dateCreated,
+			LocalDateTime lastModified, boolean isDeleted, String content) {
 
 		this.replyCommentId = replyCommentId;
 		this.comment = comment;

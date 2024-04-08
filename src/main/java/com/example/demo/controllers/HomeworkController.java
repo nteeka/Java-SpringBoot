@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.demo.models.Account;
 import com.example.demo.models.ClassAccount;
@@ -43,6 +45,130 @@ public class HomeworkController {
 	SubmitHomeworkRepository submitHomeworkRepository;
 	
 		
+	
+	
+	@PostMapping("/createHomework")
+    public String createHomework(@RequestParam("homeworkName") String homeworkName,
+    								@RequestParam("classes") Classes classes,
+    								@RequestParam("description") String description,
+    								
+    								@RequestParam(value = "deadline", required = false) LocalDate deadline,
+    								@RequestParam("filePath") MultipartFile[] multipartFile,
+    								Model m,
+    								RedirectAttributes redirectAttributes,
+    								HttpServletRequest request) {
+		Homework homeWork = new Homework();
+		homeWork.setClasses(classes);
+		homeWork.setHomeworkName(homeworkName);
+		homeWork.setDescription(description);
+		
+		if(deadline != null && !deadline.isAfter(LocalDate.now()))
+		{
+	        redirectAttributes.addFlashAttribute("errorDeadline", "Dealine is invalid");
+	        return "redirect:/Teacher/enterClass/" + classes.getClassId();
+		}
+		homeWork.setDeadline(deadline);
+		homeWork.setDateCreated(LocalDateTime.now());
+		homeworkRepository.save(homeWork);
+		
+		List<String> fileNames = new ArrayList<>();
+		
+		Path path = Paths.get("fileUploads/");
+		for (MultipartFile files : multipartFile)
+		{
+			String originalFilename = files.getOriginalFilename();
+		    int lastDotIndex = originalFilename.lastIndexOf('.');
+		    String fileNameWithoutExtension = originalFilename.substring(0, lastDotIndex); // Loại bỏ phần mở rộng nếu có
+		    String fileExtension = originalFilename.substring(lastDotIndex + 1);
+		    String uniqueFileName = homeWork.getHomeworkId() + "_homework_" + fileNameWithoutExtension + "." + fileExtension;
+
+		    
+		    try {	        
+		    	InputStream inputStream = files.getInputStream();
+		        Files.copy(inputStream, path.resolve(uniqueFileName), StandardCopyOption.REPLACE_EXISTING);
+		        fileNames.add(uniqueFileName.toLowerCase());       
+		    } catch (IOException e) {
+		        e.printStackTrace();
+		    }
+		}
+		homeWork.setFilePath(fileNames);
+		homeworkRepository.save(homeWork);
+		return "redirect:/Teacher/enterClass/" + classes.getClassId();
+    }
+	
+	@PostMapping("/updateHomework")
+    public String updateHomework(@RequestParam("homeworkId") long id,
+    							@RequestParam("homeworkName") String name,
+    							@RequestParam("description") String description,   
+    							@RequestParam("deadline") LocalDate deadline,  
+    							@RequestParam("filePath") MultipartFile[] multipartFile,
+    							RedirectAttributes redirectAttributes) {	       	               
+        
+		Optional<Homework> currentHomework = homeworkRepository.findById(id);
+		Homework newHw = currentHomework.get();
+		
+//		if(deadline != newHw.getDateCreated())		
+//			if(deadline != null && !deadline.isAfter(LocalDate.now()))
+//			{
+//		        redirectAttributes.addFlashAttribute("errorDeadlineUpdate", "Dealine is invalid");
+//		        return "redirect:/Teacher/enterClass/" + newHw.getClasses().getClassId();
+//			}	
+//		
+		
+		newHw.setHomeworkName(name);
+		newHw.setLastModified(LocalDateTime.now());
+		newHw.setDescription(description);
+		newHw.setDeadline(deadline);
+		
+		if(multipartFile.length != 0)
+		{
+			deleteOldFiles(newHw);
+			List<String> fileNames = new ArrayList<>();	
+			Path path = Paths.get("fileUploads/");
+			for (MultipartFile files : multipartFile)
+			{
+				String originalFilename = files.getOriginalFilename();
+				if (originalFilename == null || originalFilename.isEmpty()) {
+					homeworkRepository.save(newHw);
+					  return "redirect:/Class/enterClass/" + newHw.getClasses().getClassId();
+				    }
+			    int lastDotIndex = originalFilename.lastIndexOf('.');
+			    if (lastDotIndex == -1 || lastDotIndex == originalFilename.length() - 1) {
+			    	homeworkRepository.save(newHw);
+			    	return "redirect:/Class/enterClass/" + newHw.getClasses().getClassId();
+			    }
+			    String fileNameWithoutExtension = originalFilename.substring(0, lastDotIndex); // Loại bỏ phần mở rộng nếu có
+			    String fileExtension = originalFilename.substring(lastDotIndex + 1);
+			    String uniqueFileName = newHw.getHomeworkId() + "_homework_" + fileNameWithoutExtension + "." + fileExtension;
+
+			    
+			    try {	        
+			    	InputStream inputStream = files.getInputStream();
+			        Files.copy(inputStream, path.resolve(uniqueFileName), StandardCopyOption.REPLACE_EXISTING);
+			        fileNames.add(uniqueFileName.toLowerCase());       
+			    } catch (IOException e) {
+			        e.printStackTrace();
+			    }
+			}
+			newHw.setFilePath(fileNames);
+		}
+		
+		homeworkRepository.save(newHw);
+    	return "redirect:/Teacher/enterClass/" + newHw.getClasses().getClassId();
+    }
+	private void deleteOldFiles(Homework homework) {
+	    Path path = Paths.get("fileUploads/");
+	    for (String fileName : homework.getFilePath()) {
+	        try {
+	            Files.deleteIfExists(path.resolve(fileName));
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+	    }
+	}
+	
+	
+	
 		
 		@PostMapping("/submitHomeWork")
 	    public String submitHomework(@RequestParam("homeworkId") Homework homework,

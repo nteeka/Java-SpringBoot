@@ -1,6 +1,7 @@
 package com.example.demo.models;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import jakarta.persistence.Column;
@@ -40,9 +41,9 @@ public class Notification {
 	
 	private List<String> filePath; // multiple file
 	
-	private LocalDate dateCreated;
+	private LocalDateTime dateCreated;
 	
-	private LocalDate lastModifed;
+	private LocalDateTime lastModifed;
 	
 	@Column(name = "numComment", columnDefinition = "bigint default 0")
     private long numComment;
@@ -107,20 +108,20 @@ public class Notification {
 		this.filePath = filePath;
 	}
 
-	public LocalDate getDateCreated() {
+	public LocalDateTime getDateCreated() {
 		return dateCreated;
 	}
 
-	public void setDateCreated(LocalDate dateCreated) {
+	public void setDateCreated(LocalDateTime dateCreated) {
 		this.dateCreated = dateCreated;
 	}
 	
 	
-	public LocalDate getLastModifed() {
+	public LocalDateTime getLastModifed() {
 		return lastModifed;
 	}
 
-	public void setLastModifed(LocalDate lastModifed) {
+	public void setLastModifed(LocalDateTime lastModifed) {
 		this.lastModifed = lastModifed;
 	}
 	
@@ -139,7 +140,7 @@ public class Notification {
 	}
 
 	public Notification(long notifyId, String title, Classes classes, Account account, String content,
-			boolean isDeleted, List<String> filePath, LocalDate dateCreated, LocalDate lastModifed, long numComment) {
+			boolean isDeleted, List<String> filePath, LocalDateTime dateCreated, LocalDateTime lastModifed, long numComment) {
 		this.notifyId = notifyId;
 		this.title = title;
 		this.classes = classes;
