@@ -167,9 +167,9 @@ public class HomeworkController {
 	    }
 	}
 	
+
+
 	
-	
-		
 		@PostMapping("/submitHomeWork")
 	    public String submitHomework(@RequestParam("homeworkId") Homework homework,
 	    								@RequestParam("description") String description,	    								
@@ -231,15 +231,16 @@ public class HomeworkController {
 		
 		@GetMapping("/listMemberSubmited/{homeworkId}")
 		public String listClassView(@PathVariable long homeworkId,Model m,HttpServletRequest request) {	
-			HttpSession session = request.getSession();
-		    Account loggedInUser = (Account) session.getAttribute("loggedInUser");
-		    if (loggedInUser == null) {
-		        return "/Authen/Login";
-		    }
+//			HttpSession session = request.getSession();
+//		    Account loggedInUser = (Account) session.getAttribute("loggedInUser");
+//		    if (loggedInUser == null) {
+//		        return "/Authen/Login";
+//		    }
 		    List<SubmitHomework> listSubmited = submitHomeworkRepository.listSubmitHomeworkByHomeworkId(homeworkId);
 		    m.addAttribute("listSubmited",listSubmited);
 		    return "/Homework/ListMemberSubmited";
 		}
+		
 		
 		
 		

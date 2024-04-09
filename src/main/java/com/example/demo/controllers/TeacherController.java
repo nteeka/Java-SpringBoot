@@ -9,8 +9,11 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -30,6 +33,7 @@ import com.example.demo.models.CommentLike;
 import com.example.demo.models.Homework;
 import com.example.demo.models.Notification;
 import com.example.demo.models.ReplyComment;
+import com.example.demo.models.SubmitHomework;
 import com.example.demo.repositories.ClassAccountRepository;
 import com.example.demo.repositories.ClassRepository;
 import com.example.demo.repositories.CommentLikeRepository;
@@ -162,7 +166,20 @@ public class TeacherController {
 	    
 	    m.addAttribute("checkLikeComment",check);
 	    
-	    	    
+	    
+	    Long countMember = classAccountRepository.countAccountsInClass(id);
+	    m.addAttribute("countMember",countMember);
+	    List<SubmitHomework> countSubmited = submitHomeworkRepository.countSubmited(id);
+	    m.addAttribute("countSubmited",countSubmited);
+	    Map<Long, Integer> countSubmittedByHomeworkId = new HashMap<>();
+	    for (SubmitHomework submission : countSubmited) {
+	        Long homeworkId = submission.getHomework().getHomeworkId();
+	        countSubmittedByHomeworkId.put(homeworkId, countSubmittedByHomeworkId.getOrDefault(homeworkId, 0) + 1);
+	    }
+
+	    m.addAttribute("countSubmittedByHomeworkId", countSubmittedByHomeworkId);
+	   
+	    
 	    return "/Classes/Class-Content";
 	}
 	

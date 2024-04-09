@@ -430,424 +430,79 @@
 					</div>
 					
 				</div>
+				
+				
+				
+				<!-- thay đổi ở đây container1  -->
+				
+				
 				<div id="listHomework" class="tab-pane fade">
-					<div class="event-schedule-area-two bg-color pad100">
-						<div class="container">
-							<div class="row">
-								<div class="col-lg-12">
-									<div class="section-title text-center">
-										<div class="title-text">
-											<h2>Danh Sách Bài Tập</h2>
-										</div>
-										<p>
-											In ludus latine mea, eos paulo quaestio an. Meis possit ea
-											sit. Vidisse molestie<br /> cum te, sea lorem instructior
-											at.
-										</p>
-
-									</div>
-								</div>
-								<!-- /.col end-->
-							</div>
-							<!-- row end-->
-							<div class="row">
-								<div class="col-lg-12">
-									<ul class="nav custom-tab" id="myTab" role="tablist">
-										<!--href : tab đã làm - chưa làm - tất cả-->
-										<li class="nav-item"><a class="nav-link active show"
-											id="home-taThursday" data-toggle="tab" href="#all" role="tab"
-											aria-controls="home" aria-selected="true">Tất cả</a></li>
-										<li th:if="${c.account.accountId != session.loggedInUser.accountId}" class="nav-item"><a class="nav-link" id="profile-tab"
-											data-toggle="tab" href="#done" role="tab"
-											aria-controls="profile" aria-selected="false">Đã làm</a></li>
-										<li th:if="${c.account.accountId != session.loggedInUser.accountId}" class="nav-item"><a class="nav-link" id="contact-tab"
-											data-toggle="tab" href="#notDone" role="tab"
-											aria-controls="contact" aria-selected="false">Chưa làm</a></li>
-
-									</ul>
-
-
-								
-									<div class="tab-content" id="myTabContent">
-										<div class="tab-pane fade active show" id="all"
-											role="tabpanel">
-
-											<!-- Modal edit Homework -->
-											<div id="updateHomeworkModal" class="modal">
-												<div class="modal-dialog">
-													<div class="modal-content">
-														<!-- Modal Header -->
-														<div class="modal-header">
-															<h4 class="modal-title">Update Homework</h4>
-															<button type="button" class="close" data-dismiss="modal">&times;</button>
-														</div>
-														<!-- Modal Body -->
-														<div class="modal-body">
-															<form id="updateHomeworkForm"
-																action="/Homework/updateHomework" method="post"
-																enctype="multipart/form-data">
-																<input type="hidden" id="updateHomeworkId"
-																	name="homeworkId">
-																<div class="form-group">
-																	<label for="updateHomeworkName">Homework name:</label>
-																	<input type="text" class="form-control"
-																		id="updateHomeworkName" name="homeworkName">
-																</div>
-																<div class="form-group">
-																	<label for="updateHomeworkDescription">Description:</label>
-																	<textarea class="form-control"
-																		id="updateHomeworkDescription" name="description"></textarea>
-																</div>
-																<div class="form-group">
-																	<label for="updateHomeworkDeadline">Deadline:</label> <input
-																		type="date" class="form-control"
-																		id="updateHomeworkDeadline" name="deadline">
-																</div>
-																<div class="form-group mt-3">
-																	<label class="mr-2">Current Files:</label>
-																	<div>
-																		<ul id="listCurrentHW">
-																			
-																		</ul>
-																	</div>
-																</div>
-																<div class="form-group mt-3">
-																	<label class="mr-2">Upload your file(Optional):</label>
-																	<input type="file" name="filePath" multiple="multiple">
-																</div>
-																<button type="submit" class="btn btn-primary">Update</button>
-															</form>
-														</div>
-													</div>
-												</div>
-											</div>
-											
-											<script>
-												function openUpdateHomeworkModal(
-														homeworkId,
-														homeworkName,
-														homeworkDescription,
-														deadline, file) {
-													// Điền dữ liệu vào các trường trong modal
-													document
-															.getElementById('updateHomeworkId').value = homeworkId;
-													document
-															.getElementById('updateHomeworkName').value = homeworkName;
-													document
-															.getElementById('updateHomeworkDescription').value = homeworkDescription;
-													document
-															.getElementById('updateHomeworkDeadline').value = deadline;
-													// Kiểm tra xem biến file có giá trị hợp lệ không
-												    if (file && file.trim() !== '') {
-												        // Process the filePath to extract individual file names or paths
-												        const filePaths = file.split(';'); // Assuming file paths are separated by semicolons (adjust if needed)
-												        
-												        // Create and append list items (LIs) for each file
-												        const fileList = document.getElementById('listCur');
-												        fileList.innerHTML = ''; // Clear existing content (if any)
-												        for (const filePath of filePaths) {
-												            const cleanFileName = filePath.replace(/[\[\]]/g, "");
-												            const listItem = document.createElement('li');
-												            const anchor = document.createElement('a');
-												            anchor.href = `/downloadFile/${cleanFileName}`; // Adjust URL as needed
-												            const cutFileName = cleanFileName.slice(10);
-												            anchor.textContent = cutFileName;
-												            listItem.appendChild(anchor);
-												            fileList.appendChild(listItem);
-												        }
-												    } else {
-												        // Thực hiện một hành động phù hợp khi biến file không hợp lệ, ví dụ như hiển thị một thông báo
-												        console.log('Không có file được tải lên.');
-												        // Hoặc thực hiện một hành động khác
-												    }
-													// Mở modal
-													$('#updateHomeworkModal').modal('show');
-													document.querySelectorAll('.close')
-															.forEach(
-																	function(el) {
-																		el
-																				.addEventListener(
-																						'click',
-																						function() {
-																							$(
-																									'#updateHomeworkModal')
-																									.modal(
-																											'hide');
-																						});
-																	});
-
-};
-											</script>
-
-
-
-
-
-											<div class="table-responsive">
-
-												<table class="table custom-table">
-													<thead>
-														<!--Danh sách tất cả bài tập -->
-														<tr>
-															<th scope="col">Information</th>
-															<th scope="col">Status</th>
-															<th class="text-center" scope="col">Action</th>
-														</tr>
-													</thead>
-													<tbody>
-														<tr th:each="homework : ${hw}" class="inner-box">
-
-															<td>
-																<div class="event-wrap">
-																	<!--Tên bài tập -->
-																	<h3>
-																		<a href="#" th:text="${homework.homeworkName}"></a>
-																	</h3>
-																	<div class="meta">
-																		<div class="organizers">
-																			<!--Tên người tạo -->
-																			<!-- <a  href="#">Aslan Lingker</a>-->
-
-																		</div>
-																		<div class="categories">
-
-																			<!--<a href="#" th:text="${homework.classes.getClassName}"></a>-->
-
-																		</div>
-																		<!--Ngày kết thúc - có thể đếm ngược còn bao nhiêu ngày- giờ -->
-																		<div class="time">
-																			<p>
-																				From <span th:text="${homework.dateCreated}"></span>
-																				to <span th:text="${homework.deadline}"></span>
-																			</p>
-																		</div>
-																	</div>
-																</div>
-															</td>
-															<td>
-																<!--Trạng thái: đã nộp - chưa nộp -->
-																<div class="r-no">
-																	<span
-																		th:text="${(homework.deadline == null || homework.deadline.isAfter(T(java.time.LocalDate).now())) ? 'Open' : 'Close'}"></span>
-																	<!-- Sử dụng biểu thức điều kiện để kiểm tra xem Homework đã nộp hay chưa -->
-																	<div th:if= "${homework.classes.account.accountId != session.loggedInUser.accountId }">
-																		<span th:if="${listSubmit.contains(homework.homeworkId)}">Đã nộp</span>
-																		<span th:unless="${listSubmit.contains(homework.homeworkId)}">Chưa nộp</span>
-																	</div>
-																	
-
-																</div>
-															</td>
-															<!--các action -->
-															<td>
-																<div class="btn-group">
-																	<a th:if="${c.account.accountId == session.loggedInUser.accountId}" href="#" class="btn btn-primary" data-toggle="modal"
-																		data-target="#updateHomeworkModal"
-																		th:attr="onclick='openUpdateHomeworkModal(\'' + ${homework.homeworkId} + '\', \'' + ${homework.homeworkName} + '\', \'' + ${homework.description} + '\', \'' + ${homework.deadline} + '\', \'' + ${homework.filePath} + '\')'">
-																		<span class="fa fa-pencil"></span> Edit
-																	</a> <a
-																		th:if="${c.account.accountId == session.loggedInUser.accountId}" th:attr="onclick='confirmDeleteHomework(\'' + ${homework.homeworkId} + '\')'"
-																		class="btn btn-danger"> <span class="fa fa-trash"></span>
-																		Delete
-																	</a> <a th:if="${listSubmit.contains(homework.homeworkId) && c.account.accountId != session.loggedInUser.accountId }"
-																		th:href="@{'/Teacher/submitHomeWorkView/' + ${homework.homeworkId}}"
-																		class="btn btn-primary">Xem lại bài đã nộp</a> <a
-																		id="submitHomeworkButton"
-																		th:data-deadline="${homework.deadline}"
-																		th:if="${!listSubmit.contains(homework.homeworkId) && c.account.accountId != session.loggedInUser.accountId }"
-																		th:href="@{'/Teacher/submitHomeWorkView/' + ${homework.homeworkId}}"
-																		class="btn btn-primary">Nộp bài</a> <a
-																		class="btn btn-primary" th:href="'/Homework/listMemberSubmited/' + ${homework.homeworkId}">Read More</a>
-																</div>
-
-
-															</td>
-														</tr>
-
-
-													</tbody>
-												</table>
-											</div>
-											<style>
-												.custom-table {
-													border-collapse: collapse;
-												}
-												
-												.custom-table th, .custom-table td {
-													padding: 8px;
-													border: 1px solid #dddddd;
-													text-align: center;
-												}
-												
-												.custom-table th {
-													background-color: #f2f2f2;
-												}
-											</style>
-										</div>
-										<div class="tab-pane fade" id="done" role="tabpanel"
-											aria-labelledby="profile-tab">
-											<div class="table-responsive">
-												<table class="table">
-													<thead>
-														<tr>
-															<th class="text-center" scope="col">Date</th>
-
-															<th scope="col">Session</th>
-															<th scope="col">Venue</th>
-															<th scope="col">Venue</th>
-														</tr>
-													</thead>
-													<tbody>
-														<!--Danh sách các bài đã làm  -->
-														<tr th:each="homework : ${hw}"
-															th:if="${listSubmit.contains(homework.homeworkId)}"
-															class="inner-box">
-															<!--Ngày giao bài -->
-															<th style="text-align: center;" scope="row">
-																<div class="event-date">
-																	<span>16</span>
-																	<p th:text="${#temporals.format(homework.dateCreated, 'dd/MM/yyyy HH:mm')}"></p>
-																</div>
-															</th>
-
-															<td>
-																<div class="event-wrap">
-																	<!--Tên bài tập -->
-																	<h3>
-																		<a href="#" th:text="${homework.homeworkName}"></a>
-																	</h3>
-																	<div class="meta">
-																		<div class="organizers">
-																			<!--Tên người tạo -->
-																			<a href="#">Aslan Lingker</a>
-																		</div>
-																		<div class="categories">
-
-																			<a href="#"
-																				th:text="${homework.classes.getClassName}"></a>
-
-																		</div>
-																		<!--Ngày kết thúc - có thể đếm ngược còn bao nhiêu ngày- giờ -->
-																		<div class="time">
-																			<p>Deadline :</p>
-																			<span th:text="${homework.deadline}"></span>
-																		</div>
-																	</div>
-																</div>
-															</td>
-															<td>
-																<!--Điểm, chưa làm chưa chấm thì 0/10 -->
-																<div class="r-no">
-																	<span
-																		th:text="${(homework.deadline == null || homework.deadline.isAfter(T(java.time.LocalDate).now())) ? 'Open' : 'Close'}"></span>
-																	<!-- Sử dụng biểu thức điều kiện để kiểm tra xem Homework đã nộp hay chưa -->
-																	<span
-																		th:if="${listSubmit.contains(homework.homeworkId)}">Đã
-																		nộp</span> <span
-																		th:unless="${listSubmit.contains(homework.homeworkId)}">Chưa
-																		nộp</span>
-																</div>
-															</td>
-															<!--các action -->
-															<td>
-																<div class="primary-btn">
-																	<a class="btn btn-primary" href="#">Read More</a>
-																</div>
-															</td>
-														</tr>
-
-
-													</tbody>
-												</table>
-											</div>
-										</div>
-										<div class="tab-pane fade" id="notDone" role="tabpanel"
-											aria-labelledby="contact-tab">
-											<div class="table-responsive">
-												<table class="table">
-													<thead>
-														<tr>
-															<th class="text-center" scope="col">Date</th>
-
-															<th scope="col">Session</th>
-															<th scope="col">Venue</th>
-															<th scope="col">Venue</th>
-														</tr>
-													</thead>
-													<tbody>
-														<!--danh sách các bài tập chưa làm -->
-														<tr th:each="homework : ${hw}"
-															th:if="${!listSubmit.contains(homework.homeworkId)}"
-															class="inner-box">
-															<!--Ngày giao bài -->
-															<th style="text-align: center;" scope="row">
-																<div class="event-date">
-																	<span>16</span>
-																	<p th:text="${#temporals.format(homework.dateCreated, 'dd/MM/yyyy HH:mm')}"></p>
-																</div>
-															</th>
-
-															<td>
-																<div class="event-wrap">
-																	<!--Tên bài tập -->
-																	<h3>
-																		<a href="#" th:text="${homework.homeworkName}"></a>
-																	</h3>
-																	<div class="meta">
-																		<div class="organizers">
-																			<!--Tên người tạo -->
-																			<a href="#">Aslan Lingker</a>
-																		</div>
-																		<div class="categories">
-
-																			<a href="#"
-																				th:text="${homework.classes.getClassName}"></a>
-
-																		</div>
-																		<!--Ngày kết thúc - có thể đếm ngược còn bao nhiêu ngày- giờ -->
-																		<div class="time">
-																			<p>Deadline :</p>
-																			<span th:text="${homework.deadline}"></span>
-																		</div>
-																	</div>
-																</div>
-															</td>
-															<td>
-																<!--Điểm, chưa làm chưa chấm thì 0/10 -->
-																<div class="r-no">
-																	<span
-																		th:text="${(homework.deadline == null || homework.deadline.isAfter(T(java.time.LocalDate).now())) ? 'Open' : 'Close'}"></span>
-																	<!-- Sử dụng biểu thức điều kiện để kiểm tra xem Homework đã nộp hay chưa -->
-																	<span
-																		th:if="${listSubmit.contains(homework.homeworkId)}">Đã
-																		nộp</span> <span
-																		th:unless="${listSubmit.contains(homework.homeworkId)}">Chưa
-																		nộp</span>
-																</div>
-															</td>
-															<!--các action -->
-															<td>
-																<div class="primary-btn">
-																	<a class="btn btn-primary" href="#">Read More</a>
-																</div>
-															</td>
-														</tr>
-
-													</tbody>
-												</table>
-											</div>
-										</div>
-									</div>
-									<div class="primary-btn text-center">
-										<a href="#" class="btn btn-primary">Download Schedule</a>
-									</div>
-								</div>
-								<!-- /col end-->
-							</div>
-							<!-- /row end-->
-						</div>
-					</div>
+					<div class="container1 bootstrap snippets bootdey">
+    <div class="table-responsive">
+    	<!-- PROJECT TABLE -->
+    	<table class="table colored-header datatable project-list">
+    		<thead>
+    			<tr>
+    				<th>Title</th>
+    				<th>Date Start</th>
+    				<th>Days to Deadline</th>
+    				<th>Progress</th>
+    				<th>Priority</th>
+    				<th>Leader</th>
+    				<th>Status</th>
+    			</tr>
+    		</thead>
+    		<tbody>
+    			<tr th:each="homework : ${hw}">
+    <td><a href="#"><span th:text="${homework.homeworkName}"></span></a></td>
+    <td>18-05-2014</td>
+    <td>12 days</td>
+    <td>
+        <!-- Kiểm tra và xử lý nếu countSubmittedByHomeworkId hoặc countMember là null -->
+        
+        
+        <input th:type="hidden" name="submittedCount[${homework.homeworkId}]" 
+               th:value="${countSubmittedByHomeworkId[homework.homeworkId] ?: 0}">
+        
+        <!-- Progress bar -->
+        <div class="progress">
+            <div class="progress-bar" 
+                th:if="${countSubmittedByHomeworkId[homework.homeworkId]} != null and ${countMember} != null" 
+                th:attr="data-transitiongoal=${countSubmittedByHomeworkId[homework.homeworkId] * 100 / countMember}, aria-valuenow=${countSubmittedByHomeworkId[homework.homeworkId] * 100 / countMember}" 
+                th:style="'width:' + (${countSubmittedByHomeworkId[homework.homeworkId] * 100 / countMember}) + '%'">
+                <span th:text="${countSubmittedByHomeworkId[homework.homeworkId] * 100 / countMember} + '%'"></span>
+            	
+            </div>
+            <span th:if="${countSubmittedByHomeworkId[homework.homeworkId]} == null or ${countMember} == null"  style="color: red;">0%</span>
+        	
+              
+            
+        </div>
+    </td>
+    <td><span class="label label-warning">MEDIUM</span></td>
+    <td><img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="Avatar" class="avatar img-circle"> <a href="#">Michael</a></td>
+    <td><span class="label label-success">ACTIVE</span></td>
+</tr>
+    			
+    			
+    			
+    			
+    		</tbody>
+    	</table>
+    	<!-- END PROJECT TABLE -->
+    </div>
+</div>
 				</div>
+				
+				
+
+
+				
+				
+				
+				<!-- thay đổi ở đây -->
+				
+				
 				<div id="listMembers" class="tab-pane fade">
 					<h1>
 						Created by : <span th:text="${c.account.displayName}"> ></span>
@@ -915,4 +570,22 @@
 		</div>
 	</div>
 </div>
+<style>
+.container1 bootstrap snippets bootdey {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  color: #555;
+  background: #ececec;
+  margin-top:20px;
+}
+
+.project-list > tbody > tr > td {
+  padding: 12px 8px;
+}
+
+.project-list > tbody > tr > td .avatar {
+  width: 22px;
+  border: 1px solid #CCC;
+}
+</style>
 <div th:replace="/ViewLayout/footer.html"></div>

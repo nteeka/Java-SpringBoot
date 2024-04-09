@@ -16,4 +16,7 @@ public interface SubmitHomeworkRepository extends JpaRepository<SubmitHomework, 
 	
 	@Query("SELECT s FROM SubmitHomework s WHERE s.homework.homeworkId = :homeworkId")
     List<SubmitHomework> listSubmitHomeworkByHomeworkId(@Param("homeworkId") long homeworkId);
+	
+	@Query("SELECT ca FROM SubmitHomework ca WHERE ca.homework.classes.classId = :classId")
+    List<SubmitHomework> countSubmited(String classId);
 }

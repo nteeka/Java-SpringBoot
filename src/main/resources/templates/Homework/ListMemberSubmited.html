@@ -1,296 +1,197 @@
 <div th:replace="/ViewLayout/header.html"></div>
 
-<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-  <script>
-  $( function() {
-    $( "#sortable" ).sortable();
-    $( "#sortable" ).disableSelection();
-  } );
-  </script>
-<div class="page-content page-container" id="page-content">
-   <div class="padding">
-      <div class="row">
-         <div class="col-sm-8">
-             
-           <div class="container-fluid d-flex justify-content-center">
-            <div class="list list-row card" id="sortable" data-sortable-id="0" aria-dropeffect="move">
-               
-               <div th:each="submit : ${listSubmited}" class="list-item" data-id="13" data-item-sortable-id="0" draggable="true" role="option" aria-grabbed="false">
-                  <div><a href="#" data-abc="true"><span class="w-40 avatar gd-primary">P</span></a></div>
-                  <div class="flex">
-                     <a href="#" class="item-author text-color" data-abc="true"><span th:text="${submit.account.displayName}"></span></a>
-                     <div class="item-except text-muted text-sm h-1x"><span th:text="${submit.description}"></span></div>
-                  </div>
-                  <div class="no-wrap">
-                     <div class="item-date text-muted text-sm d-none d-md-block"><span th:text="${submit.dateSubmited}"></span></div>
-                  	<span th:text="${(submit.status) ? 'Đã nộp' : 'Đã nộp muộn'}"></span>		
-                  	
-                  </div>
-                  <div>
-                     <div class="item-action dropdown">
-                        <a href="#" data-toggle="dropdown" class="text-muted" data-abc="true">
-                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical">
-                              <circle cx="12" cy="12" r="1"></circle>
-                              <circle cx="12" cy="5" r="1"></circle>
-                              <circle cx="12" cy="19" r="1"></circle>
-                           </svg>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right bg-white" role="menu">
-                           	<a class="dropdown-item" href="#" data-abc="true" data-toggle="modal" data-target="#homeworkInfoModal"
-								th:attr="onclick='openHomeworkInfoModal(\'' + ${submit.homework.homeworkName} + '\', \'' + ${submit.account.displayName} + '\' ,\'' + ${submit.homework.description} + '\', \'' + ${submit.filePath} + '\')'">
-								See detail
-							</a>   
-							                   
-                           <a class="dropdown-item download" data-abc="true">Download </a>
-                           <a class="dropdown-item edit" data-abc="true">Edit</a>
-                           <div class="dropdown-divider"></div>
-                           <a class="dropdown-item trash" data-abc="true">Delete item</a>
-                        </div>
-                     </div>
-                  </div>
-                  <div id="homeworkInfoModal" class="modal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <!-- Modal Header -->
-            <div class="modal-header">
-                <h4 class="modal-title">Homework Information</h4>
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-            </div>
-            <!-- Modal Body -->
-            <div class="modal-body">
-                <form>
-                    <div class="form-group">
-                        <label for="homeworkId">Homework Name:</label>
-                        <input type="text" class="form-control" name="homeworkName" id="homeworkName" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="member">Member:</label>
-                        <input type="text" class="form-control" name="member" id="member" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="description">Description:</label>
-                        <input type="text" class="form-control" name="description" id="homeworkDescription"  readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="fileList">File List:</label>
-                        <ul id="filelist">
-							
+
+<div class="container bootstrap snippets bootdey">
+    <div class="table-responsive">
+    	<!-- PROJECT TABLE -->
+    	<table class="table colored-header datatable project-list">
+    		<thead>
+    			<tr>
+    			
+    				
+                    <th>Member</th>
+					    					
+                    
+    				<th>Date Submited</th>
+    				<th>Status</th>
+    				
+    				<th>Files</th>
+    				
+    				<th>Point</th>
+    				<th>Action</th>
+    			</tr>
+    		</thead>
+    		<tbody>
+    			<tr th:each="submit : ${listSubmited}">
+    			    <td><img th:src="@{'/image/getImage/' + ${submit.account.image}}" alt="Avatar" class="avatar img-circle"> <a href="#"><span th:text="${submit.account.displayName}"></span></a></td>   			
+    				<td><span th:text="${submit.dateSubmited}"></span></td>
+    				<td th:if="${submit.status}"><span style="color: green;">ON TIME</span></td>
+    				<td th:if="${!submit.status}"><span style="color: red;">LATE</span></td>
+    				
+    				<td>
+    					<ul>
+							<li th:each="file : ${submit.filePath}">
+								<a th:href="@{'/downloadFile/' + ${file}}" th:text="${file}">Download</a>
+							</li>
 						</ul>
-                    </div>
-                </form>
-            </div>
-        </div>
+    				</td>
+    				
+    				<td><span>_/10</span> </td>
+    				<td>
+	    				<div class="btn-group">
+	    					<a class="btn btn-primary" href="#">Give point</a>
+	    					<a class="btn btn-info" href="#">See detail</a>
+	    				</div>  					 
+    				</td>
+    			</tr>
+    			
+    		</tbody>
+    	</table>
+    	<!-- END PROJECT TABLE -->
     </div>
 </div>
-                  
-               </div>
-              
-               
-               
-            </div>
-         </div>
-        </div>     
-      </div>  
-   </div>
+
+
+
+
+
+
+
+
+
+<div class="container bootstrap snippets bootdey">
+    <div class="table-responsive">
+    	<!-- PROJECT TABLE -->
+    	<table class="table colored-header datatable project-list">
+    		<thead>
+    			<tr>
+    				<th>Title</th>
+    				<th>Date Start</th>
+    				<th>Days to Deadline</th>
+    				<th>Progress</th>
+    				<th>Priority</th>
+    				<th>Leader</th>
+    				<th>Status</th>
+    			</tr>
+    		</thead>
+    		<tbody>
+    			<tr>
+    				<td><a href="#">Spot Media</a></td>
+    				<td>18-05-2014</td>
+    				<td>12 days</td>
+    				<td>
+    					<div class="progress">
+    						<div class="progress-bar" data-transitiongoal="95" aria-valuenow="95" style="width: 95%;">95%</div>
+    					</div>
+    				</td>
+    				<td><span class="label label-warning">MEDIUM</span></td>
+    				<td><img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="Avatar" class="avatar img-circle"> <a href="#">Michael</a></td>
+    				<td><span class="label label-success">ACTIVE</span></td>
+    			</tr>
+    			<tr>
+    				<td><a href="#">E-Commerce Site</a></td>
+    				<td>24-05-2014</td>
+    				<td>30 days</td>
+    				<td>
+    					<div class="progress">
+    						<div class="progress-bar" data-transitiongoal="40" aria-valuenow="40" style="width: 40%;">40%</div>
+    					</div>
+    				</td>
+    				<td><span class="label label-success">LOW</span></td>
+    				<td><img src="https://bootdey.com/img/Content/avatar/avatar2.png" alt="Avatar" class="avatar img-circle"> <a href="#">Antonius</a></td>
+    				<td><span class="label label-warning">PENDING</span></td>
+    			</tr>
+    			<tr>
+    				<td><a href="#">Project 123GO</a></td>
+    				<td>20-09-2014</td>
+    				<td>50 days</td>
+    				<td>
+    					<div class="progress">
+    						<div class="progress-bar" data-transitiongoal="65" aria-valuenow="65" style="width: 65%;">65%</div>
+    					</div>
+    				</td>
+    				<td><span class="label label-danger">HIGH</span></td>
+    				<td><img src="https://bootdey.com/img/Content/avatar/avatar3.png" alt="Avatar" class="avatar"> <a href="#">Antonius</a></td>
+    				<td><span class="label label-success">ACTIVE</span></td>
+    			</tr>
+    			<tr>
+    				<td><a href="#">Wordpress Theme</a></td>
+    				<td>05-10-2014</td>
+    				<td>40 days</td>
+    				<td>
+    					<div class="progress">
+    						<div class="progress-bar" data-transitiongoal="77" aria-valuenow="77" style="width: 77%;">77%</div>
+    					</div>
+    				</td>
+    				<td><span class="label label-warning">MEDIUM</span></td>
+    				<td><img src="https://bootdey.com/img/Content/avatar/avatar4.png" alt="Avatar" class="avatar"> <a href="#">Michael</a></td>
+    				<td><span class="label label-success">ACTIVE</span></td>
+    			</tr>
+    			<tr>
+    				<td><a href="#">Redesign Landing Page</a></td>
+    				<td>15-11-2014</td>
+    				<td>30 days</td>
+    				<td>
+    					<div class="progress">
+    						<div class="progress-bar" data-transitiongoal="25" aria-valuenow="25" style="width: 25%;">25%</div>
+    					</div>
+    				</td>
+    				<td><span class="label label-success">LOW</span></td>
+    				<td><img src="https://bootdey.com/img/Content/avatar/avatar4.png" alt="Avatar" class="avatar"> <a href="#">Jason</a></td>
+    				<td><span class="label label-success">ACTIVE</span></td>
+    			</tr>
+    			<tr>
+    				<td><a href="#">Wordpress Theme</a></td>
+    				<td>05-10-2014</td>
+    				<td>N/A</td>
+    				<td>
+    					<div class="progress">
+    						<div class="progress-bar progress-bar-default" data-transitiongoal="100" aria-valuenow="100" style="width: 100%;">100%</div>
+    					</div>
+    				</td>
+    				<td><span class="label label-default">MEDIUM</span></td>
+    				<td><img src="https://bootdey.com/img/Content/avatar/avatar6.png" alt="Avatar" class="avatar"> <a href="#">Michael</a></td>
+    				<td><span class="label label-default">CLOSED</span></td>
+    			</tr>
+    			<tr>
+    				<td><a href="#">Redesign Landing Page</a></td>
+    				<td>15-11-2014</td>
+    				<td>30 days</td>
+    				<td>
+    					<div class="progress">
+    						<div class="progress-bar" data-transitiongoal="33" aria-valuenow="33" style="width: 33%;">33%</div>
+    					</div>
+    				</td>
+    				<td><span class="label label-success">LOW</span></td>
+    				<td><img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Avatar" class="avatar"> <a href="#">Jason</a></td>
+    				<td><span class="label label-warning">PENDING</span></td>
+    			</tr>
+    		</tbody>
+    	</table>
+    	<!-- END PROJECT TABLE -->
+    </div>
 </div>
-								
 
-
-
-<script>
-    function openHomeworkInfoModal(homeworkName, displayName, description, file) {
-        // Lấy thông tin của submit được nhấp
-            // Đặt giá trị cho các trường trong modal
-		document.getElementById('homeworkName').value = homeworkName;
-        document.getElementById('member').value = displayName;
-		document.getElementById('homeworkDescription').value = description;
-		
-		// Process the filePath to extract individual file names or paths
-	    const filePaths = file.split(';'); // Assuming file paths are separated by semicolons (adjust if needed)
-		
-	    // Create and append list items (LIs) for each file
-	    const fileList = document.getElementById('filelist');
-	    fileList.innerHTML = ''; // Clear existing content (if any)
-	    for (const filePath of filePaths) {
-	    	const cleanFileName = filePath.replace(/[\[\]]/g, "");
-	        const listItem = document.createElement('li');
-	        const anchor = document.createElement('a');
-	        anchor.href = `/downloadFile/${cleanFileName}`; // Adjust URL as needed
-	        anchor.textContent = cleanFileName;
-	        listItem.appendChild(anchor);
-	        fileList.appendChild(listItem);
-	    }
-	
-            // Hiển thị modal
-            $('#homeworkInfoModal').modal('show');
-        
-    }
-</script>
 <style>
-
-body {
-     background-color: #f9f9fa
- }
-
- .flex {
-     -webkit-box-flex: 1;
-     -ms-flex: 1 1 auto;
-     flex: 1 1 auto
- }
-
- @media (max-width:991.98px) {
-     .padding {
-         padding: 1.5rem
-     }
- }
-
- @media (max-width:767.98px) {
-     .padding {
-         padding: 1rem
-     }
- }
-
- .padding {
-     padding: 5rem
- }
-
- .card {
-     background: #fff;
-     border-width: 0;
-     border-radius: .25rem;
-     box-shadow: 0 1px 3px rgba(0, 0, 0, .05);
-     margin-bottom: 1.5rem
- }
-
- .card {
-     position: relative;
-     display: flex;
-     flex-direction: column;
-     min-width: 0;
-     word-wrap: break-word;
-     background-color: #fff;
-     background-clip: border-box;
-     border: 1px solid rgba(19, 24, 44, .125);
-     border-radius: .25rem
- }
- 
- .list-item {
-    position: relative;
-    display: -ms-flexbox;
-    display: flex;
-    -ms-flex-direction: column;
-    flex-direction: column;
-    min-width: 0;
-    word-wrap: break-word
+.container bootstrap snippets bootdey {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  color: #555;
+  background: #ececec;
+  margin-top:20px;
 }
 
-.list-item.block .media {
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0
+.project-list > tbody > tr > td {
+  padding: 12px 8px;
 }
 
-.list-item.block .list-content {
-    padding: 1rem
+.project-list > tbody > tr > td .avatar {
+  width: 22px;
+  border: 1px solid #CCC;
 }
+</style>
 
-.w-40 {
-    width: 40px!important;
-    height: 40px!important
-}
 
-.avatar {
-    position: relative;
-    line-height: 1;
-    border-radius: 500px;
-    white-space: nowrap;
-    font-weight: 700;
-    border-radius: 100%;
-    display: -ms-flexbox;
-    display: flex;
-    -ms-flex-pack: center;
-    justify-content: center;
-    -ms-flex-align: center;
-    align-items: center;
-    -ms-flex-negative: 0;
-    flex-shrink: 0;
-    border-radius: 500px;
-    box-shadow: 0 5px 10px 0 rgba(50, 50, 50, .15)
-}
-
-.avatar img {
-    border-radius: inherit;
-    width: 100%
-}
-
-.gd-primary {
-    color: #fff;
-    border: none;
-    background: #448bff linear-gradient(45deg, #448bff, #44e9ff)
-}
-
-.flex {
-    -webkit-box-flex: 1;
-    -ms-flex: 1 1 auto;
-    flex: 1 1 auto
-}
-
-.text-color {
-    color: #5e676f
-}
-
-.text-sm {
-    font-size: .825rem
-}
-
-.h-1x {
-    height: 1.25rem;
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical
-}
-
-.no-wrap {
-    white-space: nowrap
-}
-
-.list-row .list-item {
-    -ms-flex-direction: row;
-    flex-direction: row;
-    -ms-flex-align: center;
-    align-items: center;
-    padding: .75rem .625rem;
-}
-
-.list-item {
-    position: relative;
-    display: -ms-flexbox;
-    display: flex;
-    -ms-flex-direction: column;
-    flex-direction: column;
-    min-width: 0;
-    word-wrap: break-word;
-}
-
-.list-row .list-item>* {
-    padding-left: .625rem;
-    padding-right: .625rem;
-}
-
-.dropdown {
-    position: relative;
-}
-
-a:focus, a:hover {
-    text-decoration: none;
-}
-
-list-item{
-    background:white;
-}
-
-    </style>
 
 
 

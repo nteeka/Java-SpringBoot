@@ -18,4 +18,15 @@ public interface ClassAccountRepository extends JpaRepository<ClassAccount, Long
 	
 	@Query("SELECT ca FROM ClassAccount ca WHERE ca.classes.classId = :classId AND ca.account.accountId = :accountId")
     ClassAccount findByClassIdAndAccountId(@Param("classId") String classId, @Param("accountId") long accountId);
+
+	@Query("SELECT COUNT(ca) FROM ClassAccount ca WHERE ca.classes.classId = :classId")
+    Long countAccountsInClass(String classId);
+
 }
+
+
+
+
+
+
+
