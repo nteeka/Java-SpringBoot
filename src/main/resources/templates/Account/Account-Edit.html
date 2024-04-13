@@ -25,7 +25,9 @@
     <div class="col-12 col-sm-auto mb-3">
         <div class="mx-auto" style="width: 140px; height: 140px;">
             <div class="d-flex justify-content-center align-items-center rounded" style="height: 100%; background-color: rgb(233, 236, 239);">
-                <img id="previewImage" style="max-width: 100%; max-height: 100%" alt="Image user"  th:src="@{'/image/getImage/' + ${account.image}}" />
+            	<img th:if="${account == null and account.image == null}" id="previewImage" style="max-width: 100%; max-height: 100%" alt="Image user"  th:src="@{'/image/getImage/' + 'facebook default profile picture.jpg'}" />
+            	<img th:unless="${account == null and account.image == null} " id="previewImage" style="max-width: 100%; max-height: 100%" alt="Image user"  th:src="${account.image}" />
+            	
             </div>
         </div>
     </div>

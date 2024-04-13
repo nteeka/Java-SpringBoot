@@ -65,7 +65,7 @@ public class HomeworkController {
 		if(deadline != null && !deadline.isAfter(LocalDate.now()))
 		{
 	        redirectAttributes.addFlashAttribute("errorDeadline", "Dealine is invalid");
-	        return "redirect:/Teacher/enterClass/" + classes.getClassId();
+	        return "redirect:/Class/enterClass/" + classes.getClassId();
 		}
 		homeWork.setDeadline(deadline);
 		homeWork.setDateCreated(LocalDateTime.now());
@@ -93,7 +93,7 @@ public class HomeworkController {
 		}
 		homeWork.setFilePath(fileNames);
 		homeworkRepository.save(homeWork);
-		return "redirect:/Teacher/enterClass/" + classes.getClassId();
+		return "redirect:/Class/enterClass/" + classes.getClassId();
     }
 	
 	@PostMapping("/updateHomework")
@@ -111,7 +111,7 @@ public class HomeworkController {
 //			if(deadline != null && !deadline.isAfter(LocalDate.now()))
 //			{
 //		        redirectAttributes.addFlashAttribute("errorDeadlineUpdate", "Dealine is invalid");
-//		        return "redirect:/Teacher/enterClass/" + newHw.getClasses().getClassId();
+//		        return "redirect:/Class/enterClass/" + newHw.getClasses().getClassId();
 //			}	
 //		
 		
@@ -154,7 +154,7 @@ public class HomeworkController {
 		}
 		
 		homeworkRepository.save(newHw);
-    	return "redirect:/Teacher/enterClass/" + newHw.getClasses().getClassId();
+    	return "redirect:/Class/enterClass/" + newHw.getClasses().getClassId();
     }
 	private void deleteOldFiles(Homework homework) {
 	    Path path = Paths.get("fileUploads/");
@@ -199,7 +199,7 @@ public class HomeworkController {
 					submit.setStatus(false);
 			
 			
-			submit.setDateSubmited(LocalDate.now());
+			submit.setDateSubmited(LocalDateTime.now());
 			
 			
 			submitHomeworkRepository.save(submit);
@@ -226,8 +226,64 @@ public class HomeworkController {
 			}
 			submit.setFilePath(fileNames);
 			submitHomeworkRepository.save(submit);
-	        return "redirect:/StudentView/listStudent";
+	        return "redirect:/Class/enterClass/" + homework.getClasses().getClassId() ;
 	    }
+		
+		
+		@PostMapping("/updateSubmitHomework")
+	    public String updateSubmitHomework(@RequestParam("submitHomeworkId") long id,
+	    							@RequestParam("description") String description,   
+	    							@RequestParam("filePath") MultipartFile[] multipartFile,
+	    							RedirectAttributes redirectAttributes) {	       	               
+	        
+			Optional<SubmitHomework> currentSubmitHomework = submitHomeworkRepository.findById(id);
+			SubmitHomework newSubmit = currentSubmitHomework.get();
+			
+
+			
+			newSubmit.setLastModified(LocalDateTime.now());
+			newSubmit.setDescription(description);
+
+			if(multipartFile.length != 0)
+			{
+				//deleteOldFiles(newSubmit);
+				List<String> fileNames = new ArrayList<>();	
+				Path path = Paths.get("fileUploads/");
+				for (MultipartFile files : multipartFile)
+				{
+					String originalFilename = files.getOriginalFilename();
+					if (originalFilename == null || originalFilename.isEmpty()) {
+						submitHomeworkRepository.save(newSubmit);
+						  return "redirect:/Class/enterClass/" + newSubmit.getHomework().getClasses().getClassId();
+					    }
+				    int lastDotIndex = originalFilename.lastIndexOf('.');
+				    if (lastDotIndex == -1 || lastDotIndex == originalFilename.length() - 1) {
+				    	submitHomeworkRepository.save(newSubmit);
+				    	return "redirect:/Class/enterClass/" + newSubmit.getHomework().getClasses().getClassId();
+				    }
+				    String fileNameWithoutExtension = originalFilename.substring(0, lastDotIndex); // Loại bỏ phần mở rộng nếu có
+				    String fileExtension = originalFilename.substring(lastDotIndex + 1);
+				    String uniqueFileName = newSubmit.getSubmitHomeworkId() + "_submitHomework_" + fileNameWithoutExtension + "." + fileExtension;
+
+				    
+				    try {	        
+				    	InputStream inputStream = files.getInputStream();
+				        Files.copy(inputStream, path.resolve(uniqueFileName), StandardCopyOption.REPLACE_EXISTING);
+				        fileNames.add(uniqueFileName.toLowerCase());       
+				    } catch (IOException e) {
+				        e.printStackTrace();
+				    }
+				}
+				newSubmit.setFilePath(fileNames);
+			}
+			
+			submitHomeworkRepository.save(newSubmit);
+	    	return "redirect:/Class/enterClass/" + newSubmit.getHomework().getClasses().getClassId();
+	    }
+		
+		
+		
+		
 		
 		@GetMapping("/listMemberSubmited/{homeworkId}")
 		public String listClassView(@PathVariable long homeworkId,Model m,HttpServletRequest request) {	
@@ -238,9 +294,26 @@ public class HomeworkController {
 //		    }
 		    List<SubmitHomework> listSubmited = submitHomeworkRepository.listSubmitHomeworkByHomeworkId(homeworkId);
 		    m.addAttribute("listSubmited",listSubmited);
+		    for (SubmitHomework submitHomework : listSubmited) {
+		    	submitHomework.getHomework().getDeadline().isBefore(LocalDate.now());
+			}
 		    return "/Homework/ListMemberSubmited";
 		}
 		
+		@GetMapping("/detailHomework/{homeworkId}")
+		public String detailHomework(@PathVariable long homeworkId,Model m,HttpServletRequest request) {	
+			HttpSession session = request.getSession();
+		    Account loggedInUser = (Account) session.getAttribute("loggedInUser");
+		    if (loggedInUser == null) {
+		        return "/Authen/Login";
+		    }
+		    Optional<Homework> homework = homeworkRepository.findById(homeworkId);
+		    m.addAttribute("homework",homework.get());
+		    
+		    List<SubmitHomework> listSubmit = submitHomeworkRepository.listSubmitHomeworkByHomeworkId(homeworkId);
+		    m.addAttribute("listSubmit",listSubmit);
+		    return "/Homework/Homework-Detail";
+		}
 		
 		
 		

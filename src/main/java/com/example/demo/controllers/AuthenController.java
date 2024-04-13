@@ -1,6 +1,9 @@
 package com.example.demo.controllers;
 
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -8,10 +11,15 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,6 +34,9 @@ import com.example.demo.services.RoleService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.core.io.ResourceLoader;
+
+
 
 @Controller
 @RequestMapping("/Authen")
@@ -47,6 +58,12 @@ public class AuthenController {
     private EmailService emailService;
 	@Autowired
 	private HttpSession session;
+	
+	@Autowired
+    private ResourceLoader resourceLoader;
+	
+	
+	
 	@PostMapping("/login")
     public String checkLogin(@RequestParam("email") String email,
     						 @RequestParam("password") String password,
@@ -82,7 +99,7 @@ public class AuthenController {
         return "/Authen/Login";
     }
 	
-	
+
 	@PostMapping("/register")
 	public String createAccount(@RequestParam("role") Role role,
 								@RequestParam("email") String email,
@@ -122,7 +139,12 @@ public class AuthenController {
 		account.setEmail(email);
 		account.setDisplayName(displayName);
 		account.setTimeCreated(LocalDate.now());
-        String hashedPassword = passwordEncoder.encode(password);
+		account.setImage(null);
+		
+        
+
+		
+        String hashedPassword = passwordEncoder.encode(password);        
         account.setPassword(hashedPassword);
 		
         //set image default...
@@ -131,6 +153,7 @@ public class AuthenController {
 	    model.addAttribute("currentPassword", password);
 	    return "/Authen/Login";			
 	}
+	
 	
 	
 	@GetMapping("/forgotPass")
@@ -214,11 +237,18 @@ public class AuthenController {
         return "/Authen/Login";
     }
 	@GetMapping("/changePassword")
-    public String showChangePasswordForm(HttpServletRequest request) {
+    public String showChangePasswordForm(HttpServletRequest request,Model m) {
 		
-//		HttpSession session = request.getSession();
-//        Account loggedInUser = (Account) session.getAttribute("loggedInUser");
-//        System.out.println(loggedInUser.getRole().getRoleName());
+		HttpSession session = request.getSession();
+        Account loggedInUser = (Account) session.getAttribute("loggedInUser");
+        if (loggedInUser == null) {
+	        // Xử lý khi tài khoản chưa đăng nhập
+	        return "/Authen/Login";
+	    }
+        
+	    Optional<Account> acc = accountRepository.findById(loggedInUser.getAccountId());
+	    
+        m.addAttribute("account",acc.get());
         return "/Authen/changePass";
     }
 	

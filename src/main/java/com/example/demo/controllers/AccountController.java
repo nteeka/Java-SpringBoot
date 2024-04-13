@@ -7,7 +7,10 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,6 +30,7 @@ import com.example.demo.services.RoleService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/Account")
@@ -110,28 +114,71 @@ public class AccountController {
         return "/Account/Account-Edit";
     }
     
+    
+    
+//    @PostMapping("/saveImage")
+//    public String saveImage(@RequestParam("file") MultipartFile file,HttpServletRequest request) {
+//    	
+//    	HttpSession session = request.getSession();
+//	    Account loggedInUser = (Account) session.getAttribute("loggedInUser");
+//	    if (loggedInUser == null) {
+//	        return "/Authen/Login";
+//	    }
+//	    Optional<Account> account = accountRepository.findById(loggedInUser.getAccountId()); // Thay userId bằng userId của người dùng
+//	    
+//	    Path path = Paths.get("uploads/");
+//	    try {
+//	        InputStream inputStream = file.getInputStream();
+//	        // Tạo tên file mới với định dạng account_img_id
+//	        String newFileName = "account_img_" + account.get().getAccountId();
+//	        Files.copy(inputStream, path.resolve(newFileName), StandardCopyOption.REPLACE_EXISTING);
+//	        account.get().setImage(newFileName);
+//	    } catch (Exception e) {
+//	        e.printStackTrace();
+//	    }
+//		accountRepository.save(account.get());
+//		return "redirect:/StudentView/listStudent";        
+//    }
+    
     @PostMapping("/saveImage")
-    public String saveImage(@RequestParam("file") MultipartFile file,HttpServletRequest request) {
-    	
-    	HttpSession session = request.getSession();
-	    Account loggedInUser = (Account) session.getAttribute("loggedInUser");
-	    if (loggedInUser == null) {
-	        return "/Authen/Login";
-	    }
-	    Optional<Account> account = accountRepository.findById(loggedInUser.getAccountId()); // Thay userId bằng userId của người dùng
-	    
-	    Path path = Paths.get("uploads/");
+    public String saveImage(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
+
+        HttpSession session = request.getSession();
+        Account loggedInUser = (Account) session.getAttribute("loggedInUser");
+        if (loggedInUser == null) {
+            return "/Authen/Login";
+        }
+        Optional<Account> account = accountRepository.findById(loggedInUser.getAccountId());
+        Path path = Paths.get("uploads/");
 	    try {
 	        InputStream inputStream = file.getInputStream();
 	        // Tạo tên file mới với định dạng account_img_id
 	        String newFileName = "account_img_" + account.get().getAccountId();
 	        Files.copy(inputStream, path.resolve(newFileName), StandardCopyOption.REPLACE_EXISTING);
-	        account.get().setImage(newFileName);
+	        
+	        
+	        Cloudinary cloudinary = new Cloudinary(ObjectUtils.asMap(
+                    "cloud_name", "dccmckgvc",
+                    "api_key", "891328625785465",
+                    "api_secret", "szFBRogObiQHosinNgfK9pA1W0I"));
+	        
+	     // Thư mục trong Cloudinary mà bạn muốn lưu trữ file
+	        String folder = "user_img";
+
+            // Tải lên hình ảnh lên Cloudinary
+            Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap("folder", folder));
+            
+            // Lấy URL của hình ảnh từ Cloudinary và lưu vào đối tượng tài khoản
+            String imageUrl = (String) uploadResult.get("url");
+            account.get().setImage(imageUrl);
+	        
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }
-		accountRepository.save(account.get());
-		return "redirect:/StudentView/listStudent";        
+		
+
+        accountRepository.save(account.get());
+        return "redirect:/StudentView/listStudent";
     }
     
    

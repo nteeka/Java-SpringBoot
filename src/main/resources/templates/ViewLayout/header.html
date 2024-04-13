@@ -140,8 +140,19 @@
         .dropdown:hover .dropdown-content {
             display: block;
         }
-        
+        .dark-mode {
+    /* CSS cho chế độ tối */
+    background-color: #333;
+    color: #fff;
+}
+
+.light-mode {
+    /* CSS cho chế độ sáng */
+    background-color: #fff;
+    color: #333;
+}
     </style>
+    
 </head>
 <body>
    <div id="header">
@@ -158,6 +169,11 @@
                 
             </div>
             <div class="nav__right">
+            	<div id="toggleButton" onclick="toggleMode()">
+    <i id="moonIcon" style="color: black;" class="fa-solid fa-moon"></i> <!-- Biểu tượng mặt trăng -->
+    <i id="sunIcon" style="display: none; color: black;" class="fa-solid fa-sun"></i> <!-- Biểu tượng mặt trời -->
+</div>
+            	
                 <div class="dropdown">
                     <a th:if="${session.loggedInUser != null}" href="#" class="dropbtn"><i class="fa-solid fa-plus"></i></a>
                     <div class="dropdown-content">
@@ -167,7 +183,10 @@
                 </div>
                 <i class="fa-solid fa-braille"></i>
                 <div th:if="${session.loggedInUser != null}" class="dropdown">
-                	<a href="#"><img style="border-radius: 50%;width: 32px; height: 32px;" th:src="@{'/image/getImage/' + ${session.loggedInUser.image}}" alt="Mô tả hình ảnh"></a>
+                    <a th:if="${account != null and account.image != null }" href="#"><img style="border-radius: 50%;width: 32px; height: 32px;" th:src="${account.image}" alt="Mô tả hình ảnh"></a>
+                	<a th:unless="${account != null and account.image != null }" href="#"><img style="border-radius: 50%;width: 32px; height: 32px;" th:src="@{'/image/getImage/' + 'facebook default profile picture.jpg'}" alt="Mô tả hình ảnh"></a>
+                	
+                	<!-- <a href="#"><img style="border-radius: 50%;width: 32px; height: 32px;" th:src="@{'/image/getImage/' + ${session.loggedInUser.image}}" alt="Mô tả hình ảnh"></a> -->
                     <div class="dropdown-content">
                         <a th:href="@{'/Account/edit/' + ${session.loggedInUser.accountId}}">Quản lý tài khoản</a>
                         <a href="/Authen/changePassword">Đổi mật khẩu</a>
@@ -250,6 +269,25 @@
     </div>
   </div>
 </div>
+<script>
+
+function toggleMode() {
+    var body = document.body;
+    var moonIcon = document.getElementById("moonIcon");
+    var sunIcon = document.getElementById("sunIcon");
+    
+    if (body.classList.contains("dark-mode")) {
+        body.classList.remove("dark-mode");
+        moonIcon.style.display = "inline-block"; // Hiện biểu tượng mặt trăng
+        sunIcon.style.display = "none"; // Ẩn biểu tượng mặt trời
+    } else {
+        body.classList.add("dark-mode");
+        moonIcon.style.display = "none"; // Ẩn biểu tượng mặt trăng
+        sunIcon.style.display = "inline-block"; // Hiện biểu tượng mặt trời
+    }
+}
+
+</script>
 <script th:inline="javascript">
     /*<![CDATA[*/
     /* Thymeleaf variable to check if there is an error */

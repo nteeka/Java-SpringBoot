@@ -55,7 +55,10 @@
 		                </div>
 		            
 		                <div class="clasrooms__box__item__middle">
-		                    <img th:src="@{'/image/getImage/' + ${class.account.image}}" alt="Created image">
+                	
+		                    <img th:if="${class.account.image == null} " th:src="@{'/image/getImage/' + 'facebook default profile picture.jpg'}" alt="Created image">
+		                	<img th:unless="${class.account.image == null} " th:src="${class.account.image}" alt="Created image">
+		                	
 		                </div>
 		                <div class="clasrooms__box__item__bottom">
 		                	
@@ -81,7 +84,7 @@
 		            <script>
 						function redirectToClass(element) {
 						    var classId = element.getAttribute("data-class-id");
-						    window.location.href = '/Teacher/enterClass/' + classId;
+						    window.location.href = '/Class/enterClass/' + classId;
 						}
 					</script>
 		            

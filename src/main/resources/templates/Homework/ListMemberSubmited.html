@@ -24,9 +24,14 @@
     		<tbody>
     			<tr th:each="submit : ${listSubmited}">
     			    <td><img th:src="@{'/image/getImage/' + ${submit.account.image}}" alt="Avatar" class="avatar img-circle"> <a href="#"><span th:text="${submit.account.displayName}"></span></a></td>   			
-    				<td><span th:text="${submit.dateSubmited}"></span></td>
-    				<td th:if="${submit.status}"><span style="color: green;">ON TIME</span></td>
-    				<td th:if="${!submit.status}"><span style="color: red;">LATE</span></td>
+    				<td><span th:text="${#temporals.format(submit.dateSubmited, 'dd/MM/yyyy HH:mm')}"></span></td>
+    				
+    				<td th:if="${submit.status}">
+    					<span style="color: green;">ON TIME</span>
+    				</td>
+    				<td th:if="${!submit.status}">
+    					<span style="color: red;">LATE</span>
+    				</td>
     				
     				<td>
     					<ul>
@@ -59,118 +64,7 @@
 
 
 
-<div class="container bootstrap snippets bootdey">
-    <div class="table-responsive">
-    	<!-- PROJECT TABLE -->
-    	<table class="table colored-header datatable project-list">
-    		<thead>
-    			<tr>
-    				<th>Title</th>
-    				<th>Date Start</th>
-    				<th>Days to Deadline</th>
-    				<th>Progress</th>
-    				<th>Priority</th>
-    				<th>Leader</th>
-    				<th>Status</th>
-    			</tr>
-    		</thead>
-    		<tbody>
-    			<tr>
-    				<td><a href="#">Spot Media</a></td>
-    				<td>18-05-2014</td>
-    				<td>12 days</td>
-    				<td>
-    					<div class="progress">
-    						<div class="progress-bar" data-transitiongoal="95" aria-valuenow="95" style="width: 95%;">95%</div>
-    					</div>
-    				</td>
-    				<td><span class="label label-warning">MEDIUM</span></td>
-    				<td><img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="Avatar" class="avatar img-circle"> <a href="#">Michael</a></td>
-    				<td><span class="label label-success">ACTIVE</span></td>
-    			</tr>
-    			<tr>
-    				<td><a href="#">E-Commerce Site</a></td>
-    				<td>24-05-2014</td>
-    				<td>30 days</td>
-    				<td>
-    					<div class="progress">
-    						<div class="progress-bar" data-transitiongoal="40" aria-valuenow="40" style="width: 40%;">40%</div>
-    					</div>
-    				</td>
-    				<td><span class="label label-success">LOW</span></td>
-    				<td><img src="https://bootdey.com/img/Content/avatar/avatar2.png" alt="Avatar" class="avatar img-circle"> <a href="#">Antonius</a></td>
-    				<td><span class="label label-warning">PENDING</span></td>
-    			</tr>
-    			<tr>
-    				<td><a href="#">Project 123GO</a></td>
-    				<td>20-09-2014</td>
-    				<td>50 days</td>
-    				<td>
-    					<div class="progress">
-    						<div class="progress-bar" data-transitiongoal="65" aria-valuenow="65" style="width: 65%;">65%</div>
-    					</div>
-    				</td>
-    				<td><span class="label label-danger">HIGH</span></td>
-    				<td><img src="https://bootdey.com/img/Content/avatar/avatar3.png" alt="Avatar" class="avatar"> <a href="#">Antonius</a></td>
-    				<td><span class="label label-success">ACTIVE</span></td>
-    			</tr>
-    			<tr>
-    				<td><a href="#">Wordpress Theme</a></td>
-    				<td>05-10-2014</td>
-    				<td>40 days</td>
-    				<td>
-    					<div class="progress">
-    						<div class="progress-bar" data-transitiongoal="77" aria-valuenow="77" style="width: 77%;">77%</div>
-    					</div>
-    				</td>
-    				<td><span class="label label-warning">MEDIUM</span></td>
-    				<td><img src="https://bootdey.com/img/Content/avatar/avatar4.png" alt="Avatar" class="avatar"> <a href="#">Michael</a></td>
-    				<td><span class="label label-success">ACTIVE</span></td>
-    			</tr>
-    			<tr>
-    				<td><a href="#">Redesign Landing Page</a></td>
-    				<td>15-11-2014</td>
-    				<td>30 days</td>
-    				<td>
-    					<div class="progress">
-    						<div class="progress-bar" data-transitiongoal="25" aria-valuenow="25" style="width: 25%;">25%</div>
-    					</div>
-    				</td>
-    				<td><span class="label label-success">LOW</span></td>
-    				<td><img src="https://bootdey.com/img/Content/avatar/avatar4.png" alt="Avatar" class="avatar"> <a href="#">Jason</a></td>
-    				<td><span class="label label-success">ACTIVE</span></td>
-    			</tr>
-    			<tr>
-    				<td><a href="#">Wordpress Theme</a></td>
-    				<td>05-10-2014</td>
-    				<td>N/A</td>
-    				<td>
-    					<div class="progress">
-    						<div class="progress-bar progress-bar-default" data-transitiongoal="100" aria-valuenow="100" style="width: 100%;">100%</div>
-    					</div>
-    				</td>
-    				<td><span class="label label-default">MEDIUM</span></td>
-    				<td><img src="https://bootdey.com/img/Content/avatar/avatar6.png" alt="Avatar" class="avatar"> <a href="#">Michael</a></td>
-    				<td><span class="label label-default">CLOSED</span></td>
-    			</tr>
-    			<tr>
-    				<td><a href="#">Redesign Landing Page</a></td>
-    				<td>15-11-2014</td>
-    				<td>30 days</td>
-    				<td>
-    					<div class="progress">
-    						<div class="progress-bar" data-transitiongoal="33" aria-valuenow="33" style="width: 33%;">33%</div>
-    					</div>
-    				</td>
-    				<td><span class="label label-success">LOW</span></td>
-    				<td><img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Avatar" class="avatar"> <a href="#">Jason</a></td>
-    				<td><span class="label label-warning">PENDING</span></td>
-    			</tr>
-    		</tbody>
-    	</table>
-    	<!-- END PROJECT TABLE -->
-    </div>
-</div>
+
 
 <style>
 .container bootstrap snippets bootdey {

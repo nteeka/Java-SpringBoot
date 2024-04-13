@@ -3,7 +3,9 @@ package com.example.demo.controllers;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,8 @@ import com.example.demo.models.CommentLike;
 import com.example.demo.models.Homework;
 import com.example.demo.models.Notification;
 import com.example.demo.models.ReplyComment;
+import com.example.demo.models.SubmitHomework;
+import com.example.demo.repositories.AccountRepository;
 import com.example.demo.repositories.ClassAccountRepository;
 import com.example.demo.repositories.ClassRepository;
 import com.example.demo.repositories.CommentLikeRepository;
@@ -73,6 +77,9 @@ public class ClassesController {
 	@PersistenceContext
 	private EntityManager entityManager;
 	
+	@Autowired
+    private AccountRepository accountRepository;
+	
 	
 	@GetMapping("/listClass")
 	public String listClassView(Model m,HttpServletRequest request) {	
@@ -84,9 +91,16 @@ public class ClassesController {
 	        // Xử lý khi tài khoản chưa đăng nhập
 	        return "/Authen/Login";
 	    }
+	    Optional<Account> acc = accountRepository.findById(loggedInUser.getAccountId());
+
 	    List<ClassAccount> account = classAccountRepository.findByAccountId(loggedInUser.getAccountId());  
 	    if(account.isEmpty())
+	    {
+	    	//lấy ảnh user cho header
+	    	m.addAttribute("account",acc.get());
 	    	return "/Classes/Class-List_Empty";
+
+	    }
 	    List<Classes> classes = new ArrayList<Classes>();
 	    for (ClassAccount classes2 : account) {
 	    	classes.add(classes2.getClasses());
@@ -95,6 +109,8 @@ public class ClassesController {
 //	    List<Classes> c = classRepository.findByAccountId(loggedInUser.getAccountId());
 //	    classes.addAll(c);
 	    m.addAttribute("classes",classes);
+	    //lấy ảnh user cho header
+    	m.addAttribute("account",acc.get());
 	    return "/Classes/Class-List";
 	}
 	
@@ -190,6 +206,90 @@ public class ClassesController {
 	
 	@GetMapping("/enterClass/{classId}")
 	public String enterClassView(@PathVariable("classId") String id,Model m,HttpServletRequest request) {	
+		
+//		HttpSession session = request.getSession();
+//	    Account loggedInUser = (Account) session.getAttribute("loggedInUser");
+//
+//	    if (loggedInUser == null) {
+//	        return "/Authen/Login";
+//	    }
+//		//get class id
+//	    Optional<Classes> c = classRepository.findById(id);
+//	    m.addAttribute("id", c.get().getClassId());	    
+//		m.addAttribute("c", c.get());
+//	    //get class list which is already joined
+//	    List<ClassAccount> account = classAccountRepository.findByAccountId(loggedInUser.getAccountId());  
+//	    List<Classes> classes = new ArrayList<Classes>();
+//	    for (ClassAccount classes2 : account) {
+//	    	if(classes2.getClasses().getClassId() != id)
+//	    		classes.add(classes2.getClasses());
+//	    }
+//	    m.addAttribute("classes",classes);
+//	    
+//	    //all homework
+//	    List<Homework> hw = homeworkRepository.findByClassId(id);
+//	    m.addAttribute("hw",hw);
+//	    
+//	    //check done or not done
+//	    List<Long> listSubmit = submitHomeworkRepository.listHomeworkByAccountId(loggedInUser.getAccountId());	    
+//	    m.addAttribute("listSubmit",listSubmit);
+//	    
+//	    //get all account on this class
+//	    List<ClassAccount> acc = classAccountRepository.findByClassId(id);
+//	    List<Account> listAccount = new ArrayList<Account>();
+//	    for (ClassAccount lstAcc : acc)
+//	    {
+//	    	//phân biệt người tạo ra lớp với người tham gia
+//	    	if(lstAcc.getAccount().getAccountId() != c.get().getAccount().getAccountId())
+//	    		listAccount.add(lstAcc.getAccount());
+//	    }
+//	    m.addAttribute("listAccount",listAccount);
+//	    
+//	    List<Notification> notifies = notifyRepository.findByClassId(c.get().getClassId());
+//	    m.addAttribute("notifies",notifies);
+//	    
+//	    List<Long> lstNotifyId = notifyRepository.listNotifyId(c.get().getClassId());
+//	    m.addAttribute("lstNotifyId",lstNotifyId);
+//	    
+//	    List<Comment> listComment = commentRepository.findAllNotDeleted();	    
+//	    m.addAttribute("listComment",listComment);
+//	    
+//	    List<CommentLike> checkLikeComment = commentLikeRepository.findByAccountId(loggedInUser.getAccountId());
+//	    
+//	    List<Long> check = new ArrayList<Long>();
+//	    for (CommentLike commentLike : checkLikeComment) {
+//			for (Comment cmt22 : listComment) {
+//				if(commentLike.getComment().getCommentId() == cmt22.getCommentId())
+//					check.add(cmt22.getCommentId());
+//			}
+//		}
+//	    m.addAttribute("checkLikeComment",check);
+//	    
+//	    List<ReplyComment> listReply = replyRepository.findAll();
+//	    
+//	    m.addAttribute("listReply",listReply);
+//	    
+//	    
+//	    m.addAttribute("checkLikeComment",check);
+//	    
+//	    Long countMember = classAccountRepository.countAccountsInClass(id);
+//	    m.addAttribute("countMember",countMember);
+//	    List<SubmitHomework> countSubmited = submitHomeworkRepository.countSubmited(id);
+//	    m.addAttribute("countSubmited",countSubmited);
+//	    Map<Long, Integer> countSubmittedByHomeworkId = new HashMap<>();
+//	    for (SubmitHomework submission : countSubmited) {
+//	        Long homeworkId = submission.getHomework().getHomeworkId();
+//	        countSubmittedByHomeworkId.put(homeworkId, countSubmittedByHomeworkId.getOrDefault(homeworkId, 0) + 1);
+//	    }
+//
+//	    m.addAttribute("countSubmittedByHomeworkId", countSubmittedByHomeworkId);
+//	   
+//	    //update submitdHomework
+//	    List<SubmitHomework> listSubmitHomework = submitHomeworkRepository.findAll();	    
+//	    m.addAttribute("listSubmitHomework",listSubmitHomework);
+//	    for (SubmitHomework submitHomework : listSubmitHomework) {
+//	    	submitHomework.getHomework().getDeadline().isAfter(null);
+//		}
 		HttpSession session = request.getSession();
 	    Account loggedInUser = (Account) session.getAttribute("loggedInUser");
 
@@ -255,7 +355,27 @@ public class ClassesController {
 	    
 	    m.addAttribute("checkLikeComment",check);
 	    
-	    	    
+	    
+	    Long countMember = classAccountRepository.countAccountsInClass(id);
+	    m.addAttribute("countMember",countMember);
+	    List<SubmitHomework> countSubmited = submitHomeworkRepository.countSubmited(id);
+	    m.addAttribute("countSubmited",countSubmited);
+	    Map<Long, Integer> countSubmittedByHomeworkId = new HashMap<>();
+	    for (SubmitHomework submission : countSubmited) {
+	        Long homeworkId = submission.getHomework().getHomeworkId();
+	        countSubmittedByHomeworkId.put(homeworkId, countSubmittedByHomeworkId.getOrDefault(homeworkId, 0) + 1);
+	    }
+
+	    m.addAttribute("countSubmittedByHomeworkId", countSubmittedByHomeworkId);
+	   
+	    //update submitdHomework
+	    List<SubmitHomework> listSubmitHomework = submitHomeworkRepository.findAll();	    
+	    m.addAttribute("listSubmitHomework",listSubmitHomework);
+	    
+	    Optional<Account> accountImg = accountRepository.findById(loggedInUser.getAccountId());
+	    
+        m.addAttribute("account",accountImg.get());
+	    
 	    return "/Classes/Class-Content";
 	}
 	

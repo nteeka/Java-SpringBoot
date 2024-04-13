@@ -67,7 +67,7 @@ public class CommentController {
 		}
 			
 		commentRepository.save(cmt);
-		return "redirect:/Teacher/enterClass/" + notify.getClasses().getClassId();
+		return "redirect:/Notify/detailNoti/" + notify.getNotifyId();
     }
 	
 	
@@ -89,9 +89,14 @@ public class CommentController {
         
 		Optional<Comment> currentCmt = commentRepository.findById(id);
 		Comment deletedCmt= currentCmt.get();
+		Optional<Notification> currentNoti = notifyRepository.findById(deletedCmt.getNotify().getNotifyId());
+
+		long like = currentNoti.get().getNumComment();		
+		currentNoti.get().setNumComment(like - 1);
 		deletedCmt.setDeleted(true);	
 		commentRepository.save(deletedCmt);
-		return "redirect:/StudentView/listStudent";
+		notifyRepository.save(currentNoti.get());
+		return "redirect:/Notify/detailNoti/" + currentNoti.get().getNotifyId();
     }
 	
 	
@@ -125,7 +130,7 @@ public class CommentController {
 			commentLikeRepository.save(cmtLiked);
 		}
 		commentRepository.save(currentCmt.get());
-		return "redirect:/Teacher/enterClass/" + currentCmt.get().getNotify().getClasses().getClassId();
+		return "redirect:/Class/enterClass/" + currentCmt.get().getNotify().getClasses().getClassId();
     }
 	
 	
@@ -157,7 +162,7 @@ public class CommentController {
 //		}
 			
 		replyRepository.save(reply);
-		return "redirect:/Teacher/enterClass/" + comment.getNotify().getClasses().getClassId();
+		return "redirect:/Class/enterClass/" + comment.getNotify().getClasses().getClassId();
     }
 	
 	

@@ -73,6 +73,16 @@ public class NotificationController {
 	@Autowired
 	SubmitHomeworkRepository submitHomeworkRepository;
 	
+	
+	@GetMapping("/listNoti/{classId}")
+    public String listNotification(@PathVariable("classId") String id, Model m) {	       	               
+        
+		List<Notification> listNoti = notifyRepository.findByClassId(id);
+		m.addAttribute("listNoti",listNoti);
+    	return "/Notification/Noti-List";
+    }
+	
+	
 	@PostMapping("/createNotification")
     public String createNotification(@RequestParam("classes") Classes classes,
     								@RequestParam("title") String title,

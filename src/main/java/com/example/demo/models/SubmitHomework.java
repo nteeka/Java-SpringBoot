@@ -1,6 +1,7 @@
 package com.example.demo.models;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import jakarta.persistence.Column;
@@ -32,9 +33,9 @@ public class SubmitHomework {
 	
 	private String description;
 	
-	private LocalDate dateSubmited;
+	private LocalDateTime dateSubmited;
 	
-	private LocalDate lastModified;
+	private LocalDateTime lastModified;
 	
 	private List<String> filePath;
 	
@@ -94,19 +95,19 @@ public class SubmitHomework {
 	
 	
 	
-	public LocalDate getDateSubmited() {
+	public LocalDateTime getDateSubmited() {
 		return dateSubmited;
 	}
 
-	public void setDateSubmited(LocalDate dateSubmited) {
+	public void setDateSubmited(LocalDateTime dateSubmited) {
 		this.dateSubmited = dateSubmited;
 	}
 
-	public LocalDate getLastModified() {
+	public LocalDateTime getLastModified() {
 		return lastModified;
 	}
 
-	public void setLastModified(LocalDate lastModified) {
+	public void setLastModified(LocalDateTime lastModified) {
 		this.lastModified = lastModified;
 	}
 

@@ -58,8 +58,10 @@
 			<!-- Thẻ <a> để kích hoạt modal -->
 			<a th:if="${c.account.accountId == session.loggedInUser.accountId }"
 				href="#" id="createHomeworkBtn" class="btn btn-primary">Create
-				Homework</a> <a href="#" id="createNotifyBtn" class="btn btn-primary">Create
+				Homework</a>
+			<a href="#" id="createNotifyBtn" class="btn btn-primary">Create
 				Notification</a>
+			<a th:href="'/Notify/listNoti/' + ${id}" class="btn btn-primary">List Notification</a>
 		</div>
 		<div class="col-sm-10">
 			<ul class="nav nav-tabs">
@@ -291,8 +293,12 @@
 							<div th:each="noti : ${notifies}" class="col-md-5 mb-3">
 								<div class="card img-fluid"
 									style="width: 400px; position: relative;">
-									<img class="card-img-top"
-										th:src="@{'/image/getImage/' + ${noti.account.image}}"
+									
+									<img th:if="${account != null and account.image != null }" class="card-img-top"
+										th:src="${noti.account.image}"
+										alt="Card image" style="width: 400px">
+									<img th:unless="${account != null and account.image != null }" class="card-img-top"
+										th:src="@{'/image/getImage/' + 'facebook default profile picture.jpg'}"
 										alt="Card image" style="width: 400px">
 									<div class="card-img-overlay">
 										<h4 class="card-title">
@@ -383,7 +389,7 @@
 								    // Kiểm tra xem biến file có giá trị hợp lệ không
 								    if (file && file.trim() !== '') {
 								        // Process the filePath to extract individual file names or paths
-								        const filePaths = file.split(';'); // Assuming file paths are separated by semicolons (adjust if needed)
+								        const filePaths = file.split(','); // Assuming file paths are separated by semicolons (adjust if needed)
 								        
 								        // Create and append list items (LIs) for each file
 								        const fileList = document.getElementById('listFile');
@@ -393,7 +399,7 @@
 								            const listItem = document.createElement('li');
 								            const anchor = document.createElement('a');
 								            anchor.href = `/downloadFile/${cleanFileName}`; // Adjust URL as needed
-								            const cutFileName = cleanFileName.slice(10);
+								            const cutFileName = cleanFileName.slice(9);
 								            anchor.textContent = cutFileName;
 								            listItem.appendChild(anchor);
 								            fileList.appendChild(listItem);
@@ -443,20 +449,21 @@
     	<table class="table colored-header datatable project-list">
     		<thead>
     			<tr>
-    				<th>Title</th>
+    				<th>Homework Name</th>
     				<th>Date Start</th>
-    				<th>Days to Deadline</th>
-    				<th>Progress</th>
-    				<th>Priority</th>
-    				<th>Leader</th>
+    				
+    				<th>Done</th>
+    				<th>Deadline</th>
+    				
     				<th>Status</th>
+    				<th>Action</th>
     			</tr>
     		</thead>
     		<tbody>
     			<tr th:each="homework : ${hw}">
-    <td><a href="#"><span th:text="${homework.homeworkName}"></span></a></td>
-    <td>18-05-2014</td>
-    <td>12 days</td>
+    <td><a th:href="'/Homework/detailHomework/' + ${homework.homeworkId}"><span th:text="${homework.homeworkName}"></span></a></td>
+    <td><p th:text="${#temporals.format(homework.dateCreated, 'dd/MM/yyyy HH:mm')}"></p></td>
+    
     <td>
         <!-- Kiểm tra và xử lý nếu countSubmittedByHomeworkId hoặc countMember là null -->
         
@@ -468,9 +475,9 @@
         <div class="progress">
             <div class="progress-bar" 
                 th:if="${countSubmittedByHomeworkId[homework.homeworkId]} != null and ${countMember} != null" 
-                th:attr="data-transitiongoal=${countSubmittedByHomeworkId[homework.homeworkId] * 100 / countMember}, aria-valuenow=${countSubmittedByHomeworkId[homework.homeworkId] * 100 / countMember}" 
-                th:style="'width:' + (${countSubmittedByHomeworkId[homework.homeworkId] * 100 / countMember}) + '%'">
-                <span th:text="${countSubmittedByHomeworkId[homework.homeworkId] * 100 / countMember} + '%'"></span>
+                th:attr="data-transitiongoal=${countSubmittedByHomeworkId[homework.homeworkId] * 100 / (countMember - 1)}, aria-valuenow=${countSubmittedByHomeworkId[homework.homeworkId] * 100 / (countMember - 1)}" 
+                th:style="'width:' + (${countSubmittedByHomeworkId[homework.homeworkId] * 100 / (countMember - 1)}) + '%'">
+                <span th:text="${countSubmittedByHomeworkId[homework.homeworkId] * 100 / (countMember - 1)} + '%'"></span>
             	
             </div>
             <span th:if="${countSubmittedByHomeworkId[homework.homeworkId]} == null or ${countMember} == null"  style="color: red;">0%</span>
@@ -479,10 +486,44 @@
             
         </div>
     </td>
-    <td><span class="label label-warning">MEDIUM</span></td>
-    <td><img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="Avatar" class="avatar img-circle"> <a href="#">Michael</a></td>
-    <td><span class="label label-success">ACTIVE</span></td>
+    <td>
+    	<p th:if="${homework.deadline != null}" th:text="${#temporals.format(homework.deadline, 'dd/MM/yyyy')}"></p>
+    	<p th:unless="${homework.deadline != null}" th:text="None"></p>
+    	
+    </td>
+    
+    <td>
+    	<span class="label label-success" th:if="${(homework.deadline == null || homework.deadline.isAfter(T(java.time.LocalDate).now()))}">OPEN</span>
+    	<span class="label label-danger" th:unless="${(homework.deadline == null || homework.deadline.isAfter(T(java.time.LocalDate).now()))}">CLOSE</span>
+    	
+    </td>
+	<td>
+	<div class="btn-group">
+		<a th:if="${c.account.accountId == session.loggedInUser.accountId}" href="#" class="btn btn-primary" data-toggle="modal"
+			data-target="#updateHomeworkModal"
+			th:attr="onclick='openUpdateHomeworkModal(\'' + ${homework.homeworkId} + '\', \'' + ${homework.homeworkName} + '\', \'' + ${homework.description} + '\', \'' + ${homework.deadline} + '\', \'' + ${homework.filePath} + '\')'">
+			<span class="fa fa-pencil"></span> Edit
+		</a>
+		<a th:if="${c.account.accountId == session.loggedInUser.accountId}"  class="btn btn-primary" th:href="'/Homework/listMemberSubmited/' + ${homework.homeworkId}">Danh sách</a>
+		<a	id="submitHomeworkButton" 
+			th:data-deadline="${homework.deadline}" th:if="${!listSubmit.contains(homework.homeworkId) && c.account.accountId != session.loggedInUser.accountId }"
+			th:href="@{'/Teacher/submitHomeWorkView/' + ${homework.homeworkId}}"
+			class="btn btn-primary">Nộp bài
+		</a>
+		<a th:each="list : ${listSubmitHomework}" 
+			th:if="${list.account.accountId == session.loggedInUser.accountId 
+    and list.homework.homeworkId == homework.homeworkId 
+    and (homework.deadline == null || homework.deadline.isAfter(T(java.time.LocalDate).now()))}"	
+		
+			href="#" class="btn btn-primary btn-sm" data-toggle="modal"
+			data-target="#updateSubmitHomeworkModal"
+			th:attr="onclick='openUpdateSubmitHomeworkModal(\'' + ${list.submitHomeworkId} + '\', \'' + ${list.description} + '\', \'' + ${list.filePath} + '\')'">
+			<span class="fa fa-pencil"></span> Chỉnh sửa bài nộp
+		</a>
+	</div>
+	</td>
 </tr>
+
     			
     			
     			
@@ -570,6 +611,202 @@
 		</div>
 	</div>
 </div>
+
+
+
+
+<div id="updateHomeworkModal" class="modal">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h4 class="modal-title">Update Homework</h4>
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+			</div>
+			<!-- Modal Body -->
+			<div class="modal-body">
+				<form id="updateHomeworkForm" action="/Homework/updateHomework" method="post" enctype="multipart/form-data">
+					<input type="hidden" id="updateHomeworkId" name="homeworkId">
+					<div class="form-group">
+						<label for="updateHomeworkName">Homework name:</label>
+						<input type="text" class="form-control" id="updateHomeworkName" name="homeworkName">
+					</div>
+					<div class="form-group">
+						<label for="updateHomeworkDescription">Description:</label>
+						<textarea class="form-control" id="updateHomeworkDescription" name="description"></textarea>
+					</div>
+					<div class="form-group">
+						<label for="updateHomeworkDeadline">Deadline:</label> 
+						<input type="date" class="form-control" id="updateHomeworkDeadline" name="deadline">
+					</div>
+					<div class="form-group mt-3">
+						<label class="mr-2">Current Files:</label>
+						<div>
+							<ul id="listCurrentHW">
+																			
+							</ul>
+						</div>
+					</div>
+					<div class="form-group mt-3">
+						<label class="mr-2">Upload your file(Optional):</label>
+						<input type="file" name="filePath" multiple="multiple">
+					</div>											
+					<button type="submit" class="btn btn-primary">Update</button>
+				</form>
+			</div>
+		</div>
+	</div>											
+</div>
+
+<div id="updateSubmitHomeworkModal" class="modal">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h4 class="modal-title">Update SubmitHomework</h4>
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+			</div>
+			<!-- Modal Body -->
+			<div class="modal-body">
+				<form id="updateSubmitHomeworkForm" action="/Homework/updateSubmitHomework" method="post" enctype="multipart/form-data">
+					<input type="hidden" id="updateSubmitHomeworkId" name="submitHomeworkId">
+					
+					<div class="form-group">
+						<label for="updateHomeworkDescription">Description:</label>
+						<textarea class="form-control" id="updateSubmitHomeworkDescription" name="description"></textarea>
+					</div>
+					
+					<div class="form-group mt-3">
+						<label class="mr-2">Current Files:</label>
+						<div>
+							<ul id="listCurrentSubmitHW">
+																			
+							</ul>
+						</div>
+					</div>
+					<div class="form-group mt-3">
+						<label class="mr-2">Upload your new file(Current file will be deleted):</label>
+						<input type="file" name="filePath" multiple="multiple">
+					</div>											
+					<button type="submit" class="btn btn-primary">Update</button>
+				</form>
+			</div>
+		</div>
+	</div>											
+</div>
+											
+											<script>
+												function openUpdateHomeworkModal(
+														homeworkId,
+														homeworkName,
+														homeworkDescription,
+														deadline, file) {
+													// Điền dữ liệu vào các trường trong modal
+													document
+															.getElementById('updateHomeworkId').value = homeworkId;
+													document
+															.getElementById('updateHomeworkName').value = homeworkName;
+													document
+															.getElementById('updateHomeworkDescription').value = homeworkDescription;
+													document
+															.getElementById('updateHomeworkDeadline').value = deadline;
+													// Kiểm tra xem biến file có giá trị hợp lệ không
+												    if (file && file.trim() !== '') {
+												    	const filePaths = file.split(','); // Giả sử các đường dẫn được phân tách bằng dấu phẩy (hãy điều chỉnh nếu cần)
+
+													    // Tạo và thêm các mục danh sách (LIs) cho từng file
+													    const fileList = document.getElementById('listCurrentHW');
+													    fileList.innerHTML = ''; // Xóa nội dung hiện có (nếu có)
+													    for (const filePath of filePaths) {
+												            const cleanFileName2 = filePath.trim().replace(/[\[\]]/g, "");
+													        const cleanFileName = filePath.replace(/.*?_homework_/, '').replace(/\]/g, ''); // Loại bỏ phần tiền tố "id_homework_" và ký tự "]"
+													        const listItem = document.createElement('li');
+													        const anchor = document.createElement('a');
+													        anchor.href = `/downloadFile/${cleanFileName2}`; // Điều chỉnh URL nếu cần
+													        anchor.textContent = cleanFileName;
+													        listItem.appendChild(anchor);
+													        fileList.appendChild(listItem);
+												        }
+												    } else {
+												    	
+												        // Thực hiện một hành động phù hợp khi biến file không hợp lệ, ví dụ như hiển thị một thông báo
+												        console.log('Không có file được tải lên.');
+												        // Hoặc thực hiện một hành động khác
+												    }
+													// Mở modal
+													$('#updateHomeworkModal').modal('show');
+													document.querySelectorAll('.close')
+															.forEach(
+																	function(el) {
+																		el
+																				.addEventListener(
+																						'click',
+																						function() {
+																							$(
+																									'#updateHomeworkModal')
+																									.modal(
+																											'hide');
+																						});
+																	});
+
+};
+											</script>
+	<script>
+	function openUpdateSubmitHomeworkModal(
+			homeworkId,	
+			homeworkDescription,
+			file) {
+		// Điền dữ liệu vào các trường trong modal
+		document
+				.getElementById('updateSubmitHomeworkId').value = homeworkId;
+		
+		document
+				.getElementById('updateSubmitHomeworkDescription').value = homeworkDescription;
+		
+		// Kiểm tra xem biến file có giá trị hợp lệ không
+	    if (file && file.trim() !== '') {
+	        // Process the filePath to extract individual file names or paths
+	        const filePaths = file.split(','); // Assuming file paths are separated by semicolons (adjust if needed)
+	        
+	        // Create and append list items (LIs) for each file
+	        const fileList = document.getElementById('listCurrentSubmitHW');
+	        fileList.innerHTML = ''; // Clear existing content (if any)
+	        for (const filePath of filePaths) {
+	            const cleanFileName = filePath.replace(/[\[\]]/g, "");
+	            const listItem = document.createElement('li');
+	            const anchor = document.createElement('a');
+	            anchor.href = `/downloadFile/${cleanFileName}`; // Adjust URL as needed
+	            anchor.textContent = cleanFileName;
+	            listItem.appendChild(anchor);
+	            fileList.appendChild(listItem);
+	        }
+	    } else {
+	        // Thực hiện một hành động phù hợp khi biến file không hợp lệ, ví dụ như hiển thị một thông báo
+	        console.log('Không có file được tải lên.');
+	        // Hoặc thực hiện một hành động khác
+	    }
+		// Mở modal
+		$('#updateSubmitHomeworkModal').modal('show');
+		document.querySelectorAll('.close')
+				.forEach(
+						function(el) {
+							el
+									.addEventListener(
+											'click',
+											function() {
+												$(
+														'#updateSubmitHomeworkModal')
+														.modal(
+																'hide');
+											});
+						});
+
+};											
+											</script>
+											
+											`
+
+
 <style>
 .container1 bootstrap snippets bootdey {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;

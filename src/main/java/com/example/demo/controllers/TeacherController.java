@@ -101,6 +101,7 @@ public class TeacherController {
 	
 	@GetMapping("/enterClass/{classId}")
 	public String enterClassView(@PathVariable("classId") String id,Model m,HttpServletRequest request) {	
+		
 		HttpSession session = request.getSession();
 	    Account loggedInUser = (Account) session.getAttribute("loggedInUser");
 
@@ -179,6 +180,9 @@ public class TeacherController {
 
 	    m.addAttribute("countSubmittedByHomeworkId", countSubmittedByHomeworkId);
 	   
+	    //update submitdHomework
+	    List<SubmitHomework> listSubmitHomework = submitHomeworkRepository.findAll();	    
+	    m.addAttribute("listSubmitHomework",listSubmitHomework);
 	    
 	    return "/Classes/Class-Content";
 	}
