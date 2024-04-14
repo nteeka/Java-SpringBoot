@@ -2,6 +2,7 @@ package com.example.demo.models;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.Column;
@@ -10,6 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -42,6 +44,8 @@ public class Homework {
 	@Column(name = "isDeleted", columnDefinition = "boolean default false")
 	private boolean isDeleted;
 	
+	@Lob
+	@Column(columnDefinition = "MEDIUMTEXT")
 	private List<String> filePath;
 	
 	@Column(name = "status", columnDefinition = "boolean default false")

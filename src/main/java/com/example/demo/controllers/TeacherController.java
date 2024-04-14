@@ -203,26 +203,6 @@ public class TeacherController {
     }
 	
 	
-	@GetMapping("/submitHomeWorkView/{homeworkId}")
-	public String submitHomeWorkView(@PathVariable long homeworkId,Model model,HttpServletRequest request) {
-		
-		HttpSession session = request.getSession();
-	    Account loggedInUser = (Account) session.getAttribute("loggedInUser");
-
-	    if (loggedInUser == null) {
-	        return "/Authen/Login";
-	    }
-		
-		Optional<Homework> homework = homeworkRepository.findById(homeworkId);
-		//Kiểm tra deadline
-//		if (homework.get().getDeadline().isBefore(LocalDate.now())) {
-//		    model.addAttribute("lateDeadline", "You have your chance, but time is over! You cannot submit anymore.");
-//			return enterClassView(homework.get().getClasses().getClassId(),model,request);
-//		}
-
-		model.addAttribute("homework", homework.get());
-		return "/Homework/submitHomework";
-      
-	}
+	
 	
 }

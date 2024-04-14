@@ -389,20 +389,19 @@
 								    // Kiểm tra xem biến file có giá trị hợp lệ không
 								    if (file && file.trim() !== '') {
 								        // Process the filePath to extract individual file names or paths
-								        const filePaths = file.split(','); // Assuming file paths are separated by semicolons (adjust if needed)
-								        
-								        // Create and append list items (LIs) for each file
-								        const fileList = document.getElementById('listFile');
-								        fileList.innerHTML = ''; // Clear existing content (if any)
-								        for (const filePath of filePaths) {
-								            const cleanFileName = filePath.replace(/[\[\]]/g, "");
-								            const listItem = document.createElement('li');
-								            const anchor = document.createElement('a');
-								            anchor.href = `/downloadFile/${cleanFileName}`; // Adjust URL as needed
-								            const cutFileName = cleanFileName.slice(9);
-								            anchor.textContent = cutFileName;
-								            listItem.appendChild(anchor);
-								            fileList.appendChild(listItem);
+								    	const filePaths = file.split(','); // Giả sử các đường dẫn được phân tách bằng dấu phẩy (hãy điều chỉnh nếu cần)
+										// Tạo và thêm các mục danh sách (LIs) cho từng file
+										const fileList = document.getElementById('listFile');
+										fileList.innerHTML = ''; // Xóa nội dung hiện có (nếu có)
+										for (const filePath of filePaths) {
+									            const cleanFileName2 = filePath.trim().replace(/[\[\]]/g, "");
+										        const cleanFileName = filePath.replace(/.*?_notify_/, '').replace(/\]/g, ''); // Loại bỏ phần tiền tố "id_homework_" và ký tự "]"
+										        const listItem = document.createElement('li');
+										        const anchor = document.createElement('a');
+										        anchor.href = `/downloadFile/${cleanFileName2}`; // Điều chỉnh URL nếu cần
+										        anchor.textContent = cleanFileName;
+										        listItem.appendChild(anchor);
+										        fileList.appendChild(listItem);
 								        }
 								    } else {
 								        // Thực hiện một hành động phù hợp khi biến file không hợp lệ, ví dụ như hiển thị một thông báo
@@ -507,7 +506,7 @@
 		<a th:if="${c.account.accountId == session.loggedInUser.accountId}"  class="btn btn-primary" th:href="'/Homework/listMemberSubmited/' + ${homework.homeworkId}">Danh sách</a>
 		<a	id="submitHomeworkButton" 
 			th:data-deadline="${homework.deadline}" th:if="${!listSubmit.contains(homework.homeworkId) && c.account.accountId != session.loggedInUser.accountId }"
-			th:href="@{'/Teacher/submitHomeWorkView/' + ${homework.homeworkId}}"
+			th:href="@{'/Homework/submitHomeWorkView/' + ${homework.homeworkId}}"
 			class="btn btn-primary">Nộp bài
 		</a>
 		<a th:each="list : ${listSubmitHomework}" 

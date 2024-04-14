@@ -1,6 +1,10 @@
 package com.example.demo.helpers;
 
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
+import com.cloudinary.*;
+
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -8,6 +12,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -20,6 +27,8 @@ import java.io.File;
 import java.nio.file.Files;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import com.cloudinary.utils.ObjectUtils;
+
 @RestController
 public class FileDownload {
 	// Thay đổi đường dẫn đến thư mục lưu trữ file tải xuống tùy thuộc vào cấu hình của bạn
@@ -48,6 +57,24 @@ public class FileDownload {
             // Nếu có lỗi xảy ra, trả về response lỗi 500
             return ResponseEntity.status(500).build();
         }
+    }
+    
+    @GetMapping("/downloadFileCloud/{publicId}")
+    @ResponseBody
+    public byte[] downloadFileCloud(@PathVariable String publicId) throws IOException {
+        // Replace 'your_cloud_name', 'your_api_key', and 'your_api_secret' with your Cloudinary credentials
+        String cloudName = "dccmckgvc";
+        String apiKey = "891328625785465";
+        String apiSecret = "szFBRogObiQHosinNgfK9pA1W0I";
+        
+        // Replace 'your_cloud_name' with your Cloudinary cloud name
+        String url = "https://res.cloudinary.com/" + cloudName + "/raw/upload/" + publicId;
+
+        // Create a RestTemplate to send HTTP requests
+        RestTemplate restTemplate = new RestTemplate();
+
+        // Send a GET request to download the file
+        return restTemplate.getForObject(url, byte[].class);
     }
 
 }

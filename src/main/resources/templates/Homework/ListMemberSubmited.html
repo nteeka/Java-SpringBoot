@@ -5,53 +5,66 @@
     <div class="table-responsive">
     	<!-- PROJECT TABLE -->
     	<table class="table colored-header datatable project-list">
-    		<thead>
-    			<tr>
-    			
-    				
-                    <th>Member</th>
-					    					
-                    
-    				<th>Date Submited</th>
-    				<th>Status</th>
-    				
-    				<th>Files</th>
-    				
-    				<th>Point</th>
-    				<th>Action</th>
-    			</tr>
-    		</thead>
-    		<tbody>
-    			<tr th:each="submit : ${listSubmited}">
-    			    <td><img th:src="@{'/image/getImage/' + ${submit.account.image}}" alt="Avatar" class="avatar img-circle"> <a href="#"><span th:text="${submit.account.displayName}"></span></a></td>   			
-    				<td><span th:text="${#temporals.format(submit.dateSubmited, 'dd/MM/yyyy HH:mm')}"></span></td>
-    				
-    				<td th:if="${submit.status}">
-    					<span style="color: green;">ON TIME</span>
-    				</td>
-    				<td th:if="${!submit.status}">
-    					<span style="color: red;">LATE</span>
-    				</td>
-    				
-    				<td>
-    					<ul>
-							<li th:each="file : ${submit.filePath}">
-								<a th:href="@{'/downloadFile/' + ${file}}" th:text="${file}">Download</a>
-							</li>
-						</ul>
-    				</td>
-    				
-    				<td><span>_/10</span> </td>
-    				<td>
-	    				<div class="btn-group">
-	    					<a class="btn btn-primary" href="#">Give point</a>
-	    					<a class="btn btn-info" href="#">See detail</a>
-	    				</div>  					 
-    				</td>
-    			</tr>
-    			
-    		</tbody>
-    	</table>
+    <thead>
+        <tr>
+            <th>Member</th>
+            <th>Date Submited</th>
+            <th>Status</th>
+            <th>Files</th>
+            <th>Point</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="submit : ${listSubmited}">
+            <td>
+                <img th:src="@{'/image/getImage/' + ${submit.account.image}}" alt="Avatar" class="avatar img-circle">
+                <a href="#">
+                    <span th:text="${submit.account.displayName}"></span>
+                </a>
+            </td>
+            <td>
+                <span th:text="${#temporals.format(submit.dateSubmited, 'dd/MM/yyyy HH:mm')}"></span>
+            </td>
+            <td th:if="${submit.status}">
+                <span style="color: green;">ON TIME</span>
+            </td>
+            <td th:if="${!submit.status}">
+                <span style="color: red;">LATE</span>
+            </td>
+	
+           	<td>
+			    <ul>
+			        <li th:each="fileUrl : ${submit.filePath}">
+			            <a th:href="${fileUrl}"><span th:text="${fileUrl}"></span></a>
+			        </li>
+			    </ul>
+			</td>
+
+            <td>
+                <span>_/10</span>
+            </td>
+            <td>
+                <div class="btn-group">
+                    <a class="btn btn-primary" href="#">Give point</a>
+                    <a class="btn btn-info" href="#">See detail</a>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var fileSpans = document.querySelectorAll("ul li span");
+        fileSpans.forEach(function(fileSpan) {
+            var url = fileSpan.textContent; // Lấy nội dung của thẻ span, tức là URL
+            var filename = url.substring(url.lastIndexOf('/') + 1);
+            var regex = /.*?_submitHomework_/; // Biểu thức chính quy để tìm phần tiền tố
+            filename = filename.replace(regex, ''); // Loại bỏ phần tiền tố từ tên file
+            fileSpan.textContent = filename; // Thay đổi nội dung của thẻ span thành tên file
+        });
+    });
+</script>
     	<!-- END PROJECT TABLE -->
     </div>
 </div>

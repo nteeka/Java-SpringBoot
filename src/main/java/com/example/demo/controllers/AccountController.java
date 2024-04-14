@@ -171,6 +171,7 @@ public class AccountController {
             // Lấy URL của hình ảnh từ Cloudinary và lưu vào đối tượng tài khoản
             String imageUrl = (String) uploadResult.get("url");
             account.get().setImage(imageUrl);
+            
 	        
 	    } catch (Exception e) {
 	        e.printStackTrace();
