@@ -37,7 +37,7 @@ public class SubmitHomework {
 	
 	private LocalDateTime lastModified;
 	
-	private List<String> filePath;
+	private List<Long> filePath;
 	
 //	private String message;
 	
@@ -77,11 +77,11 @@ public class SubmitHomework {
 		this.description = description;
 	}
 
-	public List<String> getFilePath() {
+	public List<Long> getFilePath() {
 		return filePath;
 	}
 
-	public void setFilePath(List<String> filePath) {
+	public void setFilePath(List<Long> filePath) {
 		this.filePath = filePath;
 	}
 
@@ -117,7 +117,7 @@ public class SubmitHomework {
 	}
 	
 	public SubmitHomework(long submitHomeworkId, Account account, Homework homework, String description,
-			List<String> filePath, boolean status) {
+			List<Long> filePath, boolean status) {
 		
 		this.submitHomeworkId = submitHomeworkId;
 		this.account = account;

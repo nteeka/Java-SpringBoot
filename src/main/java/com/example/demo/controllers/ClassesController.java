@@ -22,6 +22,7 @@ import com.example.demo.models.ClassAccount;
 import com.example.demo.models.Classes;
 import com.example.demo.models.Comment;
 import com.example.demo.models.CommentLike;
+import com.example.demo.models.FileAttach;
 import com.example.demo.models.Homework;
 import com.example.demo.models.Notification;
 import com.example.demo.models.ReplyComment;
@@ -31,6 +32,7 @@ import com.example.demo.repositories.ClassAccountRepository;
 import com.example.demo.repositories.ClassRepository;
 import com.example.demo.repositories.CommentLikeRepository;
 import com.example.demo.repositories.CommentRepository;
+import com.example.demo.repositories.FileAttachRepository;
 import com.example.demo.repositories.HomeworkRepository;
 import com.example.demo.repositories.NotificationRepository;
 import com.example.demo.repositories.ReplyCommentRepository;
@@ -79,6 +81,9 @@ public class ClassesController {
 	
 	@Autowired
     private AccountRepository accountRepository;
+	
+	@Autowired
+    private FileAttachRepository fileAttachRepository;
 	
 	
 	@GetMapping("/listClass")
@@ -375,6 +380,10 @@ public class ClassesController {
 	    Optional<Account> accountImg = accountRepository.findById(loggedInUser.getAccountId());
 	    
         m.addAttribute("account",accountImg.get());
+        
+        List<FileAttach> listFile = fileAttachRepository.findAll();
+		m.addAttribute("listFile", listFile);
+	    
 	    
 	    return "/Classes/Class-Content";
 	}

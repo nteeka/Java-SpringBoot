@@ -18,7 +18,7 @@
     <tbody>
         <tr th:each="submit : ${listSubmited}">
             <td>
-                <img th:src="@{'/image/getImage/' + ${submit.account.image}}" alt="Avatar" class="avatar img-circle">
+                <img th:src="${submit.account.image}" alt="Avatar" class="avatar img-circle">
                 <a href="#">
                     <span th:text="${submit.account.displayName}"></span>
                 </a>
@@ -34,9 +34,9 @@
             </td>
 	
            	<td>
-			    <ul>
-			        <li th:each="fileUrl : ${submit.filePath}">
-			            <a th:href="${fileUrl}"><span th:text="${fileUrl}"></span></a>
+			    <ul>			        
+			        <li th:each="fileUrl : ${listFile}" th:if="${fileUrl.submitHomework != null and fileUrl.submitHomework.submitHomeworkId == submit.submitHomeworkId}" >
+			            <a th:href="${fileUrl.filePath}"><span th:text="${fileUrl.filePath}"></span></a>
 			        </li>
 			    </ul>
 			</td>

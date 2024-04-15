@@ -39,7 +39,7 @@ public class Notification {
 	@Column(name = "isDeleted", columnDefinition = "boolean default false")
 	private boolean isDeleted;
 	
-	private List<String> filePath; // multiple file
+	private List<Long> filePath; // multiple file
 	
 	private LocalDateTime dateCreated;
 	
@@ -100,11 +100,11 @@ public class Notification {
 		this.isDeleted = isDeleted;
 	}
 
-	public List<String> getFilePath() {
+	public List<Long> getFilePath() {
 		return filePath;
 	}
 
-	public void setFilePath(List<String> filePath) {
+	public void setFilePath(List<Long> filePath) {
 		this.filePath = filePath;
 	}
 
@@ -140,7 +140,7 @@ public class Notification {
 	}
 
 	public Notification(long notifyId, String title, Classes classes, Account account, String content,
-			boolean isDeleted, List<String> filePath, LocalDateTime dateCreated, LocalDateTime lastModifed, long numComment) {
+			boolean isDeleted, List<Long> filePath, LocalDateTime dateCreated, LocalDateTime lastModifed, long numComment) {
 		this.notifyId = notifyId;
 		this.title = title;
 		this.classes = classes;

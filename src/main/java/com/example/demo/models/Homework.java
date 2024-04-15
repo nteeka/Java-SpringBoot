@@ -46,7 +46,7 @@ public class Homework {
 	
 	@Lob
 	@Column(columnDefinition = "MEDIUMTEXT")
-	private List<String> filePath;
+	private List<Long> filePath;
 	
 	@Column(name = "status", columnDefinition = "boolean default false")
 	private boolean status;
@@ -61,11 +61,11 @@ public class Homework {
 		this.status = status;
 	}
 
-	public List<String> getFilePath() {
+	public List<Long> getFilePath() {
 		return filePath;
 	}
 
-	public void setFilePath(List<String> filePath) {
+	public void setFilePath(List<Long> filePath) {
 		this.filePath = filePath;
 	}
 
@@ -180,7 +180,7 @@ public class Homework {
 
 
 	public Homework(long homeworkId, String homeworkName, Classes classes, String description, LocalDateTime dateCreated,
-			LocalDateTime lastModified, LocalDate deadline, boolean isDeleted, List<String> filePath, boolean status) {
+			LocalDateTime lastModified, LocalDate deadline, boolean isDeleted, List<Long> filePath, boolean status) {
 		this.homeworkId = homeworkId;
 		this.homeworkName = homeworkName;
 		this.classes = classes;

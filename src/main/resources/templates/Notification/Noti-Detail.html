@@ -298,8 +298,8 @@
    	<div >
 		<!-- <a th:href="@{'/downloadFile/' + ${noti.filePath}}" th:text="${noti.filePath}">Download</a><!-- You can modify the link text and URL as needed -->
 		 <ul>
-        <li th:each="fileName : ${noti.filePath}">
-            <a th:href="@{'/downloadFile/' + ${fileName}}" th:text="${fileName}">Download</a>
+        <li th:each="fileName : ${listFile}">
+    <a th:href="${fileName.filePath}" th:text="${fileName.filePath.replaceFirst('.*_Notify_', '')}"></a>
         </li>
     </ul>
 	</div>

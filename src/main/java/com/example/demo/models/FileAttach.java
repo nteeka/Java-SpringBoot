@@ -27,6 +27,10 @@ public class FileAttach {
     @JoinColumn(name = "homeworkId") // Specify the foreign key column
     private Homework homework;
 	
+	@ManyToOne
+    @JoinColumn(name = "submitHomeworkId") // Specify the foreign key column
+    private SubmitHomework submitHomework;
+	
 	private String filePath;
 
 	public long getFileAttId() {
@@ -60,19 +64,31 @@ public class FileAttach {
 	public void setFilePath(String filePath) {
 		this.filePath = filePath;
 	}
+	
+
+	public SubmitHomework getSubmitHomework() {
+		return submitHomework;
+	}
+
+	public void setSubmitHomework(SubmitHomework submitHomework) {
+		this.submitHomework = submitHomework;
+	}
 
 	public FileAttach() {
 		
 	}
 	
 	
-	public FileAttach(long fileAttId, Notification notify, Homework homework, String filePath) {
-		
+	public FileAttach(long fileAttId, Notification notify, Homework homework, SubmitHomework submitHomework,
+			String filePath) {
 		this.fileAttId = fileAttId;
 		this.notify = notify;
 		this.homework = homework;
+		this.submitHomework = submitHomework;
 		this.filePath = filePath;
 	}
+
+	
 	
 	
 }

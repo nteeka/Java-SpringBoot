@@ -1,22 +1,22 @@
 <div th:replace="/ViewLayout/header.html"></div>
 
-<div class="container">
+<div style="margin-top: 30px" class="container">
         <div class="row">
-            <div class="col-lg-4">
+            <div th:each="noti : ${listNoti}" class="col-lg-4">
                 <div class="card card-margin">
                     <div class="card-header no-border">
-                        <h5 class="card-title">Người tạo</h5>
+                        <h5 class="card-title" th:text="${noti.account.displayName}"></h5>
                     </div>
                     <div class="card-body pt-0">
                         <div class="widget-49">
                             <div class="widget-49-title-wrapper">
                                 <div class="widget-49-date-primary">
-                                    <span class="widget-49-date-day">09</span>
-                                    <span class="widget-49-date-month">apr</span>
+                                    <span class="widget-49-date-day" th:text="${#temporals.format(noti.dateCreated, 'dd')}"></span>
+									<span class="widget-49-date-month" th:text="${#temporals.format(noti.dateCreated, 'MMM')}"></span>
                                 </div>
                                 <div class="widget-49-meeting-info">
-                                    <span class="widget-49-pro-title">Tên thông báo</span>
-                                    <span class="widget-49-meeting-time">Ngày tạo</span>
+                                    <span class="widget-49-pro-title" th:text="${noti.title}"></span>
+                                    <span class="widget-49-meeting-time">Nhãn dán</span>
                                 </div>
                             </div>
                             <ol class="widget-49-meeting-points">
@@ -25,7 +25,7 @@
                                 <li class="widget-49-meeting-item"><span>Session timeout increase to 30 minutes</span></li>
                             </ol>
                             <div class="widget-49-meeting-action">
-                                <a href="#" class="btn btn-sm btn-flash-border-primary">View All</a>
+                                <a th:href="@{'/Notify/detailNoti/' + ${noti.notifyId}}" class="btn btn-sm btn-flash-border-primary">View All</a>
                             </div>
                         </div>
                     </div>
@@ -92,10 +92,7 @@
         </div>
         </div>
 <style>
-body{
-    background: #F4F7FD;
-    margin-top:20px;
-}
+
 
 .card-margin {
     margin-bottom: 1.875rem;

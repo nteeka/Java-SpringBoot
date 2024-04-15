@@ -189,19 +189,6 @@ public class TeacherController {
 	
 	
 	
-		
-	
-	
-	@GetMapping("/deleteHomework/{homeworkId}")
-    public String deleteHomework(@PathVariable("homeworkId") long id) {	       	               
-        
-		Optional<Homework> currentHW = homeworkRepository.findById(id);
-		Homework deletedHW = currentHW.get();
-		deletedHW.setDeleted(true);	
-		homeworkRepository.save(deletedHW);
-    	return "redirect:/Class/enterClass/" + deletedHW.getClasses().getClassId();
-    }
-	
 	
 	
 	

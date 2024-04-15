@@ -498,27 +498,41 @@
     </td>
 	<td>
 	<div class="btn-group">
-		<a th:if="${c.account.accountId == session.loggedInUser.accountId}" href="#" class="btn btn-primary" data-toggle="modal"
-			data-target="#updateHomeworkModal"
-			th:attr="onclick='openUpdateHomeworkModal(\'' + ${homework.homeworkId} + '\', \'' + ${homework.homeworkName} + '\', \'' + ${homework.description} + '\', \'' + ${homework.deadline} + '\', \'' + ${homework.filePath} + '\')'">
-			<span class="fa fa-pencil"></span> Edit
-		</a>
-		<a th:if="${c.account.accountId == session.loggedInUser.accountId}"  class="btn btn-primary" th:href="'/Homework/listMemberSubmited/' + ${homework.homeworkId}">Danh sách</a>
-		<a	id="submitHomeworkButton" 
-			th:data-deadline="${homework.deadline}" th:if="${!listSubmit.contains(homework.homeworkId) && c.account.accountId != session.loggedInUser.accountId }"
-			th:href="@{'/Homework/submitHomeWorkView/' + ${homework.homeworkId}}"
-			class="btn btn-primary">Nộp bài
-		</a>
-		<a th:each="list : ${listSubmitHomework}" 
-			th:if="${list.account.accountId == session.loggedInUser.accountId 
-    and list.homework.homeworkId == homework.homeworkId 
-    and (homework.deadline == null || homework.deadline.isAfter(T(java.time.LocalDate).now()))}"	
+		<!-- Người tạo lớp -->
+		<div th:if="${c.account.accountId == session.loggedInUser.accountId}">
+			<a href="#" class="btn btn-primary" data-toggle="modal"
+			    data-target="#updateHomeworkModal"
+			    th:attr="onclick='openUpdateHomeworkModal(\'' + ${homework.homeworkId} + '\', \'' + ${homework.homeworkName} + '\', \'' + ${homework.description} + '\', \'' + ${homework.deadline} + '\', \'' + ${fileId} + '\')'">
+			    <span class="fa fa-pencil"></span> Edit
+			</a>
+			
+			
+			<a href="#" class="btn btn-danger"
+				th:attr="onclick='confirmDeleteHomework(\'' + ${homework.homeworkId} + '\')'">
+				<span class="fa fa-trash"></span> Delete
+			</a>
+			<a class="btn btn-primary" th:href="'/Homework/listMemberSubmited/' + ${homework.homeworkId}">Danh sách</a>
 		
-			href="#" class="btn btn-primary btn-sm" data-toggle="modal"
-			data-target="#updateSubmitHomeworkModal"
-			th:attr="onclick='openUpdateSubmitHomeworkModal(\'' + ${list.submitHomeworkId} + '\', \'' + ${list.description} + '\', \'' + ${list.filePath} + '\')'">
-			<span class="fa fa-pencil"></span> Chỉnh sửa bài nộp
-		</a>
+		</div>
+		<!-- THành viên -->
+		<div th:if="${c.account.accountId != session.loggedInUser.accountId}">
+			<a	id="submitHomeworkButton" 
+				th:data-deadline="${homework.deadline}" th:if="${!listSubmit.contains(homework.homeworkId)}"
+				th:href="@{'/Homework/submitHomeWorkView/' + ${homework.homeworkId}}"
+				class="btn btn-primary">
+				Nộp bài
+			</a>
+			<a th:each="list : ${listSubmitHomework}" 
+				th:if="${list.account.accountId == session.loggedInUser.accountId 
+	    			and list.homework.homeworkId == homework.homeworkId 
+	    			and (homework.deadline == null || homework.deadline.isAfter(T(java.time.LocalDate).now()))}"			
+				href="#" class="btn btn-primary btn-sm" data-toggle="modal"
+				data-target="#updateSubmitHomeworkModal"
+				th:attr="onclick='openUpdateSubmitHomeworkModal(\'' + ${list.submitHomeworkId} + '\', \'' + ${list.description} + '\', \'' + ${list.filePath} + '\')'">
+				<span class="fa fa-pencil"></span> Chỉnh sửa bài nộp
+			</a>
+		</div>
+		
 	</div>
 	</td>
 </tr>
@@ -641,9 +655,9 @@
 					<div class="form-group mt-3">
 						<label class="mr-2">Current Files:</label>
 						<div>
-							<ul id="listCurrentHW">
-																			
-							</ul>
+							 <ul id="listCurrentHW"> 
+							 	</ul> 
+							
 						</div>
 					</div>
 					<div class="form-group mt-3">
@@ -678,9 +692,11 @@
 					<div class="form-group mt-3">
 						<label class="mr-2">Current Files:</label>
 						<div>
-							<ul id="listCurrentSubmitHW">
-																			
-							</ul>
+							<ul id="fileList">
+					            
+        					</ul>
+							
+						    
 						</div>
 					</div>
 					<div class="form-group mt-3">
@@ -717,12 +733,12 @@
 													    const fileList = document.getElementById('listCurrentHW');
 													    fileList.innerHTML = ''; // Xóa nội dung hiện có (nếu có)
 													    for (const filePath of filePaths) {
-												            const cleanFileName2 = filePath.trim().replace(/[\[\]]/g, "");
-													        const cleanFileName = filePath.replace(/.*?_homework_/, '').replace(/\]/g, ''); // Loại bỏ phần tiền tố "id_homework_" và ký tự "]"
+												            //const cleanFileName2 = filePath.trim().replace(/[\[\]]/g, "");
+													        //const cleanFileName = filePath.replace(/.*?_homework_/, '').replace(/\]/g, ''); // Loại bỏ phần tiền tố "id_homework_" và ký tự "]"
 													        const listItem = document.createElement('li');
 													        const anchor = document.createElement('a');
-													        anchor.href = `/downloadFile/${cleanFileName2}`; // Điều chỉnh URL nếu cần
-													        anchor.textContent = cleanFileName;
+													        anchor.href = `/downloadFile/${filePath}`; // Điều chỉnh URL nếu cần
+													        anchor.textContent = filePath;
 													        listItem.appendChild(anchor);
 													        fileList.appendChild(listItem);
 												        }
@@ -761,29 +777,23 @@
 		
 		document
 				.getElementById('updateSubmitHomeworkDescription').value = homeworkDescription;
+		// Thêm các file vào danh sách
+		const fileList = document.getElementById('fileList');
+        file.forEach(function(fileUrl) {
+            var listItem = document.createElement('li');
+            listItem.setAttribute('th:each', 'fileUrl : ${listFile}');
+            listItem.setAttribute('th:if', '${fileUrl.submitHomework.submitHomeworkId == ' + submitHomeworkId + '}');
+
+            var link = document.createElement('a');
+            link.setAttribute('th:href', fileUrl);
+            var span = document.createElement('span');
+            span.setAttribute('th:text', fileUrl);
+            link.appendChild(span);
+            listItem.appendChild(link);
+            fileList.appendChild(listItem);
+        });
+        
 		
-		// Kiểm tra xem biến file có giá trị hợp lệ không
-	    if (file && file.trim() !== '') {
-	        // Process the filePath to extract individual file names or paths
-	        const filePaths = file.split(','); // Assuming file paths are separated by semicolons (adjust if needed)
-	        
-	        // Create and append list items (LIs) for each file
-	        const fileList = document.getElementById('listCurrentSubmitHW');
-	        fileList.innerHTML = ''; // Clear existing content (if any)
-	        for (const filePath of filePaths) {
-	            const cleanFileName = filePath.replace(/[\[\]]/g, "");
-	            const listItem = document.createElement('li');
-	            const anchor = document.createElement('a');
-	            anchor.href = `/downloadFile/${cleanFileName}`; // Adjust URL as needed
-	            anchor.textContent = cleanFileName;
-	            listItem.appendChild(anchor);
-	            fileList.appendChild(listItem);
-	        }
-	    } else {
-	        // Thực hiện một hành động phù hợp khi biến file không hợp lệ, ví dụ như hiển thị một thông báo
-	        console.log('Không có file được tải lên.');
-	        // Hoặc thực hiện một hành động khác
-	    }
 		// Mở modal
 		$('#updateSubmitHomeworkModal').modal('show');
 		document.querySelectorAll('.close')
@@ -803,7 +813,18 @@
 };											
 											</script>
 											
-											`
+<script>
+			function confirmDeleteHomework(homeworkId) {
+				var result = confirm("Are you sure you want to delete this homework?");
+												if (result) {
+													// User clicked 'Yes', redirect to the delete URL
+													window.location.href = "/Homework/deleteHomework/"
+															+ homeworkId;
+												} else {
+													// User clicked 'No', do nothing
+												}
+											}
+										</script>											`
 
 
 <style>
