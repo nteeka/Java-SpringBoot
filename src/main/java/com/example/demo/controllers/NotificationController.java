@@ -89,10 +89,19 @@ public class NotificationController {
 			"891328625785465", "api_secret", "szFBRogObiQHosinNgfK9pA1W0I"));
 
 	@GetMapping("/listNoti/{classId}")
-	public String listNotification(@PathVariable("classId") String id, Model m) {
+	public String listNotification(@PathVariable("classId") String id, Model m,HttpServletRequest request) {
+		
+		HttpSession session = request.getSession();
+		Account loggedInUser = (Account) session.getAttribute("loggedInUser");
+		if (loggedInUser == null) {
+			return "/Authen/Login";
+		}
+		//img header
+		m.addAttribute("account", loggedInUser);
 
 		List<Notification> listNoti = notifyRepository.findByClassId(id);
 		m.addAttribute("listNoti", listNoti);
+		m.addAttribute("classInfo", listNoti.get(0).getClasses());
 		return "/Notification/Noti-List";
 	}
 

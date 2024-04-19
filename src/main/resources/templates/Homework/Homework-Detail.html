@@ -21,8 +21,9 @@
                             <div>
                             	<ul>
                             		
-                            		<li th:each="fileName : ${homework.filePath}">
-									    <a th:href="@{'/downloadFile/' + ${fileName}}" th:text="${#strings.substring(fileName, 12)}">Download</a>
+                            		<li th:each="fileName : ${listFile}">
+									    <a th:href="${fileName.filePath}" th:text="${#strings.substringAfter(fileName.filePath, '_Homework_')}"></a>
+										
 									</li>
                             		
                             	</ul>

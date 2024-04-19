@@ -26,12 +26,22 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.example.demo.models.Account;
 import com.example.demo.models.ClassAccount;
 import com.example.demo.models.Classes;
+import com.example.demo.models.Comment;
+import com.example.demo.models.CommentLike;
 import com.example.demo.models.FileAttach;
 import com.example.demo.models.Homework;
+import com.example.demo.models.Notification;
+import com.example.demo.models.ReplyComment;
 import com.example.demo.models.SubmitHomework;
 import com.example.demo.repositories.AccountRepository;
+import com.example.demo.repositories.ClassAccountRepository;
+import com.example.demo.repositories.ClassRepository;
+import com.example.demo.repositories.CommentLikeRepository;
+import com.example.demo.repositories.CommentRepository;
 import com.example.demo.repositories.FileAttachRepository;
 import com.example.demo.repositories.HomeworkRepository;
+import com.example.demo.repositories.NotificationRepository;
+import com.example.demo.repositories.ReplyCommentRepository;
 import com.example.demo.repositories.SubmitHomeworkRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -55,9 +65,128 @@ public class HomeworkController {
 
 	@Autowired
 	private AccountRepository accountRepository;
+	
+	@Autowired
+	private ClassRepository classRepository;
+	
+	@Autowired
+	private ClassAccountRepository classAccountRepository;
+	
+	@Autowired
+	private NotificationRepository notifyRepository;
+	
+	@Autowired
+	private CommentRepository commentRepository;
+	
+	@Autowired
+	private CommentLikeRepository commentLikeRepository;
+	
+	@Autowired
+	private ReplyCommentRepository replyRepository;
+	
 
 	@Autowired
 	private FileAttachRepository fileAttachRepository;
+	
+	
+	@GetMapping("/listHomework/{classId}")
+	public String listHomework(@PathVariable("classId") String id, Model m, HttpServletRequest request) {
+		
+		
+		HttpSession session = request.getSession();
+	    Account loggedInUser = (Account) session.getAttribute("loggedInUser");
+
+	    if (loggedInUser == null) {
+	        return "/Authen/Login";
+	    }
+		
+		
+		//get class id
+	    Optional<Classes> c = classRepository.findById(id);
+	    m.addAttribute("id", c.get().getClassId());	    
+		m.addAttribute("c", c.get());
+	    //get class list which is already joined
+//	    List<ClassAccount> account = classAccountRepository.findByAccountId(loggedInUser.getAccountId());  
+//	    List<Classes> classes = new ArrayList<Classes>();
+//	    for (ClassAccount classes2 : account) {
+//	    	if(classes2.getClasses().getClassId() != id)
+//	    		classes.add(classes2.getClasses());
+//	    }
+//	    m.addAttribute("classes",classes);
+	    
+	    //all homework
+	    List<Homework> hw = homeworkRepository.findByClassId(id);
+	    m.addAttribute("hw",hw);
+	    
+	    //check done or not done
+	    List<Long> listSubmit = submitHomeworkRepository.listHomeworkByAccountId(loggedInUser.getAccountId());	    
+	    m.addAttribute("listSubmit",listSubmit);
+	    
+//	    //get all account on this class
+//	    List<ClassAccount> acc = classAccountRepository.findByClassId(id);
+//	    List<Account> listAccount = new ArrayList<Account>();
+//	    for (ClassAccount lstAcc : acc)
+//	    {
+//	    	//phân biệt người tạo ra lớp với người tham gia
+//	    	if(lstAcc.getAccount().getAccountId() != c.get().getAccount().getAccountId())
+//	    		listAccount.add(lstAcc.getAccount());
+//	    }
+//	    m.addAttribute("listAccount",listAccount);
+	    
+	    List<Notification> notifies = notifyRepository.findByClassId(c.get().getClassId());
+	    m.addAttribute("notifies",notifies);
+	    
+	    List<Long> lstNotifyId = notifyRepository.listNotifyId(c.get().getClassId());
+	    m.addAttribute("lstNotifyId",lstNotifyId);
+	    
+	    List<Comment> listComment = commentRepository.findAllNotDeleted();	    
+	    m.addAttribute("listComment",listComment);
+	    
+	    List<CommentLike> checkLikeComment = commentLikeRepository.findByAccountId(loggedInUser.getAccountId());
+	    
+	    List<Long> check = new ArrayList<Long>();
+	    for (CommentLike commentLike : checkLikeComment) {
+			for (Comment cmt22 : listComment) {
+				if(commentLike.getComment().getCommentId() == cmt22.getCommentId())
+					check.add(cmt22.getCommentId());
+			}
+		}
+	    m.addAttribute("checkLikeComment",check);
+	    
+	    List<ReplyComment> listReply = replyRepository.findAll();
+	    
+	    m.addAttribute("listReply",listReply);
+	    
+	    
+	    m.addAttribute("checkLikeComment",check);
+	    
+	    
+	    Long countMember = classAccountRepository.countAccountsInClass(id);
+	    m.addAttribute("countMember",countMember);
+	    List<SubmitHomework> countSubmited = submitHomeworkRepository.countSubmited(id);
+	    m.addAttribute("countSubmited",countSubmited);
+	    Map<Long, Integer> countSubmittedByHomeworkId = new HashMap<>();
+	    for (SubmitHomework submission : countSubmited) {
+	        Long homeworkId = submission.getHomework().getHomeworkId();
+	        countSubmittedByHomeworkId.put(homeworkId, countSubmittedByHomeworkId.getOrDefault(homeworkId, 0) + 1);
+	    }
+
+	    m.addAttribute("countSubmittedByHomeworkId", countSubmittedByHomeworkId);
+	   
+	    //update submitdHomework
+	    List<SubmitHomework> listSubmitHomework = submitHomeworkRepository.findAll();	    
+	    m.addAttribute("listSubmitHomework",listSubmitHomework);
+	    
+	    Optional<Account> accountImg = accountRepository.findById(loggedInUser.getAccountId());
+	    
+        m.addAttribute("account",accountImg.get());
+        
+        List<FileAttach> listFile = fileAttachRepository.findAll();
+		m.addAttribute("listFile", listFile);
+		
+		return "/Homework/Homework-List";
+	}
+	
 
 	@PostMapping("/createHomework")
 	public String createHomework(@RequestParam("homeworkName") String homeworkName,
@@ -435,6 +564,9 @@ public class HomeworkController {
 
 		List<SubmitHomework> listSubmit = submitHomeworkRepository.listSubmitHomeworkByHomeworkId(homeworkId);
 		m.addAttribute("listSubmit", listSubmit);
+		
+		List<FileAttach> listFile = fileAttachRepository.findByHomeworkId(homeworkId);
+		m.addAttribute("listFile", listFile);
 		return "/Homework/Homework-Detail";
 	}
 

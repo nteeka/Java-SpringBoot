@@ -295,6 +295,11 @@ public class ClassesController {
 //	    for (SubmitHomework submitHomework : listSubmitHomework) {
 //	    	submitHomework.getHomework().getDeadline().isAfter(null);
 //		}
+		
+		
+		
+		
+		
 		HttpSession session = request.getSession();
 	    Account loggedInUser = (Account) session.getAttribute("loggedInUser");
 
