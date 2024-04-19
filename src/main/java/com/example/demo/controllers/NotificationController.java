@@ -148,6 +148,25 @@ public class NotificationController {
 		return "redirect:/Class/enterClass/" + notify.getClasses().getClassId();
 	}
 
+	@GetMapping("/editNoti/{notifyId}")
+	public String editHomeworkView(@PathVariable long notifyId, Model m, HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		Account loggedInUser = (Account) session.getAttribute("loggedInUser");
+//		if (loggedInUser == null) {
+//			return "/Authen/Login";
+//		}
+		// ảnh user login trên header
+		m.addAttribute("account", loggedInUser);
+
+		Optional<Notification> noti = notifyRepository.findById(notifyId);
+		m.addAttribute("noti", noti.get());
+		
+		List<FileAttach> listFile = fileAttachRepository.findByNotifyId(notifyId);
+		m.addAttribute("listFile", listFile);
+		
+		return "/Notification/Noti-Edit";
+	}
+	
 	public static void deleteFile(String filePath) {
 		filePath = extractPublicId(filePath);
 		try {

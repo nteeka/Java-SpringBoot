@@ -308,7 +308,8 @@
 										<a th:href="@{'/Notify/detailNoti/' + ${noti.notifyId}}"
 											class="btn btn-primary btn-sm"
 											style="position: absolute; bottom: 10px; right: 10px;">See
-											detail</a> <a
+											detail</a> 
+											<a
 											th:if="${noti.account.accountId == session.loggedInUser.accountId }"
 											href="#" class="btn btn-primary btn-sm" data-toggle="modal"
 											data-target="#updateNotifyModal"
@@ -316,7 +317,15 @@
 
 											<span class="fa fa-pencil"></span> Edit
 
-										</a> <a
+										</a> 
+										<a
+											th:if="${noti.account.accountId == session.loggedInUser.accountId }"
+											th:href="'/Notify/editNoti/' + ${noti.notifyId}" class="btn btn-primary btn-sm">
+
+											<span class="fa fa-pencil"></span> Edit1
+
+										</a> 
+										<a
 											th:if="${noti.account.accountId == session.loggedInUser.accountId }"
 											th:attr="onclick='confirmDelete(\'' + ${noti.notifyId} + '\')'"
 											class="btn btn-danger btn-xs"><span class="fa fa-trash"></span>
@@ -504,6 +513,9 @@
 			    data-target="#updateHomeworkModal"
 			    th:attr="onclick='openUpdateHomeworkModal(\'' + ${homework.homeworkId} + '\', \'' + ${homework.homeworkName} + '\', \'' + ${homework.description} + '\', \'' + ${homework.deadline} + '\', \'' + ${fileId} + '\')'">
 			    <span class="fa fa-pencil"></span> Edit
+			</a>
+			<a th:href="'/Homework/editHomework/' + ${homework.homeworkId}" class="btn btn-primary" >
+			    <span class="fa fa-pencil"></span> Edit1
 			</a>
 			
 			

@@ -107,11 +107,30 @@ public class HomeworkController {
 		homeworkRepository.save(homeWork);
 		return "redirect:/Class/enterClass/" + classes.getClassId();
 	}
+	
+	@GetMapping("/editHomework/{homeworkId}")
+	public String editHomeworkView(@PathVariable long homeworkId, Model m, HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		Account loggedInUser = (Account) session.getAttribute("loggedInUser");
+//		if (loggedInUser == null) {
+//			return "/Authen/Login";
+//		}
+		// ảnh user login trên header
+		m.addAttribute("account", loggedInUser);
+
+		Optional<Homework> homework = homeworkRepository.findById(homeworkId);
+		m.addAttribute("homework", homework.get());
+		
+		List<FileAttach> listFile = fileAttachRepository.findByHomeworkId(homeworkId);
+		m.addAttribute("listFile", listFile);
+		
+		return "/Homework/Homework-Edit";
+	}
 
 	@PostMapping("/updateHomework")
 	public String updateHomework(@RequestParam("homeworkId") long id, @RequestParam("homeworkName") String name,
 			@RequestParam("description") String description, @RequestParam("deadline") LocalDate deadline,
-			@RequestParam("filePath") MultipartFile[] multipartFile, RedirectAttributes redirectAttributes) {
+			@RequestParam(value = "filePath", required = false) MultipartFile[] multipartFile, RedirectAttributes redirectAttributes) {
 
 		Optional<Homework> currentHomework = homeworkRepository.findById(id);
 		Homework newHw = currentHomework.get();
