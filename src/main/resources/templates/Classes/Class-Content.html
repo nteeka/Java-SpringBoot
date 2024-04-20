@@ -9,8 +9,8 @@
 }
 </style>
 <div class="p-5 bg-primary text-white text-center">
-	<h1>My First Bootstrap 5 Page</h1>
-	<p>Resize this responsive page to see the effect!</p>
+	<h1 th:text="${c.className}"></h1>
+	<p>Chào mừng bạn tham gia vào lớp!</p>
 </div>
 
 <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
@@ -18,24 +18,19 @@
 		<ul class="navbar-nav">
 			<li class="nav-item"><a class="nav-link active"
 				th:href="'/Class/enterClass/' + ${id}">Lobby</a></li>
-			<li class="nav-item dropdown"><a
-				class="nav-link dropdown-toggle" href="#" id="navbarDropdown"
-				role="button" data-bs-toggle="dropdown" aria-expanded="false">
-					Create </a>
+			<li th:if="${c.account.accountId == session.loggedInUser.accountId}"
+				class="nav-item dropdown"><a class="nav-link dropdown-toggle"
+				href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+				aria-expanded="false"> Create </a>
 				<ul class="dropdown-menu" aria-labelledby="navbarDropdown">
 					<li><a id="createNotifyBtn" class="dropdown-item" href="#">Notify</a></li>
 					<li><a id="createHomeworkBtn" class="dropdown-item" href="#">Homework</a></li>
 				</ul></li>
-			<li class="nav-item dropdown"><a
-				class="nav-link dropdown-toggle" href="#" id="navbarDropdown"
-				role="button" data-bs-toggle="dropdown" aria-expanded="false">
-					List </a>
-				<ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-					<li><a class="dropdown-item"
-						th:href="'/Notify/listNoti/' + ${id}">Notify</a></li>
-					<li><a class="dropdown-item"
-						th:href="'/Homework/listHomework/' + ${id}">Homework</a></li>
-				</ul></li>
+
+			<li class="nav-item"><a class="nav-link"
+				th:href="'/Homework/listHomework/' + ${id}">Homework</a></li>
+			<li class="nav-item"><a class="nav-link"
+				th:href="'/Notify/listNoti/' + ${id}">Notify</a></li>
 			<li class="nav-item"><a class="nav-link disabled" href="#">Disabled</a>
 			</li>
 		</ul>
@@ -89,20 +84,45 @@
 				<img style="width: 100%; height: 100%;" th:src="${c.account.image}"
 					alt="Created">
 			</div>
-			<p>Some text about me in culpa qui officia deserunt mollit anim..</p>
+			<p th:text="${c.account.bio}"></p>
 
-			<h3 class="mt-4">Some Links</h3>
+			<h3 class="mt-4">Some Class you already joined</h3>
 			<p>Lorem ipsum dolor sit ame.</p>
-			<ul class="nav nav-pills flex-column">
+			<div class="scrollable-list">
+				<ul class="nav nav-pills flex-column">
+					<li th:each="class : ${classes}" class="nav-item"><a
+						th:href="'/Class/enterClass/' + ${class.classId}" class="nav-link"><span
+							th:text="${class.className}"></span></a></li>
+				</ul>
+			</div>
 
-				<li class="nav-item"><a class="nav-link active" href="#">Active</a>
-				</li>
-				<li class="nav-item"><a class="nav-link" href="#">Link</a></li>
-				<li class="nav-item"><a class="nav-link" href="#">Link</a></li>
-				<li class="nav-item"><a class="nav-link disabled" href="#">Disabled</a>
-				</li>
-			</ul>
+
+			<h3 class="mt-4">List member joined</h3>
+
+			<input type="text" id="searchInput" placeholder="Search..."
+					onkeyup="searchAccounts()">
+			<div class="scrollable-listAccount">
+				
+				<ul id="accountList" class="list-unstyled">
+					<li th:each="account : ${listAccount}"><span
+						th:text="${account.displayName}"></span></li>
+				</ul>
+			</div>
+
+
+
+
+
+
+
+
+
+
+
 			<hr class="d-sm-none">
+			<a href="#" class="leave-class-btn" th:data-class-id="${c.classId}">Leave
+				Class</a>
+
 		</div>
 		<div class="col-sm-8">
 			<h2>TITLE HEADING</h2>
@@ -302,7 +322,52 @@
 		});
 	}
 	/*]]>*/
+	
+	// Lấy tất cả các phần tử có class là leave-class-btn
+	const leaveButtons = document.querySelectorAll('.leave-class-btn');
+	leaveButtons.forEach(button => {
+		button.addEventListener('click', function() {
+		if (confirm("Are you sure you want to leave this class?")) {
+			const classId = button.getAttribute('data-class-id');
+			window.location.href = '/Class/leaveClass/' + classId;
+		}
+	});
+});
+</script>
+<script>
+    function searchAccounts() {
+        // Lấy giá trị nhập vào từ ô tìm kiếm
+        var input, filter, ul, li, i, txtValue;
+        input = document.getElementById("searchInput");
+        filter = input.value.toUpperCase();
+        ul = document.getElementById("accountList");
+        li = ul.getElementsByTagName("li");
+
+        // Lặp qua tất cả các mục trong danh sách và ẩn những mục không khớp với tìm kiếm
+        for (i = 0; i < li.length; i++) {
+            txtValue = li[i].textContent || li[i].innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                li[i].style.display = "";
+            } else {
+                li[i].style.display = "none";
+            }
+        }
+    }
 </script>
 <!-- Homework -->
-
+<!-- Other -->
+<style>
+.scrollable-list {
+	max-height: calc(7 * ( 1.5rem + 1px));
+	/* Tính toán chiều cao tối đa cho 4 dòng */
+	overflow-y: auto; /* Hiển thị thanh cuộn dọc khi cần thiết */
+}
+</style>
+<style>
+/* Đặt chiều cao tối đa cho danh sách là 3 dòng và kích hoạt thanh cuộn khi cần thiết */
+.scrollable-listAccount {
+	max-height: calc(3 * ( 1.5rem + 1px)); /* 3 dòng * 3em (giả sử mỗi dòng có độ cao 3em) */
+	overflow-y: auto;
+}
+</style>
 <div th:replace="/ViewLayout/footer.html"></div>

@@ -70,7 +70,7 @@
             <form action="/Authen/register" method="post">
               <!-- 2 column grid layout with text inputs for the first and last names -->
               
-              <div class="form-outline mb-4">
+              <div hidden="true" class="form-outline mb-4">
                 <select name="role" class="form-control form-control-lg" required>
                      <option th:each="role : ${roles}" th:value="${role.roleId}" th:text="${role.roleName}"></option>
                 </select>

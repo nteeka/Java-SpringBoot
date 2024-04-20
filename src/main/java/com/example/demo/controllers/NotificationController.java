@@ -98,10 +98,13 @@ public class NotificationController {
 		}
 		//img header
 		m.addAttribute("account", loggedInUser);
-
+		Optional<Classes> listClass = classRepository.findById(id);
 		List<Notification> listNoti = notifyRepository.findByClassId(id);
-		m.addAttribute("listNoti", listNoti);
-		m.addAttribute("classInfo", listNoti.get(0).getClasses());
+		if(!listNoti.isEmpty())
+			m.addAttribute("listNoti", listNoti);
+		m.addAttribute("c", listClass.get());
+		m.addAttribute("idClass", id);
+		m.addAttribute("nameClass", listClass.get().getClassName());
 		return "/Notification/Noti-List";
 	}
 
