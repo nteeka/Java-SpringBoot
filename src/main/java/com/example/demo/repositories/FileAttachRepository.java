@@ -27,6 +27,9 @@ public interface FileAttachRepository extends JpaRepository<FileAttach, Long> {
 	@Query("SELECT s FROM FileAttach s WHERE s.homework.homeworkId = :homeworkId")
     List<FileAttach> findByHomeworkId(@Param("homeworkId") Long homeworkId);
 	
+	@Query("SELECT s FROM FileAttach s WHERE s.submitHomework.homework.homeworkId = :homeworkId")
+    List<FileAttach> findBySubmitHomeworkId(@Param("homeworkId") Long homeworkId);
+	
 	@Query("SELECT s.fileAttId FROM FileAttach s WHERE s.notify.notifyId = :notifyId")
     List<Long> findIdByNotifyId(@Param("notifyId") Long notifyId);
 	

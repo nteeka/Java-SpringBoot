@@ -66,7 +66,7 @@ public class NotificationController {
 
 	@Autowired
 	AccountRepository accountRepository;
-	
+
 	@Autowired
 	ClassRepository classRepository;
 
@@ -89,18 +89,18 @@ public class NotificationController {
 			"891328625785465", "api_secret", "szFBRogObiQHosinNgfK9pA1W0I"));
 
 	@GetMapping("/listNoti/{classId}")
-	public String listNotification(@PathVariable("classId") String id, Model m,HttpServletRequest request) {
-		
+	public String listNotification(@PathVariable("classId") String id, Model m, HttpServletRequest request) {
+
 		HttpSession session = request.getSession();
 		Account loggedInUser = (Account) session.getAttribute("loggedInUser");
 		if (loggedInUser == null) {
 			return "/Authen/Login";
 		}
-		//img header
+		// img header
 		m.addAttribute("account", loggedInUser);
 		Optional<Classes> listClass = classRepository.findById(id);
 		List<Notification> listNoti = notifyRepository.findByClassId(id);
-		if(!listNoti.isEmpty())
+		if (!listNoti.isEmpty())
 			m.addAttribute("listNoti", listNoti);
 		m.addAttribute("c", listClass.get());
 		m.addAttribute("idClass", id);
@@ -110,7 +110,7 @@ public class NotificationController {
 
 	@PostMapping("/createNotification")
 	public String createNotification(@RequestParam("classes") Classes classes, @RequestParam("title") String title,
-			@RequestParam("content") String content, @RequestParam("filePath") MultipartFile[] multipartFile,
+			@RequestParam("content") String content, @RequestParam("filePath") MultipartFile[] multipartFile,Model m,
 			HttpServletRequest request) {
 
 		HttpSession session = request.getSession();
@@ -118,7 +118,16 @@ public class NotificationController {
 		if (loggedInUser == null) {
 			return "/Authen/Login";
 		}
-
+		// sẽ bổ sung một check box, nếu check thì check empty file, nếu không thì không
+		// check empty file
+		for (MultipartFile file : multipartFile) {
+			if (file.getSize() == 0)
+			{
+				m.addAttribute("errorEmptyFile", "Can't upload an empty file");
+				return this.listNotification(classes.getClassId(), m, request);
+			}
+				
+		}
 		Notification notify = new Notification();
 		notify.setClasses(classes);
 		notify.setTitle(title);
@@ -161,7 +170,7 @@ public class NotificationController {
 	}
 
 	@GetMapping("/editNoti/{notifyId}")
-	public String editHomeworkView(@PathVariable long notifyId, Model m, HttpServletRequest request) {
+	public String editNotiView(@PathVariable long notifyId, Model m, HttpServletRequest request) {
 		HttpSession session = request.getSession();
 		Account loggedInUser = (Account) session.getAttribute("loggedInUser");
 //		if (loggedInUser == null) {
@@ -172,13 +181,13 @@ public class NotificationController {
 
 		Optional<Notification> noti = notifyRepository.findById(notifyId);
 		m.addAttribute("noti", noti.get());
-		
+
 		List<FileAttach> listFile = fileAttachRepository.findByNotifyId(notifyId);
 		m.addAttribute("listFile", listFile);
-		
+
 		return "/Notification/Noti-Edit";
 	}
-	
+
 	public static void deleteFile(String filePath) {
 		filePath = extractPublicId(filePath);
 		try {
@@ -218,7 +227,8 @@ public class NotificationController {
 
 	@PostMapping("/updateNoti")
 	public String updateNotification(@RequestParam("notifyId") long id, @RequestParam("title") String title,
-			@RequestParam("content") String content, @RequestParam("filePath") MultipartFile[] multipartFile) {
+			@RequestParam("content") String content, @RequestParam("filePath") MultipartFile[] multipartFile, Model m,
+			HttpServletRequest request) {
 
 		Optional<Notification> currentNoti = notifyRepository.findById(id);
 		Notification newNoti = currentNoti.get();
@@ -228,7 +238,14 @@ public class NotificationController {
 
 		List<FileAttach> fileAttachs = fileAttachRepository.findByNotifyId(newNoti.getNotifyId());
 
-		if (multipartFile.length != 0) {
+		if (!multipartFile[0].isEmpty()) {
+			for (MultipartFile file : multipartFile) {
+				if (file.getSize() == 0) {
+					m.addAttribute("errorEmptyFile", "Can't update an empty file");
+					return this.editNotiView(id, m, request);
+
+				}
+			}
 			// xóa file trên cloud
 			for (FileAttach fileAttach : fileAttachs) {
 				deleteFile(fileAttach.getFilePath());
@@ -242,7 +259,9 @@ public class NotificationController {
 				fileAttach.setHomework(null);
 				String originalFilename = file.getOriginalFilename();
 
-				Map params = ObjectUtils.asMap("public_id", newNoti.getNotifyId() + "_Notify_" + originalFilename, // Specify																								// Cloudinary
+				Map params = ObjectUtils.asMap("public_id", newNoti.getNotifyId() + "_Notify_" + originalFilename, // Specify
+																													// //
+																													// Cloudinary
 						"resource_type", "auto", // Treat uploaded files as raw data
 						"folder", "notification");
 				try {
@@ -262,18 +281,19 @@ public class NotificationController {
 		}
 		notifyRepository.save(newNoti);
 
-		return "redirect:/Class/enterClass/" + newNoti.getClasses().getClassId();
+		return this.listNotification(newNoti.getClasses().getClassId(), m, request);
+
 	}
 
 	@GetMapping("/deleteNoti/{notifyId}")
-    public String deleteNotification(@PathVariable("notifyId") long id) {	       	               
-        
+	public String deleteNotification(@PathVariable("notifyId") long id) {
+
 		Optional<Notification> currentNoti = notifyRepository.findById(id);
 		Notification deletedNoti = currentNoti.get();
-		deletedNoti.setDeleted(true);	
+		deletedNoti.setDeleted(true);
 		notifyRepository.save(deletedNoti);
-    	return "redirect:/Class/enterClass/" + deletedNoti.getClasses().getClassId();
-    }
+		return "redirect:/Class/enterClass/" + deletedNoti.getClasses().getClassId();
+	}
 
 	@GetMapping("/detailNoti/{notifyId}")
 	public String showNotiDetail(@PathVariable long notifyId, HttpServletRequest request, Model m) {
@@ -343,11 +363,10 @@ public class NotificationController {
 			}
 		}
 		m.addAttribute("checkLikeComment", check);
-		
-		//danh sách file
+
+		// danh sách file
 		List<FileAttach> listFile = fileAttachRepository.findByNotifyId(notifyId);
 		m.addAttribute("listFile", listFile);
-		
 
 		return "/Notification/Noti-Detail";
 

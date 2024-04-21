@@ -7,30 +7,16 @@
     <section id="contact" class="gray-bg padding-top-bottom">
     	<div class="container bootstrap snippets bootdey">
             <div class="row">
-				<form id="Highlighted-form" class="col-sm-6 col-sm-offset-3" action="/Homework/updateHomework" method="post" enctype="multipart/form-data">
+				<form id="Highlighted-form" class="col-sm-6 col-sm-offset-3" action="/Homework/updateSubmitHomework" method="post" enctype="multipart/form-data">
 					
-					<input type="hidden"  name="homeworkId" th:value="${homework.homeworkId}">			
-					<div class="form-group">
-					  <label class="control-label" for="contact-name">Homework name</label>
-					  <div class="controls">
-						<input th:value="${homework.homeworkName}" id="contact-name" name="homeworkName" placeholder="Homework name" class="form-control requiredField Highlighted-label" data-new-placeholder="Homework name" type="text" data-error-empty="Please enter your Homework name">
-						<i class="fa fa-user"></i>
-					  </div>
-					</div><!-- End name input -->
-					<h5>Homework name</h5>
+					<input type="hidden"  name="submitHomeworkId" th:value="${submitHomework.submitHomeworkId}">			
+					
 								
-					<div class="form-group">
-					  <label class="control-label" for="contact-mail">Deadline</label>
-					  <div class=" controls">
-						<input th:value="${homework.deadline}" id="contact-mail" name="deadline" placeholder="Your homework deadline" class="form-control requiredField Highlighted-label" data-new-placeholder="Your homework deadline" type="date" data-error-empty="Your homework deadline" data-error-invalid="Invalid date">
-						<i class="fa fa-calendar"></i>
-					  </div>
-					</div>
-					<h5>Deadline</h5>
+					
 					<div class="form-group">
 					  <label class="control-label" for="contact-message">Description</label>
 						<div class="controls">
-							<input th:value="${homework.description}" id="contact-message" name="description"  class="form-control requiredField Highlighted-label" rows="6" data-error-empty="Please enter your Homework Description">
+							<input th:value="${submitHomework.description}" id="contact-message" name="description"  class="form-control requiredField Highlighted-label" rows="6" data-error-empty="Please enter your Description">
 							<i class="fa fa-comment"></i>
 						</div>
 					</div>
@@ -41,7 +27,7 @@
 						<div>
 							 <ul th:each="file : ${listFile}">
 							 	 <li>
-							 	 	<a th:href="${file.filePath}"><span th:text="${#strings.substringAfter(file.filePath, '_Homework_')}"></span></a>	
+							 	 	<a th:href="${file.filePath}"><span th:text="${#strings.substringAfter(file.filePath, '_submitHomework_')}"></span></a>	
 							 	 </li>
 							 </ul> 							
 						</div>

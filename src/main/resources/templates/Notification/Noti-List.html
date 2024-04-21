@@ -13,36 +13,36 @@
 <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
 	<div class="container-fluid">
 		<ul class="navbar-nav">
-			<li class="nav-item"><a class="nav-link active" th:href="'/Class/enterClass/' + ${idClass}">Lobby</a>
-				</li>
-			<li th:if="${c.account.accountId == session.loggedInUser.accountId}" class="nav-item dropdown"><a
-				class="nav-link dropdown-toggle" href="#" id="navbarDropdown"
-				role="button" data-bs-toggle="dropdown" aria-expanded="false">
-					Create </a>
+			<li class="nav-item"><a class="nav-link active"
+				th:href="'/Class/enterClass/' + ${idClass}">Lobby</a></li>
+			<li th:if="${c.account.accountId == session.loggedInUser.accountId}"
+				class="nav-item dropdown"><a class="nav-link dropdown-toggle"
+				href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+				aria-expanded="false"> Create </a>
 				<ul class="dropdown-menu" aria-labelledby="navbarDropdown">
 					<li><a id="createNotifyBtn" class="dropdown-item" href="#">Notify</a></li>
 					<li><a id="createHomeworkBtn" class="dropdown-item" href="#">Homework</a></li>
-				</ul>
-			</li>
-			
-			<li class="nav-item">
-				<a class="nav-link" th:href="'/Homework/listHomework/' + ${c.classId}">Homework</a>			
-			</li>
-			<li class="nav-item">
-				<a class="nav-link" th:href="'/Notify/listNoti/' + ${c.classId}">Notify</a>			
-			</li>
+				</ul></li>
+
+			<li class="nav-item"><a class="nav-link"
+				th:href="'/Homework/listHomework/' + ${c.classId}">Homework</a></li>
+			<li class="nav-item"><a class="nav-link"
+				th:href="'/Notify/listNoti/' + ${c.classId}">Notify</a></li>
 			<li class="nav-item"><a class="nav-link disabled" href="#">Disabled</a>
 			</li>
 		</ul>
 	</div>
 </nav>
+<div id="errorDiv" class="alert alert-danger" th:if="${errorEmptyFile}">
+	<p th:text="${errorEmptyFile}"></p>
+</div>
 <div th:if="!${listNoti}">List noti is empty - Let's create one !!</div>
 <div th:if="${listNoti}" style="margin-top: 20px" class="container">
 	<a id="createNotifyBtn2" class="btn btn-primary" href="#">Create
 		Notify</a>
 
 	<div style="margin-top: 10px" class="row">
-		
+
 		<div th:each="noti : ${listNoti}" class="col-lg-4">
 			<div class="card card-margin">
 				<div class="card-header no-border">
@@ -429,8 +429,7 @@
 						<label for="classes">Class</label> <select class="form-control"
 							id="classes" name="classes">
 							<!-- Iterate over the classes and populate the options -->
-							<option th:value="${idClass}"
-								th:text="${nameClass}"></option>
+							<option th:value="${idClass}" th:text="${nameClass}"></option>
 						</select>
 					</div>
 					<div class="form-group">
@@ -483,8 +482,7 @@
 						<label for="classes">Class</label> <select class="form-control"
 							id="classes" name="classes">
 							<!-- Iterate over the classes and populate the options -->
-							<option th:value="${idClass}"
-								th:text="${nameClass}"></option>
+							<option th:value="${idClass}" th:text="${nameClass}"></option>
 						</select>
 					</div>
 					<div class="form-group">
@@ -591,6 +589,20 @@
 		});
 	}
 	/*]]>*/
+</script>
+<script>
+    // Hàm để ẩn đi phần tử sau một khoảng thời gian
+    function hideElementAfterDelay(elementId, delay) {
+        setTimeout(function() {
+            var element = document.getElementById(elementId);
+            if (element) {
+                element.style.display = 'none';
+            }
+        }, delay);
+    }
+
+    // Gọi hàm để ẩn đi phần tử sau 3 giây (3000 milliseconds)
+    hideElementAfterDelay('errorDiv', 3000);
 </script>
 <!-- Homework -->
 

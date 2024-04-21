@@ -1,6 +1,7 @@
 package com.example.demo.repositories;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -19,4 +20,7 @@ public interface SubmitHomeworkRepository extends JpaRepository<SubmitHomework, 
 	
 	@Query("SELECT ca FROM SubmitHomework ca WHERE ca.homework.classes.classId = :classId")
     List<SubmitHomework> countSubmited(String classId);
+	
+	@Query("SELECT s FROM SubmitHomework s WHERE s.homework.homeworkId = :homeworkId")
+    Optional<SubmitHomework> findByHomeworkId(@Param("homeworkId") Long homeworkId);
 }
