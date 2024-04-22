@@ -20,7 +20,7 @@ public interface AccountRepository extends JpaRepository<Account, Long>{
 	Optional<Account> findByEmailAndIdNot(@Param("email") String email, @Param("currentAccountId") long currentAccountId);
 
 	
-	@Query("SELECT s FROM Account s WHERE s.resetToken = :resetToken")
+	@Query("SELECT s FROM Account s WHERE s.resetToken = :resetToken AND s.isDeleted = false")
     Optional<Account> findByResetToken(@Param("resetToken") String resetToken);
 
 }

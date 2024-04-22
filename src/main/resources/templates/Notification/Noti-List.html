@@ -6,8 +6,8 @@
 }
 </style>
 <div class="p-5 bg-primary text-white text-center">
-	<h1>My First Bootstrap 5 Page</h1>
-	<p>Resize this responsive page to see the effect!</p>
+	<h1 th:text="${c.className}"></h1>
+	<p>Chào mừng bạn tham gia vào lớp!</p>
 </div>
 
 <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
@@ -30,12 +30,26 @@
 				th:href="'/Notify/listNoti/' + ${c.classId}">Notify</a></li>
 			<li class="nav-item"><a class="nav-link disabled" href="#">Disabled</a>
 			</li>
+			<li th:if="${account.accountId != c.account.accountId}" class="nav-item"><a class="nav-link leave-class-btn" href="#" th:data-class-id="${c.classId}">Leave class</a>
+			</li>
 		</ul>
 	</div>
 </nav>
 <div id="errorDiv" class="alert alert-danger" th:if="${errorEmptyFile}">
 	<p th:text="${errorEmptyFile}"></p>
 </div>
+<div id="successDiv" class="alert alert-success" th:if="${createNotiSuccess}">
+		<p th:text="${createNotiSuccess}"></p>
+	</div>
+	<div id="successDiv" class="alert alert-success" th:if="${updateNotiSuccess}">
+		<p th:text="${updateNotiSuccess}"></p>
+	</div>
+	<div id="successDiv" class="alert alert-success" th:if="${pinNotiSuccess}">
+		<p th:text="${pinNotiSuccess}"></p>
+	</div>
+	<div id="successDiv" class="alert alert-success" th:if="${unPinNotiSuccess}">
+		<p th:text="${unPinNotiSuccess}"></p>
+	</div>
 <div th:if="!${listNoti}">List noti is empty - Let's create one !!</div>
 <div th:if="${listNoti}" style="margin-top: 20px" class="container">
 	<a id="createNotifyBtn2" class="btn btn-primary" href="#">Create
@@ -44,7 +58,8 @@
 	<div style="margin-top: 10px" class="row">
 
 		<div th:each="noti : ${listNoti}" class="col-lg-4">
-			<div class="card card-margin">
+			<div class="card card-margin" th:classappend="${noti.isPinned} ? 'bg-primary' : ''">
+
 				<div class="card-header no-border">
 					<h5 class="card-title" th:text="${noti.account.displayName}"></h5>
 				</div>
@@ -64,8 +79,12 @@
 						</div>
 
 						<div class="widget-49-meeting-action">
+							<a th:if="${noti.isPinned}") th:href="@{'/Notify/pinNoti/' + ${noti.notifyId}}"
+								class="btn btn-sm btn-flash-border-primary">Unpin on lobby</a>
+							<a th:unless="${noti.isPinned}") th:href="@{'/Notify/pinNoti/' + ${noti.notifyId}}"
+								class="btn btn-sm btn-flash-border-primary">Pin on lobby</a>	
 							<a th:href="@{'/Notify/detailNoti/' + ${noti.notifyId}}"
-								class="btn btn-sm btn-flash-border-primary">View All</a>
+								class="btn btn-sm btn-flash-border-primary">View Detail</a>
 						</div>
 					</div>
 				</div>
@@ -603,6 +622,7 @@
 
     // Gọi hàm để ẩn đi phần tử sau 3 giây (3000 milliseconds)
     hideElementAfterDelay('errorDiv', 3000);
+    hideElementAfterDelay('successDiv', 3000);
 </script>
 <!-- Homework -->
 

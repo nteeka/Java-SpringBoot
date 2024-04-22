@@ -10,6 +10,6 @@ import com.example.demo.models.Homework;
 
 public interface HomeworkRepository extends JpaRepository<Homework, Long> {
 	
-	@Query("SELECT s FROM Homework s WHERE s.classes.classId = :classId and s.isDeleted = false")
+	@Query("SELECT s FROM Homework s WHERE s.classes.classId = :classId and s.classes.isDeleted = false and s.isDeleted = false")
 	List<Homework> findByClassId(@Param("classId") String classId);
 }

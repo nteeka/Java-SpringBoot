@@ -21,19 +21,19 @@ public interface FileAttachRepository extends JpaRepository<FileAttach, Long> {
 	@Query("SELECT s FROM FileAttach s WHERE s.submitHomework.submitHomeworkId = :submitHomeworkId")
     List<FileAttach> findBySubmitId(@Param("submitHomeworkId") Long submitHomeworkId);
 	
-	@Query("SELECT s.fileAttId FROM FileAttach s WHERE s.homework.homeworkId = :homeworkId")
+	@Query("SELECT s.fileAttId FROM FileAttach s WHERE s.homework.homeworkId = :homeworkId and s.homework.isDeleted = false")
     List<Long> findIdByHomeworkId(@Param("homeworkId") Long homeworkId);
 	
-	@Query("SELECT s FROM FileAttach s WHERE s.homework.homeworkId = :homeworkId")
+	@Query("SELECT s FROM FileAttach s WHERE s.homework.homeworkId = :homeworkId and s.homework.isDeleted = false")
     List<FileAttach> findByHomeworkId(@Param("homeworkId") Long homeworkId);
 	
 	@Query("SELECT s FROM FileAttach s WHERE s.submitHomework.homework.homeworkId = :homeworkId")
     List<FileAttach> findBySubmitHomeworkId(@Param("homeworkId") Long homeworkId);
 	
-	@Query("SELECT s.fileAttId FROM FileAttach s WHERE s.notify.notifyId = :notifyId")
+	@Query("SELECT s.fileAttId FROM FileAttach s WHERE s.notify.notifyId = :notifyId and s.notify.isDeleted = false")
     List<Long> findIdByNotifyId(@Param("notifyId") Long notifyId);
 	
-	@Query("SELECT s FROM FileAttach s WHERE s.notify.notifyId = :notifyId")
+	@Query("SELECT s FROM FileAttach s WHERE s.notify.notifyId = :notifyId and s.notify.isDeleted = false")
     List<FileAttach> findByNotifyId(@Param("notifyId") Long notifyId);
 
 }

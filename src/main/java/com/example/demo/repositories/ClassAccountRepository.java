@@ -10,16 +10,16 @@ import com.example.demo.models.ClassAccount;
 
 public interface ClassAccountRepository extends JpaRepository<ClassAccount, Long> {
 
-	@Query("SELECT s FROM ClassAccount s WHERE s.classes.classId = :classId")
+	@Query("SELECT s FROM ClassAccount s WHERE s.classes.classId = :classId AND  s.classes.isDeleted = false")
     List<ClassAccount> findByClassId(@Param("classId") String classId);
 	
-	@Query("SELECT s FROM ClassAccount s WHERE s.account.accountId = :accountId")
+	@Query("SELECT s FROM ClassAccount s WHERE s.account.accountId = :accountId AND s.account.isDeleted = false")
     List<ClassAccount> findByAccountId(@Param("accountId") long accountId);
 	
-	@Query("SELECT ca FROM ClassAccount ca WHERE ca.classes.classId = :classId AND ca.account.accountId = :accountId")
+	@Query("SELECT ca FROM ClassAccount ca WHERE ca.classes.classId = :classId AND ca.classes.isDeleted = false AND ca.account.accountId = :accountId AND ca.account.isDeleted = false")
     ClassAccount findByClassIdAndAccountId(@Param("classId") String classId, @Param("accountId") long accountId);
 
-	@Query("SELECT COUNT(ca) FROM ClassAccount ca WHERE ca.classes.classId = :classId")
+	@Query("SELECT COUNT(ca) FROM ClassAccount ca WHERE ca.classes.classId = :classId AND ca.classes.isDeleted = false")
     Long countAccountsInClass(String classId);
 
 }

@@ -65,150 +65,93 @@ public class HomeworkController {
 
 	@Autowired
 	private AccountRepository accountRepository;
-	
+
 	@Autowired
 	private ClassRepository classRepository;
-	
+
 	@Autowired
 	private ClassAccountRepository classAccountRepository;
-	
+
 	@Autowired
 	private NotificationRepository notifyRepository;
-	
+
 	@Autowired
 	private CommentRepository commentRepository;
-	
+
 	@Autowired
 	private CommentLikeRepository commentLikeRepository;
-	
+
 	@Autowired
 	private ReplyCommentRepository replyRepository;
-	
 
 	@Autowired
 	private FileAttachRepository fileAttachRepository;
-	
-	
-	
-	
-	
+
 	@GetMapping("/listHomework/{classId}")
 	public String listHomework(@PathVariable("classId") String id, Model m, HttpServletRequest request) {
-		
-		
+
 		HttpSession session = request.getSession();
-	    Account loggedInUser = (Account) session.getAttribute("loggedInUser");
+		Account loggedInUser = (Account) session.getAttribute("loggedInUser");
 
-	    if (loggedInUser == null) {
-	        return "/Authen/Login";
-	    }
-		
-		
-		//get class id
-	    Optional<Classes> c = classRepository.findById(id);
-	    m.addAttribute("id", c.get().getClassId());	    
-		m.addAttribute("c", c.get());
-	    //get class list which is already joined
-//	    List<ClassAccount> account = classAccountRepository.findByAccountId(loggedInUser.getAccountId());  
-//	    List<Classes> classes = new ArrayList<Classes>();
-//	    for (ClassAccount classes2 : account) {
-//	    	if(classes2.getClasses().getClassId() != id)
-//	    		classes.add(classes2.getClasses());
-//	    }
-//	    m.addAttribute("classes",classes);
-	    
-	    //all homework
-	    List<Homework> hw = homeworkRepository.findByClassId(id);
-	    m.addAttribute("hw",hw);
-	    
-	    //check done or not done
-	    List<Long> listSubmit = submitHomeworkRepository.listHomeworkByAccountId(loggedInUser.getAccountId());	    
-	    m.addAttribute("listSubmit",listSubmit);
-	    
-//	    //get all account on this class
-//	    List<ClassAccount> acc = classAccountRepository.findByClassId(id);
-//	    List<Account> listAccount = new ArrayList<Account>();
-//	    for (ClassAccount lstAcc : acc)
-//	    {
-//	    	//phân biệt người tạo ra lớp với người tham gia
-//	    	if(lstAcc.getAccount().getAccountId() != c.get().getAccount().getAccountId())
-//	    		listAccount.add(lstAcc.getAccount());
-//	    }
-//	    m.addAttribute("listAccount",listAccount);
-	    
-	    List<Notification> notifies = notifyRepository.findByClassId(c.get().getClassId());
-	    m.addAttribute("notifies",notifies);
-	    
-	    List<Long> lstNotifyId = notifyRepository.listNotifyId(c.get().getClassId());
-	    m.addAttribute("lstNotifyId",lstNotifyId);
-	    
-	    List<Comment> listComment = commentRepository.findAllNotDeleted();	    
-	    m.addAttribute("listComment",listComment);
-	    
-	    List<CommentLike> checkLikeComment = commentLikeRepository.findByAccountId(loggedInUser.getAccountId());
-	    
-	    List<Long> check = new ArrayList<Long>();
-	    for (CommentLike commentLike : checkLikeComment) {
-			for (Comment cmt22 : listComment) {
-				if(commentLike.getComment().getCommentId() == cmt22.getCommentId())
-					check.add(cmt22.getCommentId());
-			}
+		if (loggedInUser == null) {
+			return "/Authen/Login";
 		}
-	    m.addAttribute("checkLikeComment",check);
-	    
-	    List<ReplyComment> listReply = replyRepository.findAll();
-	    
-	    m.addAttribute("listReply",listReply);
-	    
-	    
-	    m.addAttribute("checkLikeComment",check);
-	    
-	    
-	    Long countMember = classAccountRepository.countAccountsInClass(id);
-	    m.addAttribute("countMember",countMember);
-	    List<SubmitHomework> countSubmited = submitHomeworkRepository.countSubmited(id);
-	    m.addAttribute("countSubmited",countSubmited);
-	    Map<Long, Integer> countSubmittedByHomeworkId = new HashMap<>();
-	    for (SubmitHomework submission : countSubmited) {
-	        Long homeworkId = submission.getHomework().getHomeworkId();
-	        countSubmittedByHomeworkId.put(homeworkId, countSubmittedByHomeworkId.getOrDefault(homeworkId, 0) + 1);
-	    }
 
-	    m.addAttribute("countSubmittedByHomeworkId", countSubmittedByHomeworkId);
-	   
-	    //update submitdHomework
-	    List<SubmitHomework> listSubmitHomework = submitHomeworkRepository.findAll();	    
-	    m.addAttribute("listSubmitHomework",listSubmitHomework);
-	    
-	    Optional<Account> accountImg = accountRepository.findById(loggedInUser.getAccountId());
-	    
-        m.addAttribute("account",accountImg.get());
-        
-        List<FileAttach> listFile = fileAttachRepository.findAll();
-		m.addAttribute("listFile", listFile);
-		
-		
+		// get class id
+		Optional<Classes> c = classRepository.findById(id);
+		m.addAttribute("id", c.get().getClassId());
+		m.addAttribute("c", c.get());
+
+		// all homework
+		List<Homework> hw = homeworkRepository.findByClassId(id);
+		m.addAttribute("hw", hw);
+
+		// check done or not done
+		List<Long> listSubmit = submitHomeworkRepository.listHomeworkByAccountId(loggedInUser.getAccountId());
+		m.addAttribute("listSubmit", listSubmit);
+
+		// đếm số lượng người trong lớp để tính progess nộp bài cho từng bài tập
+		// Đã trừ đi 1 - người tạo lớp trong view
+		Long countMember = classAccountRepository.countAccountsInClass(id);
+		m.addAttribute("countMember", countMember);
+
+		List<SubmitHomework> countSubmited = submitHomeworkRepository.countSubmited(id);
+		m.addAttribute("countSubmited", countSubmited);
+		Map<Long, Integer> countSubmittedByHomeworkId = new HashMap<>();
+		for (SubmitHomework submission : countSubmited) {
+			Long homeworkId = submission.getHomework().getHomeworkId();
+			countSubmittedByHomeworkId.put(homeworkId, countSubmittedByHomeworkId.getOrDefault(homeworkId, 0) + 1);
+		}
+
+		m.addAttribute("countSubmittedByHomeworkId", countSubmittedByHomeworkId);
+
+		// update submitdHomework
+		List<SubmitHomework> listSubmitHomework = submitHomeworkRepository.findAll();
+		m.addAttribute("listSubmitHomework", listSubmitHomework);
+
+		Optional<Account> accountImg = accountRepository.findById(loggedInUser.getAccountId());
+
+		m.addAttribute("account", accountImg.get());
+
 		return "/Homework/Homework-List";
 	}
-	
 
 	@PostMapping("/createHomework")
 	public String createHomework(@RequestParam("homeworkName") String homeworkName,
 			@RequestParam("classes") Classes classes, @RequestParam("description") String description,
 
 			@RequestParam(value = "deadline", required = false) LocalDate deadline,
-			@RequestParam(value = "filePath", required = false) MultipartFile[] multipartFile, Model m, RedirectAttributes redirectAttributes,
-			HttpServletRequest request) {
-		
-		//sẽ bổ sung một check box, nếu check thì check empty file, nếu không thì không check empty file
-		for (MultipartFile file : multipartFile)
-		{
-			if(file.getSize() == 0)
-			{
-				m.addAttribute( "errorEmptyFile","Can't upload an empty file");
+			@RequestParam(value = "filePath", required = false) MultipartFile[] multipartFile, Model m,
+			RedirectAttributes redirectAttributes, HttpServletRequest request) {
+
+		// sẽ bổ sung một check box, nếu check thì check empty file, nếu không thì không
+		// check empty file
+		for (MultipartFile file : multipartFile) {
+			if (file.getSize() == 0) {
+				m.addAttribute("errorEmptyFile", "Can't upload an empty file");
 				return this.listHomework(classes.getClassId(), m, request);
 			}
-				
+
 		}
 		if (deadline != null && !deadline.isAfter(LocalDate.now())) {
 			redirectAttributes.addFlashAttribute("errorDeadline", "Dealine is invalid");
@@ -219,11 +162,10 @@ public class HomeworkController {
 		homeWork.setHomeworkName(homeworkName);
 		homeWork.setDescription(description);
 
-		
 		homeWork.setDeadline(deadline);
 		homeWork.setDateCreated(LocalDateTime.now());
 		homeworkRepository.save(homeWork);
-		
+
 		for (MultipartFile file : multipartFile) {
 			FileAttach fileAttach = new FileAttach();
 			fileAttach.setHomework(homeWork);
@@ -231,7 +173,9 @@ public class HomeworkController {
 			fileAttach.setSubmitHomework(null);
 			String originalFilename = file.getOriginalFilename();
 
-			Map params = ObjectUtils.asMap("public_id", homeWork.getHomeworkId() + "_Homework_" + originalFilename, // Specify																							// Cloudinary
+			Map params = ObjectUtils.asMap("public_id", homeWork.getHomeworkId() + "_Homework_" + originalFilename, // Specify
+																													// //
+																													// Cloudinary
 					"resource_type", "auto", // Treat uploaded files as raw data
 					"folder", "homework");
 			try {
@@ -249,9 +193,11 @@ public class HomeworkController {
 		List<Long> listIdFile = fileAttachRepository.findIdByHomeworkId(homeWork.getHomeworkId());
 		homeWork.setFilePath(listIdFile);
 		homeworkRepository.save(homeWork);
+
+		m.addAttribute("createHomeworkSuccess", "Your homework has been created");
 		return this.listHomework(classes.getClassId(), m, request);
 	}
-	
+
 	@GetMapping("/editHomework/{homeworkId}")
 	public String editHomeworkView(@PathVariable long homeworkId, Model m, HttpServletRequest request) {
 		HttpSession session = request.getSession();
@@ -264,17 +210,19 @@ public class HomeworkController {
 
 		Optional<Homework> homework = homeworkRepository.findById(homeworkId);
 		m.addAttribute("homework", homework.get());
-		
+
 		List<FileAttach> listFile = fileAttachRepository.findByHomeworkId(homeworkId);
 		m.addAttribute("listFile", listFile);
-		
+
 		return "/Homework/Homework-Edit";
 	}
 
 	@PostMapping("/updateHomework")
 	public String updateHomework(@RequestParam("homeworkId") long id, @RequestParam("homeworkName") String name,
-			@RequestParam("description") String description, @RequestParam(value = "deadline", required = false) LocalDate deadline,
-			@RequestParam(value = "filePath", required = false) MultipartFile[] multipartFile, RedirectAttributes redirectAttributes, Model m, HttpServletRequest request) {
+			@RequestParam("description") String description,
+			@RequestParam(value = "deadline", required = false) LocalDate deadline,
+			@RequestParam(value = "filePath", required = false) MultipartFile[] multipartFile,
+			RedirectAttributes redirectAttributes, Model m, HttpServletRequest request) {
 
 		Optional<Homework> currentHomework = homeworkRepository.findById(id);
 		Homework newHw = currentHomework.get();
@@ -292,34 +240,30 @@ public class HomeworkController {
 		newHw.setDescription(description);
 		newHw.setDeadline(deadline);
 
-		List<FileAttach> fileAttachs = fileAttachRepository.findByHomeworkId(newHw.getHomeworkId());
-		
-		if (!multipartFile[0].isEmpty()) {
-			for (MultipartFile file : multipartFile)
-			{
-				if(file.getSize() == 0)
-				{
-					m.addAttribute( "errorEmptyFile","Can't update an empty file");
+		//List<FileAttach> fileAttachs = fileAttachRepository.findByHomeworkId(newHw.getHomeworkId());
+		if (multipartFile[0].getOriginalFilename().length() != 0) // có file truyền vào
+		{
+//			// xóa file trên cloud
+//			for (FileAttach fileAttach : fileAttachs) {
+//				deleteFile(fileAttach.getFilePath());
+//				fileAttachRepository.delete(fileAttach);
+//			}
+			fileAttachRepository.deleteAll();
+			for (MultipartFile file : multipartFile) {
+				if (file.getSize() == 0) {
+					m.addAttribute("errorEmptyFile", "Can't update an empty file");
 					return this.editHomeworkView(id, m, request);
-
 				}
-			}
-			// xóa file trên cloud
-			for (FileAttach fileAttach : fileAttachs) {				
-				deleteFile(fileAttach.getFilePath());
-				fileAttachRepository.delete(fileAttach);
-			}
-			
-			for (MultipartFile file : multipartFile) {				
 				FileAttach fileAttach = new FileAttach();
 				fileAttach.setSubmitHomework(null);
 				fileAttach.setNotify(null);
 				fileAttach.setHomework(newHw);
 				String originalFilename = file.getOriginalFilename();
 
-				Map params = ObjectUtils.asMap("public_id", newHw.getHomeworkId() + "_Homework_" + originalFilename, // Specify																												// Cloudinary
-						"resource_type", "auto",
-						"folder", "homework");
+				Map params = ObjectUtils.asMap("public_id", newHw.getHomeworkId() + "_Homework_" + originalFilename, // Specify
+																														// //
+																														// Cloudinary
+						"resource_type", "auto", "folder", "homework");
 				try {
 					// Upload to Cloudinary using byte array
 					byte[] fileBytes = file.getBytes();
@@ -333,11 +277,11 @@ public class HomeworkController {
 			}
 			List<Long> listIdFile = fileAttachRepository.findIdBySubmitId(newHw.getHomeworkId());
 			newHw.setFilePath(listIdFile);
-
 		}
 
 		homeworkRepository.save(newHw);
-		return this.listHomework(newHw.getClasses().getClassId(),m,request);
+		m.addAttribute("updateHomeworkSuccess", "Your homework has been updated");
+		return this.listHomework(newHw.getClasses().getClassId(), m, request);
 	}
 
 	@GetMapping("/submitHomeWorkView/{homeworkId}")
@@ -358,7 +302,8 @@ public class HomeworkController {
 //		}
 
 		model.addAttribute("homework", homework.get());
-
+		model.addAttribute("c", homework.get().getClasses());
+		model.addAttribute("id", homework.get().getClasses().getClassId());
 		Optional<Account> acc = accountRepository.findById(loggedInUser.getAccountId());
 		model.addAttribute("account", acc.get());
 
@@ -380,14 +325,7 @@ public class HomeworkController {
 		if (loggedInUser == null) {
 			return "/Authen/Login";
 		}
-		for (MultipartFile file : multipartFile) {
-			if (file.getSize() == 0)
-			{
-				m.addAttribute("errorEmptyFile", "Can't upload an empty file");
-				return this.listHomework(homework.getClasses().getClassId(), m, request);
-			}
-				
-		}
+		
 		SubmitHomework submit = new SubmitHomework();
 		submit.setAccount(loggedInUser);
 		submit.setHomework(homework);
@@ -407,6 +345,10 @@ public class HomeworkController {
 		submitHomeworkRepository.save(submit);
 
 		for (MultipartFile file : multipartFile) {
+			if (file.getSize() == 0) {
+				m.addAttribute("errorEmptyFile", "Can't upload an empty file");
+				return this.listHomework(homework.getClasses().getClassId(), m, request);
+			}
 			FileAttach fileAttach = new FileAttach();
 			fileAttach.setHomework(null);
 			fileAttach.setNotify(null);
@@ -434,20 +376,20 @@ public class HomeworkController {
 		submit.setFilePath(listIdFile);
 
 		submitHomeworkRepository.save(submit);
-
+		m.addAttribute("submitHomeworkSuccess", "Your homework has been submitted");
 		return this.listHomework(homework.getClasses().getClassId(), m, request);
 	}
 
 	// xóa file trên cloud
 	public static void deleteFile(String filePath) {
-			filePath = extractPublicId(filePath);
-			try {
-				cloudinary.uploader().destroy((filePath), ObjectUtils.asMap("type", "upload", "resource_type", "raw"));
-				System.out.println("Delete Success");
-			} catch (IOException exception) {
-				System.out.println("Error deleting file: " + exception.getMessage());
-			}
+		filePath = extractPublicId(filePath);
+		try {
+			cloudinary.uploader().destroy((filePath), ObjectUtils.asMap("type", "upload", "resource_type", "raw"));
+			System.out.println("Delete Success");
+		} catch (IOException exception) {
+			System.out.println("Error deleting file: " + exception.getMessage());
 		}
+	}
 
 	// return public_id của link file
 	private static String extractPublicId(String fileUrl) {
@@ -476,8 +418,6 @@ public class HomeworkController {
 		return publicIdPart.trim();
 	}
 
-	
-	
 	@GetMapping("/editSubmitHomework/{homeworkId}")
 	public String editSubmitHomeworkView(@PathVariable long homeworkId, Model m, HttpServletRequest request) {
 		HttpSession session = request.getSession();
@@ -487,46 +427,44 @@ public class HomeworkController {
 		}
 		// ảnh user login trên header
 		m.addAttribute("account", loggedInUser);
-		
+
 		Optional<SubmitHomework> submitHomework = submitHomeworkRepository.findByHomeworkId(homeworkId);
 		m.addAttribute("submitHomework", submitHomework.get());
-		
+
 		List<FileAttach> listFile = fileAttachRepository.findBySubmitHomeworkId(homeworkId);
 		m.addAttribute("listFile", listFile);
-		
+
+		m.addAttribute("c", submitHomework.get().getHomework().getClasses());
+		m.addAttribute("id", submitHomework.get().getHomework().getClasses().getClassId());
+
 		return "/Homework/SubmitHomework-Edit";
 	}
-	
-	
+
 	@PostMapping("/updateSubmitHomework")
 	public String updateSubmitHomework(@RequestParam("submitHomeworkId") long id,
 			@RequestParam("description") String description, @RequestParam("filePath") MultipartFile[] multipartFile,
-			RedirectAttributes redirectAttributes,Model m,HttpServletRequest request) {
+			RedirectAttributes redirectAttributes, Model m, HttpServletRequest request) {
 
 		Optional<SubmitHomework> currentSubmitHomework = submitHomeworkRepository.findById(id);
 		SubmitHomework newSubmit = currentSubmitHomework.get();
 
-		List<FileAttach> fileAttachs = fileAttachRepository.findBySubmitId(newSubmit.getSubmitHomeworkId());
+		//List<FileAttach> fileAttachs = fileAttachRepository.findBySubmitId(newSubmit.getSubmitHomeworkId());
 
 		newSubmit.setLastModified(LocalDateTime.now());
 		newSubmit.setDescription(description);
-
-		if (!multipartFile[0].isEmpty()) {
+		if (multipartFile[0].getOriginalFilename().length() != 0) {
+			
+//			// xóa file trên cloud
+//						for (FileAttach fileAttach : fileAttachs) {
+//							deleteFile(fileAttach.getFilePath());
+//							fileAttachRepository.delete(fileAttach);
+//						}
+			fileAttachRepository.deleteAll();		
 			for (MultipartFile file : multipartFile) {
 				if (file.getSize() == 0) {
 					m.addAttribute("errorEmptyFile", "Can't update an empty file");
 					return this.listHomework(newSubmit.getHomework().getClasses().getClassId(), m, request);
-
 				}
-			}
-			// xóa file trên cloud
-			for (FileAttach fileAttach : fileAttachs) {
-				deleteFile(fileAttach.getFilePath());
-				fileAttachRepository.delete(fileAttach);
-			}
-
-
-			for (MultipartFile file : multipartFile) {
 				FileAttach fileAttach = new FileAttach();
 				fileAttach.setHomework(null);
 				fileAttach.setNotify(null);
@@ -551,9 +489,13 @@ public class HomeworkController {
 			}
 			List<Long> listIdFile = fileAttachRepository.findIdBySubmitId(newSubmit.getSubmitHomeworkId());
 			newSubmit.setFilePath(listIdFile);
-		}
+			}
+			
+
+			
 
 		submitHomeworkRepository.save(newSubmit);
+		m.addAttribute("updateSubmitHomeworkSuccess", "Your homework submit has been updated");
 		return this.listHomework(newSubmit.getHomework().getClasses().getClassId(), m, request);
 	}
 
@@ -571,9 +513,11 @@ public class HomeworkController {
 
 		List<FileAttach> listFile = fileAttachRepository.findAll();
 		m.addAttribute("listFile", listFile);
-		for (SubmitHomework submitHomework : listSubmited) {
-			submitHomework.getHomework().getDeadline().isBefore(LocalDate.now());
-		}
+
+		Optional<Homework> getHomework = homeworkRepository.findById(homeworkId);
+
+		m.addAttribute("id", getHomework.get().getClasses().getClassId());
+		m.addAttribute("c", getHomework.get().getClasses());
 
 		return "/Homework/ListMemberSubmited";
 	}
@@ -593,7 +537,7 @@ public class HomeworkController {
 
 		List<SubmitHomework> listSubmit = submitHomeworkRepository.listSubmitHomeworkByHomeworkId(homeworkId);
 		m.addAttribute("listSubmit", listSubmit);
-		
+
 		List<FileAttach> listFile = fileAttachRepository.findByHomeworkId(homeworkId);
 		m.addAttribute("listFile", listFile);
 		return "/Homework/Homework-Detail";
@@ -608,7 +552,5 @@ public class HomeworkController {
 		homeworkRepository.save(deletedHW);
 		return "redirect:/Class/enterClass/" + deletedHW.getClasses().getClassId();
 	}
-	
-	
 
 }

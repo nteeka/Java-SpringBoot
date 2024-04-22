@@ -47,7 +47,9 @@ public class Notification {
 	
 	@Column(name = "numComment", columnDefinition = "bigint default 0")
     private long numComment;
-
+	
+	private boolean isPinned;
+	
 	public long getNotifyId() {
 		return notifyId;
 	}
@@ -134,13 +136,26 @@ public class Notification {
 	public void setNumComment(long numComment) {
 		this.numComment = numComment;
 	}
+	
+	
+
+	public boolean getIsPinned() {
+		return isPinned;
+	}
+
+	public void setIsPinned(boolean isPinned) {
+		this.isPinned = isPinned;
+	}
 
 	public Notification() {		
 		
 	}
 
+
+
 	public Notification(long notifyId, String title, Classes classes, Account account, String content,
-			boolean isDeleted, List<Long> filePath, LocalDateTime dateCreated, LocalDateTime lastModifed, long numComment) {
+			boolean isDeleted, List<Long> filePath, LocalDateTime dateCreated, LocalDateTime lastModifed,
+			long numComment, boolean isPinned) {
 		this.notifyId = notifyId;
 		this.title = title;
 		this.classes = classes;
@@ -151,6 +166,7 @@ public class Notification {
 		this.dateCreated = dateCreated;
 		this.lastModifed = lastModifed;
 		this.numComment = numComment;
+		this.isPinned = isPinned;
 	}
 	
 	

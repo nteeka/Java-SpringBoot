@@ -11,10 +11,10 @@ import com.example.demo.models.CommentLike;
 
 public interface CommentLikeRepository extends JpaRepository<CommentLike, Long>{
 	
-	@Query("SELECT s FROM CommentLike s WHERE s.account.accountId = :accountId")
+	@Query("SELECT s FROM CommentLike s WHERE s.account.accountId = :accountId AND s.account.isDeleted = false")
     List<CommentLike> findByAccountId(@Param("accountId") long accountId);
 	
-	@Query("SELECT s FROM CommentLike s WHERE s.account.accountId = :accountId and s.comment.commentId = :commentId")
+	@Query("SELECT s FROM CommentLike s WHERE s.account.accountId = :accountId AND s.account.isDeleted = false and s.comment.commentId = :commentId AND s.comment.isDeleted = false")
     Optional<CommentLike> checkLiked(@Param("accountId") long accountId, @Param("commentId") long commentId);
 
 }

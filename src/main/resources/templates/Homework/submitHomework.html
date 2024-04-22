@@ -2,6 +2,34 @@
 
 
 
+
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+	<div class="container-fluid">
+		<ul class="navbar-nav">
+			<li class="nav-item"><a class="nav-link active"
+				th:href="'/Class/enterClass/' + ${id}">Lobby</a></li>
+			<li th:if="${c.account.accountId == session.loggedInUser.accountId}"
+				class="nav-item dropdown"><a class="nav-link dropdown-toggle"
+				href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+				aria-expanded="false"> Create </a>
+				<ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+					<li><a id="createNotifyBtn" class="dropdown-item" href="#">Notify</a></li>
+					<li><a id="createHomeworkBtn" class="dropdown-item" href="#">Homework</a></li>
+				</ul></li>
+
+			<li class="nav-item"><a class="nav-link"
+				th:href="'/Homework/listHomework/' + ${id}">Homework</a></li>
+			<li class="nav-item"><a class="nav-link"
+				th:href="'/Notify/listNoti/' + ${id}">Notify</a></li>
+			<li class="nav-item"><a class="nav-link disabled" href="#">Disabled</a>
+			</li>
+			<li th:if="${account.accountId != c.account.accountId}" class="nav-item"><a class="nav-link leave-class-btn" href="#" th:data-class-id="${c.classId}">Leave class</a>
+			</li>
+		</ul>
+	</div>
+</nav>
+
+
 <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
     <div class="relative min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 bg-gray-500 bg-no-repeat bg-cover relative items-center">
         <div class="absolute bg-black opacity-60 inset-0 z-0"></div>

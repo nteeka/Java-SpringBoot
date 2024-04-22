@@ -80,7 +80,7 @@ public class CommentController {
 		newCmt.setContent(content);	
 		newCmt.setLastModified(LocalDateTime.now());
 		commentRepository.save(newCmt);
-		return "redirect:/StudentView/listStudent";
+		return "redirect:/Notify/detailNoti/" + newCmt.getNotify().getNotifyId();
     }
 	
 	
@@ -130,7 +130,7 @@ public class CommentController {
 			commentLikeRepository.save(cmtLiked);
 		}
 		commentRepository.save(currentCmt.get());
-		return "redirect:/Class/enterClass/" + currentCmt.get().getNotify().getClasses().getClassId();
+		return "redirect:/Notify/detailNoti/" + currentCmt.get().getNotify().getNotifyId();
     }
 	
 	
@@ -162,7 +162,7 @@ public class CommentController {
 //		}
 			
 		replyRepository.save(reply);
-		return "redirect:/Class/enterClass/" + comment.getNotify().getClasses().getClassId();
+		return "redirect:/Notify/detailNoti/" + comment.getNotify().getNotifyId();
     }
 	
 	

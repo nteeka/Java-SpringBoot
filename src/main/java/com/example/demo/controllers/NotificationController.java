@@ -110,7 +110,7 @@ public class NotificationController {
 
 	@PostMapping("/createNotification")
 	public String createNotification(@RequestParam("classes") Classes classes, @RequestParam("title") String title,
-			@RequestParam("content") String content, @RequestParam("filePath") MultipartFile[] multipartFile,Model m,
+			@RequestParam("content") String content, @RequestParam("filePath") MultipartFile[] multipartFile, Model m,
 			HttpServletRequest request) {
 
 		HttpSession session = request.getSession();
@@ -121,12 +121,11 @@ public class NotificationController {
 		// sẽ bổ sung một check box, nếu check thì check empty file, nếu không thì không
 		// check empty file
 		for (MultipartFile file : multipartFile) {
-			if (file.getSize() == 0)
-			{
+			if (file.getSize() == 0) {
 				m.addAttribute("errorEmptyFile", "Can't upload an empty file");
 				return this.listNotification(classes.getClassId(), m, request);
 			}
-				
+
 		}
 		Notification notify = new Notification();
 		notify.setClasses(classes);
@@ -166,16 +165,17 @@ public class NotificationController {
 		notify.setFilePath(listIdFile);
 
 		notifyRepository.save(notify);
-		return "redirect:/Class/enterClass/" + notify.getClasses().getClassId();
+		m.addAttribute("createNotiSuccess", "Your notification has been created");
+		return this.listNotification(classes.getClassId(), m, request);
 	}
 
 	@GetMapping("/editNoti/{notifyId}")
 	public String editNotiView(@PathVariable long notifyId, Model m, HttpServletRequest request) {
 		HttpSession session = request.getSession();
 		Account loggedInUser = (Account) session.getAttribute("loggedInUser");
-//		if (loggedInUser == null) {
-//			return "/Authen/Login";
-//		}
+		if (loggedInUser == null) {
+			return "/Authen/Login";
+		}
 		// ảnh user login trên header
 		m.addAttribute("account", loggedInUser);
 
@@ -200,11 +200,7 @@ public class NotificationController {
 
 	// return public_id của link file
 	private static String extractPublicId(String fileUrl) {
-		// Định dạng của đường dẫn URL trên Cloudinary:
-		// http://res.cloudinary.com/<cloud_name>/<resource_type>/<upload_type>/<version>/<public_id>.<format>
-		// Ví dụ:
-		// http://res.cloudinary.com/dccmckgvc/raw/upload/v1713149910/homework/32_submitHomework_homework.txt
-		// Chúng ta cần lấy public_id từ đây
+		
 
 		// Tìm vị trí của chuỗi "upload/" trong đường dẫn URL
 		int uploadIndex = fileUrl.indexOf("upload/");
@@ -236,23 +232,21 @@ public class NotificationController {
 		newNoti.setLastModifed(LocalDateTime.now());
 		newNoti.setTitle(title);
 
-		List<FileAttach> fileAttachs = fileAttachRepository.findByNotifyId(newNoti.getNotifyId());
-
-		if (!multipartFile[0].isEmpty()) {
+		//List<FileAttach> fileAttachs = fileAttachRepository.findByNotifyId(newNoti.getNotifyId());
+		if (multipartFile[0].getOriginalFilename().length() != 0) // có file truyền vào
+		{
+//			// xóa file trên cloud
+//			for (FileAttach fileAttach : fileAttachs) {
+//				deleteFile(fileAttach.getFilePath());
+//				fileAttachRepository.delete(fileAttach);
+//			}
+			fileAttachRepository.deleteAll();
 			for (MultipartFile file : multipartFile) {
 				if (file.getSize() == 0) {
 					m.addAttribute("errorEmptyFile", "Can't update an empty file");
 					return this.editNotiView(id, m, request);
 
 				}
-			}
-			// xóa file trên cloud
-			for (FileAttach fileAttach : fileAttachs) {
-				deleteFile(fileAttach.getFilePath());
-				fileAttachRepository.delete(fileAttach);
-			}
-
-			for (MultipartFile file : multipartFile) {
 				FileAttach fileAttach = new FileAttach();
 				fileAttach.setSubmitHomework(null);
 				fileAttach.setNotify(newNoti);
@@ -262,7 +256,7 @@ public class NotificationController {
 				Map params = ObjectUtils.asMap("public_id", newNoti.getNotifyId() + "_Notify_" + originalFilename, // Specify
 																													// //
 																													// Cloudinary
-						"resource_type", "auto", // Treat uploaded files as raw data
+						"resource_type", "auto",
 						"folder", "notification");
 				try {
 					// Upload to Cloudinary using byte array
@@ -277,10 +271,10 @@ public class NotificationController {
 			}
 			List<Long> listIdFile = fileAttachRepository.findIdBySubmitId(newNoti.getNotifyId());
 			newNoti.setFilePath(listIdFile);
-
 		}
-		notifyRepository.save(newNoti);
 
+		notifyRepository.save(newNoti);
+		m.addAttribute("updateNotiSuccess", "Your notification has been updated");
 		return this.listNotification(newNoti.getClasses().getClassId(), m, request);
 
 	}
@@ -308,46 +302,15 @@ public class NotificationController {
 		m.addAttribute("account", accountImg.get());
 
 		Optional<Notification> notiDetail = notiRepository.findById(notifyId);
-		Notification currentNoti;
-
-		currentNoti = notiDetail.get();
+		Notification currentNoti = notiDetail.get();
 		m.addAttribute("noti", currentNoti);
 
 		// get class id
 		Optional<Classes> c = classRepository.findById(currentNoti.getClasses().getClassId());
 		m.addAttribute("id", c.get().getClassId());
 		m.addAttribute("c", c.get());
-		// get class list which is already joined
-		List<ClassAccount> account = classAccountRepository.findByAccountId(loggedInUser.getAccountId());
-		List<Classes> classes = new ArrayList<Classes>();
-		for (ClassAccount classes2 : account) {
-			if (classes2.getClasses().getClassId() != currentNoti.getClasses().getClassId())
-				classes.add(classes2.getClasses());
-		}
-		m.addAttribute("classes", classes);
 
-		List<Homework> hw = homeworkRepository.findByClassId(currentNoti.getClasses().getClassId());
-		// findByClassId
-
-		m.addAttribute("hw", hw);
-
-		// get all account on this class
-		List<ClassAccount> acc = classAccountRepository.findByClassId(currentNoti.getClasses().getClassId());
-		List<Account> listAccount = new ArrayList<Account>();
-		for (ClassAccount lstAcc : acc) {
-			// phân biệt người tạo ra lớp với người tham gia
-			if (lstAcc.getAccount().getAccountId() != c.get().getAccount().getAccountId())
-				listAccount.add(lstAcc.getAccount());
-		}
-		m.addAttribute("listAccount", listAccount);
-
-		List<Notification> notifies = notifyRepository.findByClassId(c.get().getClassId());
-		m.addAttribute("notifies", notifies);
-
-		// check done or not done
-		List<Long> listSubmit = submitHomeworkRepository.listHomeworkByAccountId(loggedInUser.getAccountId());
-		m.addAttribute("listSubmit", listSubmit);
-
+	
 		List<Comment> listComment = commentRepository.findAllNotDeleted();
 		m.addAttribute("listComment", listComment);
 
@@ -371,4 +334,24 @@ public class NotificationController {
 		return "/Notification/Noti-Detail";
 
 	}
+
+	@GetMapping("/pinNoti/{notifyId}")
+	public String pinNotification(@PathVariable("notifyId") long id, Model m, HttpServletRequest request) {
+
+		Optional<Notification> currentNoti = notifyRepository.findById(id);
+		Notification newNoti = currentNoti.get();
+		if (newNoti.getIsPinned()) {
+			newNoti.setIsPinned(false);
+			notifyRepository.save(newNoti);
+			m.addAttribute("unPinNotiSuccess", "Your notification has been unpinned on lobby");
+			return this.listNotification(newNoti.getClasses().getClassId(), m, request);
+
+		}
+		newNoti.setIsPinned(true);
+		notifyRepository.save(newNoti);
+		m.addAttribute("pinNotiSuccess", "Your notification has been pinned on lobby");
+		return this.listNotification(newNoti.getClasses().getClassId(), m, request);
+
+	}
+
 }
