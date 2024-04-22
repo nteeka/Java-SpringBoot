@@ -94,6 +94,8 @@ public class HomeworkController {
 		Account loggedInUser = (Account) session.getAttribute("loggedInUser");
 
 		if (loggedInUser == null) {
+			m.addAttribute("notLogin","You must login to access this!!");
+			session.setAttribute("redirectUrl", "/Homework/listHomework/" + id);
 			return "/Authen/Login";
 		}
 
@@ -144,15 +146,16 @@ public class HomeworkController {
 			@RequestParam(value = "filePath", required = false) MultipartFile[] multipartFile, Model m,
 			RedirectAttributes redirectAttributes, HttpServletRequest request) {
 
-		// sẽ bổ sung một check box, nếu check thì check empty file, nếu không thì không
-		// check empty file
-		for (MultipartFile file : multipartFile) {
-			if (file.getSize() == 0) {
-				m.addAttribute("errorEmptyFile", "Can't upload an empty file");
-				return this.listHomework(classes.getClassId(), m, request);
-			}
+		HttpSession session = request.getSession();
+		Account loggedInUser = (Account) session.getAttribute("loggedInUser");
 
+		if (loggedInUser == null) {
+			m.addAttribute("notLogin","You must login to access this!!");
+			session.setAttribute("redirectUrl", "/Homework/listHomework/" + classes.getClassId());
+			return "/Authen/Login";
 		}
+		
+		
 		if (deadline != null && !deadline.isAfter(LocalDate.now())) {
 			redirectAttributes.addFlashAttribute("errorDeadline", "Dealine is invalid");
 			return "redirect:/Class/enterClass/" + classes.getClassId();
@@ -164,34 +167,54 @@ public class HomeworkController {
 
 		homeWork.setDeadline(deadline);
 		homeWork.setDateCreated(LocalDateTime.now());
-		homeworkRepository.save(homeWork);
+//		for (MultipartFile file : multipartFile) {
+//			if (file.getSize() == 0) {
+//				m.addAttribute("errorEmptyFile", "Can't upload an empty file");
+//				return this.listHomework(classes.getClassId(), m, request);
+//			}				
+//
+//		}
+		// check empty file or none
+		if(multipartFile[0].getOriginalFilename().length() != 0)
+		{
+			
+			for (MultipartFile file : multipartFile) {
+				if (file.getSize() == 0) {
+					m.addAttribute("errorEmptyFile", "Can't upload an empty file");
+					return this.listHomework(classes.getClassId(), m, request);
+				}				
 
-		for (MultipartFile file : multipartFile) {
-			FileAttach fileAttach = new FileAttach();
-			fileAttach.setHomework(homeWork);
-			fileAttach.setNotify(null);
-			fileAttach.setSubmitHomework(null);
-			String originalFilename = file.getOriginalFilename();
-
-			Map params = ObjectUtils.asMap("public_id", homeWork.getHomeworkId() + "_Homework_" + originalFilename, // Specify
-																													// //
-																													// Cloudinary
-					"resource_type", "auto", // Treat uploaded files as raw data
-					"folder", "homework");
-			try {
-				// Upload to Cloudinary using byte array
-				byte[] fileBytes = file.getBytes();
-				Map result = cloudinary.uploader().upload(fileBytes, params);
-				String cloudinaryUrl = (String) result.get("url").toString();
-				fileAttach.setFilePath(cloudinaryUrl);
-				fileAttachRepository.save(fileAttach);
-			} catch (IOException exception) {
-				System.out.println("Error uploading file: " + exception.getMessage());
 			}
-		}
+			homeworkRepository.save(homeWork);
+			for (MultipartFile file : multipartFile) {
+				FileAttach fileAttach = new FileAttach();
+				fileAttach.setHomework(homeWork);
+				fileAttach.setNotify(null);
+				fileAttach.setSubmitHomework(null);
+				String originalFilename = file.getOriginalFilename();
 
-		List<Long> listIdFile = fileAttachRepository.findIdByHomeworkId(homeWork.getHomeworkId());
-		homeWork.setFilePath(listIdFile);
+				Map params = ObjectUtils.asMap("public_id", homeWork.getHomeworkId() + "_Homework_" + originalFilename, // Specify
+																														// //
+																														// Cloudinary
+						"resource_type", "auto", // Treat uploaded files as raw data
+						"folder", "homework");
+				try {
+					// Upload to Cloudinary using byte array
+					byte[] fileBytes = file.getBytes();
+					Map result = cloudinary.uploader().upload(fileBytes, params);
+					String cloudinaryUrl = (String) result.get("url").toString();
+					fileAttach.setFilePath(cloudinaryUrl);
+					fileAttachRepository.save(fileAttach);
+				} catch (IOException exception) {
+					System.out.println("Error uploading file: " + exception.getMessage());
+				}
+			}
+			List<Long> listIdFile = fileAttachRepository.findIdByHomeworkId(homeWork.getHomeworkId());
+			homeWork.setFilePath(listIdFile);
+		}
+		
+
+		
 		homeworkRepository.save(homeWork);
 
 		m.addAttribute("createHomeworkSuccess", "Your homework has been created");
@@ -203,6 +226,9 @@ public class HomeworkController {
 		HttpSession session = request.getSession();
 		Account loggedInUser = (Account) session.getAttribute("loggedInUser");
 		if (loggedInUser == null) {
+			m.addAttribute("notLogin","You must login to access this!!");
+			session.setAttribute("redirectUrl", "/Homework/editHomework/" + homeworkId);
+
 			return "/Authen/Login";
 		}
 		// ảnh user login trên header
@@ -240,15 +266,15 @@ public class HomeworkController {
 		newHw.setDescription(description);
 		newHw.setDeadline(deadline);
 
-		//List<FileAttach> fileAttachs = fileAttachRepository.findByHomeworkId(newHw.getHomeworkId());
+		List<FileAttach> fileAttachs = fileAttachRepository.findByHomeworkId(newHw.getHomeworkId());
 		if (multipartFile[0].getOriginalFilename().length() != 0) // có file truyền vào
 		{
-//			// xóa file trên cloud
-//			for (FileAttach fileAttach : fileAttachs) {
-//				deleteFile(fileAttach.getFilePath());
-//				fileAttachRepository.delete(fileAttach);
-//			}
-			fileAttachRepository.deleteAll();
+			// xóa file trên cloud
+			for (FileAttach fileAttach : fileAttachs) {
+				//deleteFile(fileAttach.getFilePath());
+				fileAttachRepository.delete(fileAttach);
+			}
+
 			for (MultipartFile file : multipartFile) {
 				if (file.getSize() == 0) {
 					m.addAttribute("errorEmptyFile", "Can't update an empty file");
@@ -291,6 +317,9 @@ public class HomeworkController {
 		Account loggedInUser = (Account) session.getAttribute("loggedInUser");
 
 		if (loggedInUser == null) {
+			model.addAttribute("notLogin","You must login to access this!!");
+
+			session.setAttribute("redirectUrl", "/Homework/submitHomeWorkView/" + homeworkId);
 			return "/Authen/Login";
 		}
 
@@ -323,9 +352,11 @@ public class HomeworkController {
 		Account loggedInUser = (Account) session.getAttribute("loggedInUser");
 
 		if (loggedInUser == null) {
+			m.addAttribute("notLogin","You must login to access this!!");
+			session.setAttribute("redirectUrl", "/Homework/submitHomeWorkView/" + homework.getHomeworkId());
 			return "/Authen/Login";
 		}
-		
+
 		SubmitHomework submit = new SubmitHomework();
 		submit.setAccount(loggedInUser);
 		submit.setHomework(homework);
@@ -423,6 +454,8 @@ public class HomeworkController {
 		HttpSession session = request.getSession();
 		Account loggedInUser = (Account) session.getAttribute("loggedInUser");
 		if (loggedInUser == null) {
+			m.addAttribute("notLogin","You must login to access this!!");
+			session.setAttribute("redirectUrl", "/Homework/editSubmitHomework/" + homeworkId);
 			return "/Authen/Login";
 		}
 		// ảnh user login trên header
@@ -448,18 +481,17 @@ public class HomeworkController {
 		Optional<SubmitHomework> currentSubmitHomework = submitHomeworkRepository.findById(id);
 		SubmitHomework newSubmit = currentSubmitHomework.get();
 
-		//List<FileAttach> fileAttachs = fileAttachRepository.findBySubmitId(newSubmit.getSubmitHomeworkId());
+		 List<FileAttach> fileAttachs = fileAttachRepository.findBySubmitId(newSubmit.getSubmitHomeworkId());
 
 		newSubmit.setLastModified(LocalDateTime.now());
 		newSubmit.setDescription(description);
 		if (multipartFile[0].getOriginalFilename().length() != 0) {
-			
-//			// xóa file trên cloud
-//						for (FileAttach fileAttach : fileAttachs) {
-//							deleteFile(fileAttach.getFilePath());
-//							fileAttachRepository.delete(fileAttach);
-//						}
-			fileAttachRepository.deleteAll();		
+
+			// xóa file trên cloud
+			for (FileAttach fileAttach : fileAttachs) {
+				//deleteFile(fileAttach.getFilePath());
+				fileAttachRepository.delete(fileAttach);
+			}
 			for (MultipartFile file : multipartFile) {
 				if (file.getSize() == 0) {
 					m.addAttribute("errorEmptyFile", "Can't update an empty file");
@@ -489,10 +521,7 @@ public class HomeworkController {
 			}
 			List<Long> listIdFile = fileAttachRepository.findIdBySubmitId(newSubmit.getSubmitHomeworkId());
 			newSubmit.setFilePath(listIdFile);
-			}
-			
-
-			
+		}
 
 		submitHomeworkRepository.save(newSubmit);
 		m.addAttribute("updateSubmitHomeworkSuccess", "Your homework submit has been updated");
@@ -504,6 +533,8 @@ public class HomeworkController {
 		HttpSession session = request.getSession();
 		Account loggedInUser = (Account) session.getAttribute("loggedInUser");
 		if (loggedInUser == null) {
+			m.addAttribute("notLogin","You must login to access this!!");
+			session.setAttribute("redirectUrl", "/Homework/listMemberSubmited/" + homeworkId);
 			return "/Authen/Login";
 		}
 		Optional<Account> acc = accountRepository.findById(loggedInUser.getAccountId());
@@ -524,9 +555,12 @@ public class HomeworkController {
 
 	@GetMapping("/detailHomework/{homeworkId}")
 	public String detailHomework(@PathVariable long homeworkId, Model m, HttpServletRequest request) {
+		
 		HttpSession session = request.getSession();
 		Account loggedInUser = (Account) session.getAttribute("loggedInUser");
 		if (loggedInUser == null) {
+			m.addAttribute("notLogin","You must login to access this!!");
+			session.setAttribute("redirectUrl", "/Homework/detailHomework/" + homeworkId);
 			return "/Authen/Login";
 		}
 		// ảnh user login trên header
@@ -544,9 +578,15 @@ public class HomeworkController {
 	}
 
 	@GetMapping("/deleteHomework/{homeworkId}")
-	public String deleteHomework(@PathVariable("homeworkId") long id) {
-
+	public String deleteHomework(@PathVariable("homeworkId") long id,HttpServletRequest request,Model m) {
+		HttpSession session = request.getSession();
+		Account loggedInUser = (Account) session.getAttribute("loggedInUser");
 		Optional<Homework> currentHW = homeworkRepository.findById(id);
+		if (loggedInUser == null) {
+			m.addAttribute("notLogin","You must login to access this!!");
+			session.setAttribute("redirectUrl", "/Homework/detailHomework/" + id);
+			return "/Authen/Login";
+		}
 		Homework deletedHW = currentHW.get();
 		deletedHW.setDeleted(true);
 		homeworkRepository.save(deletedHW);

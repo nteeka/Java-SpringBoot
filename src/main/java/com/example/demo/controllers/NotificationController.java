@@ -94,6 +94,8 @@ public class NotificationController {
 		HttpSession session = request.getSession();
 		Account loggedInUser = (Account) session.getAttribute("loggedInUser");
 		if (loggedInUser == null) {
+			m.addAttribute("notLogin","You must login to access this!!");
+			session.setAttribute("redirectUrl", "/Notify/listNoti/" + id);
 			return "/Authen/Login";
 		}
 		// img header
@@ -110,22 +112,15 @@ public class NotificationController {
 
 	@PostMapping("/createNotification")
 	public String createNotification(@RequestParam("classes") Classes classes, @RequestParam("title") String title,
-			@RequestParam("content") String content, @RequestParam("filePath") MultipartFile[] multipartFile, Model m,
+			@RequestParam("content") String content, @RequestParam(value="filePath", required = false) MultipartFile[] multipartFile, Model m,
 			HttpServletRequest request) {
 
 		HttpSession session = request.getSession();
 		Account loggedInUser = (Account) session.getAttribute("loggedInUser");
 		if (loggedInUser == null) {
+			m.addAttribute("notLogin","You must login to access this!!");
+			session.setAttribute("redirectUrl", "/Notify/listNoti/" + classes.getClassId());
 			return "/Authen/Login";
-		}
-		// sẽ bổ sung một check box, nếu check thì check empty file, nếu không thì không
-		// check empty file
-		for (MultipartFile file : multipartFile) {
-			if (file.getSize() == 0) {
-				m.addAttribute("errorEmptyFile", "Can't upload an empty file");
-				return this.listNotification(classes.getClassId(), m, request);
-			}
-
 		}
 		Notification notify = new Notification();
 		notify.setClasses(classes);
@@ -133,37 +128,47 @@ public class NotificationController {
 		notify.setContent(content);
 		notify.setAccount(loggedInUser);
 		notify.setDateCreated(LocalDateTime.now());
-		notifyRepository.save(notify);
+		
+		// check empty file
+		if(multipartFile[0].getOriginalFilename().length() != 0)
+		{
+			notifyRepository.save(notify);
+			for (MultipartFile file : multipartFile) {
+				if (file.getSize() == 0) {
+					m.addAttribute("errorEmptyFile", "Can't upload an empty file");
+					return this.listNotification(classes.getClassId(), m, request);
+				}
 
-		for (MultipartFile file : multipartFile) {
-			FileAttach fileAttach = new FileAttach();
-			fileAttach.setHomework(null);
-			fileAttach.setNotify(notify);
-			fileAttach.setSubmitHomework(null);
-			String originalFilename = file.getOriginalFilename();
-
-			Map params = ObjectUtils.asMap("public_id", notify.getNotifyId() + "_Notify_" + originalFilename, // Specify
-																												// //
-																												// public_id
-																												// //
-																												// Cloudinary
-					"resource_type", "auto", // Treat uploaded files as raw data
-					"folder", "notification");
-			try {
-				// Upload to Cloudinary using byte array
-				byte[] fileBytes = file.getBytes();
-				Map result = cloudinary.uploader().upload(fileBytes, params);
-				String cloudinaryUrl = (String) result.get("url").toString();
-				fileAttach.setFilePath(cloudinaryUrl);
-				fileAttachRepository.save(fileAttach);
-			} catch (IOException exception) {
-				System.out.println("Error uploading file: " + exception.getMessage());
 			}
+			
+
+			for (MultipartFile file : multipartFile) {
+				FileAttach fileAttach = new FileAttach();
+				fileAttach.setHomework(null);
+				fileAttach.setNotify(notify);
+				fileAttach.setSubmitHomework(null);
+				String originalFilename = file.getOriginalFilename();
+
+				Map params = ObjectUtils.asMap("public_id", notify.getNotifyId() + "_Notify_" + originalFilename, // Specify
+																													// 																							// //
+																													// Cloudinary
+						"resource_type", "auto", // Treat uploaded files as raw data
+						"folder", "notification");
+				try {
+					// Upload to Cloudinary using byte array
+					byte[] fileBytes = file.getBytes();
+					Map result = cloudinary.uploader().upload(fileBytes, params);
+					String cloudinaryUrl = (String) result.get("url").toString();
+					fileAttach.setFilePath(cloudinaryUrl);
+					fileAttachRepository.save(fileAttach);
+				} catch (IOException exception) {
+					System.out.println("Error uploading file: " + exception.getMessage());
+				}
+			}
+
+			List<Long> listIdFile = fileAttachRepository.findIdByNotifyId(notify.getNotifyId());
+			notify.setFilePath(listIdFile);
 		}
-
-		List<Long> listIdFile = fileAttachRepository.findIdByNotifyId(notify.getNotifyId());
-		notify.setFilePath(listIdFile);
-
 		notifyRepository.save(notify);
 		m.addAttribute("createNotiSuccess", "Your notification has been created");
 		return this.listNotification(classes.getClassId(), m, request);
@@ -174,6 +179,8 @@ public class NotificationController {
 		HttpSession session = request.getSession();
 		Account loggedInUser = (Account) session.getAttribute("loggedInUser");
 		if (loggedInUser == null) {
+			m.addAttribute("notLogin","You must login to access this!!");
+			session.setAttribute("redirectUrl", "/Notify/editNoti/" + notifyId);
 			return "/Authen/Login";
 		}
 		// ảnh user login trên header
@@ -232,15 +239,14 @@ public class NotificationController {
 		newNoti.setLastModifed(LocalDateTime.now());
 		newNoti.setTitle(title);
 
-		//List<FileAttach> fileAttachs = fileAttachRepository.findByNotifyId(newNoti.getNotifyId());
+		List<FileAttach> fileAttachs = fileAttachRepository.findByNotifyId(newNoti.getNotifyId());
 		if (multipartFile[0].getOriginalFilename().length() != 0) // có file truyền vào
 		{
-//			// xóa file trên cloud
-//			for (FileAttach fileAttach : fileAttachs) {
-//				deleteFile(fileAttach.getFilePath());
-//				fileAttachRepository.delete(fileAttach);
-//			}
-			fileAttachRepository.deleteAll();
+			// xóa file trên cloud
+			for (FileAttach fileAttach : fileAttachs) {
+				//deleteFile(fileAttach.getFilePath());
+				fileAttachRepository.delete(fileAttach);
+			}
 			for (MultipartFile file : multipartFile) {
 				if (file.getSize() == 0) {
 					m.addAttribute("errorEmptyFile", "Can't update an empty file");
@@ -295,6 +301,8 @@ public class NotificationController {
 		HttpSession session = request.getSession();
 		Account loggedInUser = (Account) session.getAttribute("loggedInUser");
 		if (loggedInUser == null) {
+			m.addAttribute("notLogin","You must login to access this!!");
+			session.setAttribute("redirectUrl", "/Notify/detailNoti/" + notifyId);
 			return "/Authen/Login";
 		}
 		// ảnh header
@@ -329,7 +337,8 @@ public class NotificationController {
 
 		// danh sách file
 		List<FileAttach> listFile = fileAttachRepository.findByNotifyId(notifyId);
-		m.addAttribute("listFile", listFile);
+		if(!listFile.isEmpty())
+			m.addAttribute("listFile", listFile);
 
 		return "/Notification/Noti-Detail";
 
@@ -340,6 +349,13 @@ public class NotificationController {
 
 		Optional<Notification> currentNoti = notifyRepository.findById(id);
 		Notification newNoti = currentNoti.get();
+		HttpSession session = request.getSession();
+		Account loggedInUser = (Account) session.getAttribute("loggedInUser");
+		if (loggedInUser == null) {
+			m.addAttribute("notLogin","You must login to access this!!");
+			session.setAttribute("redirectUrl", "/Notify/pinNoti/" + id);
+			return "/Authen/Login";
+		}
 		if (newNoti.getIsPinned()) {
 			newNoti.setIsPinned(false);
 			notifyRepository.save(newNoti);

@@ -74,7 +74,7 @@
        href="javascript:void(0);" 
        class="btn btn-success btn-lg">Đã nộp</a>
     <a th:unless="${#lists.contains(listSubmit.![account.accountId], session.loggedInUser.accountId)}" 
-       th:href="@{'/Teacher/submitHomeWorkView/' + ${homework.homeworkId}} "
+       th:href="@{'/Homework/submitHomeWorkView/' + ${homework.homeworkId}} "
        class="btn btn-success btn-lg">Nộp Bài</a>
 </th:block>
 <th:block th:unless="${listSubmit != null and !listSubmit.isEmpty()}">

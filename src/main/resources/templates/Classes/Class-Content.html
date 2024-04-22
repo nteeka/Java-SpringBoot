@@ -33,9 +33,10 @@
 				th:href="'/Notify/listNoti/' + ${id}">Notify</a></li>
 			<li class="nav-item"><a class="nav-link disabled" href="#">Disabled</a>
 			</li>
-			<li th:if="${account.accountId != c.account.accountId}" class="nav-item"><a class="nav-link leave-class-btn" href="#" th:data-class-id="${c.classId}">Leave class</a>
-			</li>
-			
+			<li th:if="${account.accountId != c.account.accountId}"
+				class="nav-item"><a class="nav-link leave-class-btn" href="#"
+				th:data-class-id="${c.classId}">Leave class</a></li>
+
 		</ul>
 	</div>
 </nav>
@@ -100,12 +101,14 @@
 			</div>
 
 
-			<h3 class="mt-4">List member joined(<span th:text="${countMember}"></span>)</h3>
+			<h3 class="mt-4">
+				List member joined(<span th:text="${countMember}"></span>)
+			</h3>
 
 			<input type="text" id="searchInput" placeholder="Search..."
-					onkeyup="searchAccounts()">
+				onkeyup="searchAccounts()">
 			<div class="scrollable-listAccount">
-				
+
 				<ul id="accountList" class="list-unstyled">
 					<li th:each="account : ${listAccount}"><span
 						th:text="${account.displayName}"></span></li>
@@ -127,27 +130,32 @@
 				Class</a>
 
 		</div>
-		<div th:if="${listPinnedNoti}"  class="col-sm-8">
-			<div th:each="noti : ${listPinnedNoti}">
+		<div class="col-sm-8">
+			<div th:if="${listPinnedNoti}" th:each="noti : ${listPinnedNoti}">
 				<h2 class="mt-2" th:text="${noti.title}"></h2>
-				<h5 th:text="${#temporals.format(noti.dateCreated, 'MMM dd, yyyy HH:mm')}"></h5>
-				<p th:if="${noti.lastModifed}">Last modified • <span th:text="${#temporals.format(noti.lastModifed, 'MMM dd, yyyy HH:mm')}"></span></p>			
+				<h5
+					th:text="${#temporals.format(noti.dateCreated, 'MMM dd, yyyy HH:mm')}"></h5>
+				<p th:if="${noti.lastModifed}">
+					Last modified • <span
+						th:text="${#temporals.format(noti.lastModifed, 'MMM dd, yyyy HH:mm')}"></span>
+				</p>
 				<div class="fakeimg">Fake Image</div>
 				<p>Some text..</p>
 				<p th:text="${noti.content}"></p>
-			</div>			
+			</div>
+			
+			<div th:unless="${listPinnedNoti}">
+				<h2>TITLE NOTIFICATION</h2>
+				<h5>Title description, Dec 7, 2020</h5>
+				<div class="fakeimg">Fake Image</div>
+				<p>Some text..</p>
+				<p>Sunt in culpa qui officia deserunt mollit anim id est laborum
+					consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+					labore et dolore magna aliqua. Ut enim ad minim veniam, quis
+					nostrud exercitation ullamco.</p>
+			</div>
 		</div>
-		<div th:unless="${listPinnedNoti}" class="col-sm-8">
-			<h1>Let's Pin Your Noti here</h1>
-			<h2>TITLE NOTIFICATION</h2>
-			<h5>Title description, Dec 7, 2020</h5>
-			<div class="fakeimg">Fake Image</div>
-			<p>Some text..</p>
-			<p>Sunt in culpa qui officia deserunt mollit anim id est laborum
-				consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-				labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-				exercitation ullamco.</p>
-		</div>
+
 	</div>
 </div>
 
@@ -371,7 +379,8 @@
 <style>
 /* Đặt chiều cao tối đa cho danh sách là 3 dòng và kích hoạt thanh cuộn khi cần thiết */
 .scrollable-listAccount {
-	max-height: calc(3 * ( 1.5rem + 1px)); /* 3 dòng * 3em (giả sử mỗi dòng có độ cao 3em) */
+	max-height: calc(3 * ( 1.5rem + 1px));
+	/* 3 dòng * 3em (giả sử mỗi dòng có độ cao 3em) */
 	overflow-y: auto;
 }
 </style>

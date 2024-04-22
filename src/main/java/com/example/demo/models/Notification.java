@@ -34,6 +34,7 @@ public class Notification {
     @JoinColumn(name = "accountId") // Specify the foreign key column
     private Account account;
 	
+	@Column(columnDefinition = "MEDIUMTEXT")
 	private String content;
 	
 	@Column(name = "isDeleted", columnDefinition = "boolean default false")

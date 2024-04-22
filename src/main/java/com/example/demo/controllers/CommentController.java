@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,10 +47,12 @@ public class CommentController {
 	@PostMapping("/createNotifyComment")
     public String createComment(@RequestParam("content") String content,
     							@RequestParam("notify") Notification notify,
-    							HttpServletRequest request) {
+    							HttpServletRequest request, Model m) {
 		HttpSession session = request.getSession();
 	    Account loggedInUser = (Account) session.getAttribute("loggedInUser");
 	    if (loggedInUser == null) {
+			session.setAttribute("redirectUrl", "/Notify/detailNoti/" + notify.getNotifyId());
+			m.addAttribute("notLogin","You must login to access this!!");
 	        return "/Authen/Login";
 	    }
 		Comment cmt = new Comment();
@@ -101,10 +104,19 @@ public class CommentController {
 	
 	
 	@GetMapping("/likeComment/{commentId}")
-    public String likeComment(@PathVariable("commentId") long id, HttpServletRequest request) {	       	                      
+    public String likeComment(@PathVariable("commentId") long id, HttpServletRequest request,Model m) {	       	                      
+		
+		Optional<Comment> currentCmt = commentRepository.findById(id);
+		
 		HttpSession session = request.getSession();
 	    Account loggedInUser = (Account) session.getAttribute("loggedInUser");
-		Optional<Comment> currentCmt = commentRepository.findById(id);
+	    if (loggedInUser == null) {
+			m.addAttribute("notLogin","You must login to access this!!");
+			session.setAttribute("redirectUrl", "/Notify/detailNoti/" + currentCmt.get().getNotify().getNotifyId());
+	        return "/Authen/Login";
+	    }
+
+		
 		
 		int increaseLike = currentCmt.get().getLikeNumber();
 		
@@ -140,10 +152,12 @@ public class CommentController {
 	@PostMapping("/createReplyComment")
     public String createReplyComment(@RequestParam("content") String content,
     							@RequestParam("comment") Comment comment,
-    							HttpServletRequest request) {
+    							HttpServletRequest request, Model m) {
 		HttpSession session = request.getSession();
 	    Account loggedInUser = (Account) session.getAttribute("loggedInUser");
 	    if (loggedInUser == null) {
+	    	session.setAttribute("redirectUrl", "/Notify/detailNoti/" + comment.getNotify().getNotifyId());
+			m.addAttribute("notLogin","You must login to access this!!");
 	        return "/Authen/Login";
 	    }
 		ReplyComment reply = new ReplyComment();

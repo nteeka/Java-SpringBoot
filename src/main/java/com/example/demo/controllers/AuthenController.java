@@ -74,7 +74,15 @@ public class AuthenController {
             Account account = existingAccount.get();   
             if(passwordEncoder.matches(password,account.getPassword() ))
             {
+            	
                 session.setAttribute("loggedInUser", account);
+                String redirectUrl = (String) session.getAttribute("redirectUrl");
+                if (redirectUrl != null) {
+                    // Xóa URL đã lưu trữ trong session
+                    session.removeAttribute("redirectUrl");
+                    // Chuyển hướng người dùng đến URL được lưu trữ
+                    return "redirect:" + redirectUrl;
+                }
                 return "redirect:/Class/listClass";
             }
             	

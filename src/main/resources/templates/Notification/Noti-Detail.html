@@ -13,7 +13,7 @@
 			<h1 class="text-4xl font-bold md:tracking-tight md:text-5xl" th:text="${noti.title}"></h1>
 			<div class="flex flex-col items-start justify-between w-full md:flex-row md:items-center dark:text-gray-600">
 				<div class="flex items-center md:space-x-2">
-					<img src="https://source.unsplash.com/75x75/?portrait" alt="" class="w-4 h-4 border rounded-full dark:bg-gray-500 dark:border-gray-300">
+					<img th:src="${account.image}" alt="" class="w-4 h-4 border rounded-full dark:bg-gray-500 dark:border-gray-300">
 					<p class="text-sm"><span th:text="${noti.account.displayName}"></span> • <span th:text="${noti.account.displayName}"></span> <span
 								th:text="${#temporals.format(noti.dateCreated, 'MMM,dd yyyy HH:mm')}"></span></p>
 				</div>
@@ -30,7 +30,7 @@
 			<a rel="noopener noreferrer" href="#" class="px-3 py-1 rounded-sm hover:underline dark:bg-violet-600 dark:text-gray-50">#TailwindCSS</a>
 			<a rel="noopener noreferrer" href="#" class="px-3 py-1 rounded-sm hover:underline dark:bg-violet-600 dark:text-gray-50">#Angular</a>
 		</div>
-		<div class="space-y-2">
+		<div th:if="${listFile}" class="space-y-2">
 			<h4 class="text-lg font-semibold">Files attach</h4>		
 			<ul class="ml-4 space-y-1 list-disc">
 				<li th:each="fileName : ${listFile}">

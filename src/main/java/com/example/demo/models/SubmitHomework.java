@@ -31,6 +31,7 @@ public class SubmitHomework {
     @JoinColumn(name = "homeworkId")
     private Homework homework;
 	
+	@Column(columnDefinition = "MEDIUMTEXT")
 	private String description;
 	
 	private LocalDateTime dateSubmited;

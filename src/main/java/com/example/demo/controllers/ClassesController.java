@@ -89,6 +89,7 @@ public class ClassesController {
 		// Kiểm tra xem tài khoản đã đăng nhập chưa
 		if (loggedInUser == null) {
 			// Xử lý khi tài khoản chưa đăng nhập
+			session.setAttribute("redirectUrl", "/Class/listClass");
 			return "/Authen/Login";
 		}
 		Optional<Account> acc = accountRepository.findById(loggedInUser.getAccountId());
@@ -240,6 +241,7 @@ public class ClassesController {
 		Account loggedInUser = (Account) session.getAttribute("loggedInUser");
 
 		if (loggedInUser == null) {
+			session.setAttribute("redirectUrl", "/Class/enterClass/" + id);
 			return "/Authen/Login";
 		}
 		// get class id
@@ -278,56 +280,21 @@ public class ClassesController {
 		
 		
 		List<Notification> listPinnedNoti = notifyRepository.listPinnedNotiByClassId(c.get().getClassId());
-		m.addAttribute("listPinnedNoti", listPinnedNoti);
+		if(!listPinnedNoti.isEmpty())			
+			m.addAttribute("listPinnedNoti", listPinnedNoti);
 
-//		List<Long> lstNotifyId = notifyRepository.listNotifyId(c.get().getClassId());
-//		m.addAttribute("lstNotifyId", lstNotifyId);
 
-//		List<Comment> listComment = commentRepository.findAllNotDeleted();
-//		m.addAttribute("listComment", listComment);
-
-//		List<CommentLike> checkLikeComment = commentLikeRepository.findByAccountId(loggedInUser.getAccountId());
-//
-//		List<Long> check = new ArrayList<Long>();
-//		for (CommentLike commentLike : checkLikeComment) {
-//			for (Comment cmt22 : listComment) {
-//				if (commentLike.getComment().getCommentId() == cmt22.getCommentId())
-//					check.add(cmt22.getCommentId());
-//			}
-//		}
-//		m.addAttribute("checkLikeComment", check);
-
-//		List<ReplyComment> listReply = replyRepository.findAll();
-//		m.addAttribute("listReply", listReply);
-//
 		//count member in class
 		Long countMember = classAccountRepository.countAccountsInClass(id);
 		//trừ đi người tạo lớp
 		countMember = countMember - 1 ;
 		m.addAttribute("countMember", countMember);
-		
-//		List<SubmitHomework> countSubmited = submitHomeworkRepository.countSubmited(id);
-//		m.addAttribute("countSubmited", countSubmited);
-		
-//		Map<Long, Integer> countSubmittedByHomeworkId = new HashMap<>();
-//		for (SubmitHomework submission : countSubmited) {
-//			Long homeworkId = submission.getHomework().getHomeworkId();
-//			countSubmittedByHomeworkId.put(homeworkId, countSubmittedByHomeworkId.getOrDefault(homeworkId, 0) + 1);
-//		}
-//
-//		m.addAttribute("countSubmittedByHomeworkId", countSubmittedByHomeworkId);
 
-		// update submitdHomework
-//		List<SubmitHomework> listSubmitHomework = submitHomeworkRepository.findAll();
-//		m.addAttribute("listSubmitHomework", listSubmitHomework);
 		
 		//img header account
 		Optional<Account> accountImg = accountRepository.findById(loggedInUser.getAccountId());
 		m.addAttribute("account", accountImg.get());
-		
-		//list file attach
-//		List<FileAttach> listFile = fileAttachRepository.findAll();
-//		m.addAttribute("listFile", listFile);
+
 
 		return "/Classes/Class-Content";
 	}

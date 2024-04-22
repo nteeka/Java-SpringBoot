@@ -80,7 +80,7 @@ public class AccountController {
         
     	Optional<Account> existingAccount = accountRepository.findById(id);
         if (!existingAccount.isPresent()) {
-        	return "redirect:/StudentView/listStudent"; // error, change after	    
+        	return "redirect:/StudentView/listStudent"; // error, change after	    ???
         } 
         Account account = existingAccount.get();                   		        
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
@@ -107,6 +107,8 @@ public class AccountController {
     	HttpSession session = request.getSession();
 	    Account loggedInUser = (Account) session.getAttribute("loggedInUser");
 	    if (loggedInUser == null) {
+			session.setAttribute("redirectUrl", "/Account/edit/" + id);
+			m.addAttribute("notLogin","You must login to access this!!");
 	        return "/Authen/Login";
 	    }
     	Optional<Account> acc = accountRepository.findById(id);

@@ -3,7 +3,9 @@
 	crossorigin="anonymous"></script>
 
 <section class="vh-100">
-
+	<div id="errorDiv" class="alert alert-danger" th:if="${notLogin}">
+		<p style="text-align: center;" th:text="${notLogin}"></p>
+	</div>
 	<div class="container-fluid h-custom">
 		<div
 			class="row d-flex justify-content-center align-items-center h-100">
@@ -84,6 +86,20 @@
 	</div>
 
 </section>
+<script>
+	// Hàm để ẩn đi phần tử sau một khoảng thời gian
+	function hideElementAfterDelay(elementId, delay) {
+		setTimeout(function() {
+			var element = document.getElementById(elementId);
+			if (element) {
+				element.style.display = 'none';
+			}
+		}, delay);
+	}
+
+	// Gọi hàm để ẩn đi phần tử sau 3 giây (3000 milliseconds)
+	hideElementAfterDelay('errorDiv', 3000);
+</script>
 <style>
 .divider:after, .divider:before {
 	content: "";
@@ -102,7 +118,6 @@
 	}
 }
 </style>
-
 
 
 <div th:replace="/ViewLayout/footer.html"></div>

@@ -31,7 +31,7 @@ public class Homework {
     @JoinColumn(name = "classId") // Specify the foreign key column
     private Classes classes;
 	
-	
+	@Column(columnDefinition = "MEDIUMTEXT")
 	private String description;
 	
 	

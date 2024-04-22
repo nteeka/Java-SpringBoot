@@ -30,7 +30,8 @@
 					<div class="form-group">
 					  <label class="control-label" for="contact-message">Description</label>
 						<div class="controls">
-							<input th:value="${homework.description}" id="contact-message" name="description"  class="form-control requiredField Highlighted-label" rows="6" data-error-empty="Please enter your Homework Description">
+							<textarea th:text="${homework.description}" id="contact-message" name="description" class="form-control requiredField Highlighted-label" rows="6" data-error-empty="Please enter your Homework Description"></textarea>
+						
 							<i class="fa fa-comment"></i>
 						</div>
 					</div>
