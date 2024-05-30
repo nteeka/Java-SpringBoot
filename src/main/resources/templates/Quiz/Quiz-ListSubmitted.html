@@ -1,0 +1,9 @@
+<div th:replace="/ViewLayout/header.html"></div>
+
+<ul th:if="${listSubmit}">
+	<li th:each="submit : ${listSubmit}">
+		<span th:each="account : ${listAccount}" th:if="${account.accountId == submit.key}" th:text="${account.displayName}"></span> : <span th:text="${submit.value}"></span>	
+	</li>
+</ul>
+
+<div th:replace="/ViewLayout/footer.html"></div>

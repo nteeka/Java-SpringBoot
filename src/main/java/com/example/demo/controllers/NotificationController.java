@@ -1,12 +1,6 @@
 package com.example.demo.controllers;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,12 +20,10 @@ import org.springframework.web.multipart.MultipartFile;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.example.demo.models.Account;
-import com.example.demo.models.ClassAccount;
 import com.example.demo.models.Classes;
 import com.example.demo.models.Comment;
 import com.example.demo.models.CommentLike;
 import com.example.demo.models.FileAttach;
-import com.example.demo.models.Homework;
 import com.example.demo.models.Notification;
 import com.example.demo.models.ReplyComment;
 import com.example.demo.repositories.AccountRepository;
@@ -190,7 +182,8 @@ public class NotificationController {
 		m.addAttribute("noti", noti.get());
 
 		List<FileAttach> listFile = fileAttachRepository.findByNotifyId(notifyId);
-		m.addAttribute("listFile", listFile);
+		if(!listFile.isEmpty())
+			m.addAttribute("listFile", listFile);
 
 		return "/Notification/Noti-Edit";
 	}

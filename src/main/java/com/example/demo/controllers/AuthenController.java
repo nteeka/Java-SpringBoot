@@ -1,9 +1,7 @@
 package com.example.demo.controllers;
 
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -11,10 +9,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.demo.helpers.PasswordResetTokenUtils;
 import com.example.demo.models.Account;
@@ -34,7 +29,6 @@ import com.example.demo.services.RoleService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.core.io.ResourceLoader;
 
 
 
@@ -59,10 +53,22 @@ public class AuthenController {
 	@Autowired
 	private HttpSession session;
 	
-	@Autowired
-    private ResourceLoader resourceLoader;
+
+	@GetMapping("/loginView")
+    public String login(HttpSession session,Model m) {	 
+		Account loggedInUser = (Account) session.getAttribute("loggedInUser");
+	    if (loggedInUser != null) {
+	        m.addAttribute("currentEmail", loggedInUser.getEmail());
+	    }
+        return "/Authen/Login";
+    }
 	
 	
+	@GetMapping("/oauth2/login")
+	public String handleOAuth2Login() {
+	    
+	    return "redirect:/Home/index";
+	}
 	
 	@PostMapping("/login")
     public String checkLogin(@RequestParam("email") String email,
@@ -99,13 +105,15 @@ public class AuthenController {
     }
 	
 	@GetMapping("/logout")
-    public String logout(HttpSession session,Model m) {
+	public String logout(HttpSession session, Model m , RedirectAttributes redirectAttributes) {
 	    Account loggedInUser = (Account) session.getAttribute("loggedInUser");
-	    if(loggedInUser != null)
-	    	m.addAttribute("currentEmail", loggedInUser.getEmail());
-        session.invalidate();
-        return "/Authen/Login";
-    }
+	    if (loggedInUser != null) {
+			redirectAttributes.addFlashAttribute("currentEmail", loggedInUser.getEmail());
+	    }
+	    session.invalidate();
+	    return "redirect:/Authen/loginView"; // Trả về trang đăng nhập
+
+	}
 	
 
 	@PostMapping("/register")

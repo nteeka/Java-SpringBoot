@@ -173,6 +173,9 @@
 
 			</div>
 			<div class="nav__right">
+				
+				
+				
 				<div id="toggleButton" onclick="toggleMode()">
 					<i id="moonIcon" style="color: black;" class="fa-solid fa-moon"></i>
 					<!-- Biểu tượng mặt trăng -->
@@ -190,7 +193,7 @@
 							data-target="#createClassModal">Tạo lớp học</a>
 					</div>
 				</div>
-				<i class="fa-solid fa-braille"></i>
+				
 				<div th:if="${session.loggedInUser != null}" class="dropdown">
 					<a th:if="${account != null and account.image != null }" href="#"><img
 						style="border-radius: 50%; width: 32px; height: 32px;"

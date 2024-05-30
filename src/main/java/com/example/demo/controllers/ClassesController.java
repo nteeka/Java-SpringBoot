@@ -1,9 +1,7 @@
 package com.example.demo.controllers;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,22 +16,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.example.demo.models.Account;
 import com.example.demo.models.ClassAccount;
 import com.example.demo.models.Classes;
-import com.example.demo.models.Comment;
-import com.example.demo.models.CommentLike;
-import com.example.demo.models.FileAttach;
+
 import com.example.demo.models.Homework;
 import com.example.demo.models.Notification;
-import com.example.demo.models.ReplyComment;
-import com.example.demo.models.SubmitHomework;
 import com.example.demo.repositories.AccountRepository;
 import com.example.demo.repositories.ClassAccountRepository;
 import com.example.demo.repositories.ClassRepository;
-import com.example.demo.repositories.CommentLikeRepository;
-import com.example.demo.repositories.CommentRepository;
-import com.example.demo.repositories.FileAttachRepository;
 import com.example.demo.repositories.HomeworkRepository;
 import com.example.demo.repositories.NotificationRepository;
-import com.example.demo.repositories.ReplyCommentRepository;
 import com.example.demo.repositories.SubmitHomeworkRepository;
 
 import jakarta.persistence.EntityManager;
@@ -57,14 +47,11 @@ public class ClassesController {
 	@Autowired
 	private NotificationRepository notifyRepository;
 
-	@Autowired
-	private CommentRepository commentRepository;
 
-	@Autowired
-	private CommentLikeRepository commentLikeRepository;
 
-	@Autowired
-	private ReplyCommentRepository replyRepository;
+
+
+
 
 	@Autowired
 	NotificationRepository notiRepository;
@@ -78,8 +65,7 @@ public class ClassesController {
 	@Autowired
 	private AccountRepository accountRepository;
 
-	@Autowired
-	private FileAttachRepository fileAttachRepository;
+
 
 	@GetMapping("/listClass")
 	public String listClassView(Model m, HttpServletRequest request) {
@@ -90,6 +76,7 @@ public class ClassesController {
 		if (loggedInUser == null) {
 			// Xử lý khi tài khoản chưa đăng nhập
 			session.setAttribute("redirectUrl", "/Class/listClass");
+			m.addAttribute("notLogin","You must login to access this!!");
 			return "/Authen/Login";
 		}
 		Optional<Account> acc = accountRepository.findById(loggedInUser.getAccountId());
@@ -143,6 +130,7 @@ public class ClassesController {
 		HttpSession session = request.getSession();
 		Account loggedInUser = (Account) session.getAttribute("loggedInUser");
 		if (loggedInUser == null) {
+			model.addAttribute("notLogin","You must login to access this!!");
 			return "/Authen/Login";
 		}
 		// return về List Class
@@ -208,6 +196,7 @@ public class ClassesController {
 		Account loggedInUser = (Account) session.getAttribute("loggedInUser");
 
 		if (loggedInUser == null) {
+			model.addAttribute("notLogin","You must login to access this!!");
 			return "/Authen/Login";
 		}
 		ClassAccount deleteClassAccount = classAccountRepository.findByClassIdAndAccountId(id.trim(),
@@ -242,6 +231,7 @@ public class ClassesController {
 
 		if (loggedInUser == null) {
 			session.setAttribute("redirectUrl", "/Class/enterClass/" + id);
+			m.addAttribute("notLogin","You must login to access this!!");
 			return "/Authen/Login";
 		}
 		// get class id
@@ -298,5 +288,7 @@ public class ClassesController {
 
 		return "/Classes/Class-Content";
 	}
-
+	
+	
+	
 }

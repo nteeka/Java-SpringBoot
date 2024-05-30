@@ -1,9 +1,11 @@
 package com.example.demo.viewController;
 
 
+import java.security.Principal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,15 +24,19 @@ public class homeViewController {
 	@Autowired
     private RoleService roleService;
 	
+	
+	
 	@GetMapping("/index")
-    public String showHomePage() {
+    public String showHomePage(Model model) {
+
+		
         return "index";       
     }
 	
 	@GetMapping("/login")
     public String showLoginPage(HttpServletRequest request) {
 		
-        return "/Authen/Login";       
+        return "redirect:/Authen/loginView";       
     }
 	
 	@GetMapping("/register")

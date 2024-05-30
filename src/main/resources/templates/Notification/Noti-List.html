@@ -28,8 +28,7 @@
 				th:href="'/Homework/listHomework/' + ${c.classId}">Homework</a></li>
 			<li class="nav-item"><a class="nav-link"
 				th:href="'/Notify/listNoti/' + ${c.classId}">Notify</a></li>
-			<li class="nav-item"><a class="nav-link disabled" href="#">Disabled</a>
-			</li>
+			
 			<li th:if="${account.accountId != c.account.accountId}" class="nav-item"><a class="nav-link leave-class-btn" href="#" th:data-class-id="${c.classId}">Leave class</a>
 			</li>
 		</ul>
@@ -62,6 +61,7 @@
 
 				<div class="card-header no-border">
 					<h5 class="card-title" th:text="${noti.account.displayName}"></h5>
+					<a th:if="${noti.account.accountId == session.loggedInUser.accountId}" th:href="'/Notify/editNoti/' + ${noti.notifyId}" class="btn btn-default">Edit<i class="fa fa-pencil"></i></a>
 				</div>
 				<div class="card-body pt-0">
 					<div class="widget-49">

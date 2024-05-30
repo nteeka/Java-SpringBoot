@@ -47,7 +47,9 @@
                             <a href="javascript:void(0);">Date Created<span th:text="${#temporals.format(homework.dateCreated, 'dd/MM/yyyy HH:mm')}"></span></a>
                         </li>
                         <li>
-                            <a href="javascript:void(0);">Deadline<span th:text="${#temporals.format(homework.deadline, 'dd/MM/yyyy')}"></span></a>
+                            <a th:if="${#strings.isEmpty(homework.deadline)}" href="javascript:void(0);">Deadline<span>None</span></a>
+                        	<a th:unless="${#strings.isEmpty(homework.deadline)}" href="javascript:void(0);">Deadline<span th:text="${#temporals.format(homework.deadline, 'dd/MM/yyyy')}"></span></a>                       	
+                        	
                         </li>
                     </ul>
                 </div>
@@ -78,7 +80,7 @@
        class="btn btn-success btn-lg">Nộp Bài</a>
 </th:block>
 <th:block th:unless="${listSubmit != null and !listSubmit.isEmpty()}">
-    <a th:href="@{'/Teacher/submitHomeWorkView/' + ${homework.homeworkId}} " class="btn btn-success btn-lg">Nộp Bài</a>
+    <a th:href="@{'/Homework/submitHomeWorkView/' + ${homework.homeworkId}} " class="btn btn-success btn-lg">Nộp Bài</a>
 </th:block>
                     	
                     </div>

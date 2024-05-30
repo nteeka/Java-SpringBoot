@@ -1,0 +1,343 @@
+<div th:replace="/ViewLayout/header.html"></div>
+
+
+<div class="container">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="card card-white">
+			
+				<div class="card-body">
+					<form action="/Todo/addTodo" method="post">
+						 <input type="text" class="form-control mb-3 search-task" placeholder="Search by task name...">
+						<input type="text" name="taskName" class="form-control add-task"
+							placeholder="New Task...">
+						<button type="submit" class="btn btn-primary add-button">Add
+							Task</button>
+					</form>
+					<ul class="nav nav-pills todo-nav">
+						<li role="presentation" class="nav-item all-task active"><a
+							href="#" class="nav-link">All</a></li>
+						<li role="presentation" class="nav-item active-task"><a
+							href="#" class="nav-link">Active</a></li>
+						<li role="presentation" class="nav-item completed-task"><a
+							href="#" class="nav-link">Completed</a></li>
+					</ul>
+					<div th:if="${listTodo}" class="todo-list">
+						<div th:each="todo : ${listTodo}" class="todo-item">
+							<div class="checker">
+								<span class=""><input type="checkbox"></span>
+							</div>
+							<span class="task-name" th:text="${todo.taskName}"></span> 
+							
+							<textarea class="edit-task" style="display: none;"></textarea>
+							<button class="save-btn" th:data-todo-id="${todo.id}" style="display: none;">Save</button>
+							<button class="cancel-btn" style="display: none;">Cancel</button>							 
+							
+							<a href="#" class="btn btn-success float-right edit-btn" th:data-todo-id="${todo.id}">
+								<i class="fa fa-pencil"></i>
+							</a>
+							<a href="#" class="btn btn-danger float-right delete-todo-btn" th:data-todo-id="${todo.id}"><i class="fa fa-trash"></i></a>
+							
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<script>
+	$(document).ready(function() {
+
+						"use strict";
+
+						var todo = function() {
+							$('.todo-list .todo-item input').click(
+									function() {
+										if ($(this).is(':checked')) {
+											$(this).parent().parent().parent()
+													.toggleClass('complete');
+										} else {
+											$(this).parent().parent().parent()
+													.toggleClass('complete');
+										}
+									});
+
+							$('.todo-nav .all-task').click(function() {
+								$('.todo-list').removeClass('only-active');
+								$('.todo-list').removeClass('only-complete');
+								$('.todo-nav li.active').removeClass('active');
+								$(this).addClass('active');
+							});
+
+							$('.todo-nav .active-task').click(function() {
+								$('.todo-list').removeClass('only-complete');
+								$('.todo-list').addClass('only-active');
+								$('.todo-nav li.active').removeClass('active');
+								$(this).addClass('active');
+							});
+
+							$('.todo-nav .completed-task').click(function() {
+								$('.todo-list').removeClass('only-active');
+								$('.todo-list').addClass('only-complete');
+								$('.todo-nav li.active').removeClass('active');
+								$(this).addClass('active');
+							});
+
+							$('#uniform-all-complete input')
+									.click(
+											function() {
+												if ($(this).is(':checked')) {
+													$(
+															'.todo-item .checker span:not(.checked) input')
+															.click();
+												} else {
+													$(
+															'.todo-item .checker span.checked input')
+															.click();
+												}
+											});
+
+							$('.remove-todo-item').click(function() {
+								$(this).parent().remove();
+							});
+						};
+
+						todo();
+
+						$(".add-task")
+								.keypress(
+										function(e) {
+											if ((e.which == 13)
+													&& (!$(this).val().length == 0)) {
+												$(
+														'<div class="todo-item"><div class="checker"><span class=""><input type="checkbox"></span></div> <span>'
+																+ $(this).val()
+																+ '</span> <a href="javascript:void(0);" class="float-right remove-todo-item"><i class="icon-close"></i></a></div>')
+														.insertAfter(
+																'.todo-list .todo-item:last-child');
+												$(this).val('');
+											} else if (e.which == 13) {
+												alert('Please enter new task');
+											}
+											$(document)
+													.on(
+															'.todo-list .todo-item.added input')
+													.click(
+															function() {
+																if ($(this)
+																		.is(
+																				':checked')) {
+																	$(this)
+																			.parent()
+																			.parent()
+																			.parent()
+																			.toggleClass(
+																					'complete');
+																} else {
+																	$(this)
+																			.parent()
+																			.parent()
+																			.parent()
+																			.toggleClass(
+																					'complete');
+																}
+															});
+											$(
+													'.todo-list .todo-item.added .remove-todo-item')
+													.click(
+															function() {
+																$(this)
+																		.parent()
+																		.remove();
+															});
+
+										});
+
+					});
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    $('.edit-btn').click(function(event) {
+        event.preventDefault();
+        var $todo = $(this).closest('.todo-item');
+        $todo.find('.task-name').hide();
+        $todo.find('.edit-task').show().val($todo.find('.task-name').text().trim()).focus();
+        $todo.find('.save-btn').show();
+        $todo.find('.cancel-btn').show();
+        $todo.find('.edit-btn').hide();
+    });
+    
+    $('.cancel-btn').click(function(event) {
+        event.preventDefault();
+        var $todo = $(this).closest('.todo-item');
+        $todo.find('.task-name').show();
+        $todo.find('.edit-task').hide();   
+        $todo.find('.cancel-btn').hide();
+        $todo.find('.save-btn').hide();
+        $todo.find('.edit-btn').show();
+    });
+    
+    $('.save-btn').click(function(event) {
+        event.preventDefault();
+        var $todo = $(this).closest('.todo-item');
+        var todoId = $(this).data('todo-id');
+        console.log(todoId);
+        var updatedTaskName = $todo.find('.edit-task').val().trim();
+
+        $.ajax({
+            type: 'POST',
+            url: '/Todo/edit/' + todoId,
+            data: { taskName: updatedTaskName },
+            success: function(response) {
+                console.log('Todo updated successfully');
+                $todo.find('.edit-task').hide();
+                $todo.find('.task-name').text(updatedTaskName).show();
+                $todo.find('.save-btn').hide();
+                $todo.find('.cancel-btn').hide();
+            },
+            error: function(xhr, status, error) {
+                console.error('Error updating todo:', error);
+            }
+        });
+    });
+});
+</script>
+<script>
+	// Lấy tất cả các phần tử có class là leave-class-btn
+	const leaveButtons = document.querySelectorAll('.delete-todo-btn');
+	leaveButtons.forEach(button => {
+		button.addEventListener('click', function() {
+		if (confirm("Are you sure you want to delete this?")) {
+			const todoId = button.getAttribute('data-todo-id');
+			window.location.href = '/Todo/delete/' + todoId;
+		}
+	});
+});
+	
+</script>
+<script>
+$(document).ready(function() {
+    $('.search-task').on('input', function() {
+        var searchText = $(this).val().trim().toLowerCase();
+        $('.todo-item').each(function() {
+            var taskName = $(this).find('.task-name').text().trim().toLowerCase();
+            if (taskName.includes(searchText)) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    });
+});
+
+
+</script>
+<style>
+body {
+	margin-top: 20px;
+	background: #f8f8f8;
+}
+
+.todo-nav {
+	margin-top: 10px
+}
+
+.todo-list {
+	margin: 10px 0
+}
+
+.todo-list .todo-item {
+	padding: 15px;
+	margin: 5px 0;
+	border-radius: 0;
+	background: #f7f7f7
+}
+
+.todo-list.only-active .todo-item.complete {
+	display: none
+}
+
+.todo-list.only-active .todo-item:not(.complete) {
+	display: block
+}
+
+.todo-list.only-complete .todo-item:not(.complete) {
+	display: none
+}
+
+.todo-list.only-complete .todo-item.complete {
+	display: block
+}
+
+.todo-list .todo-item.complete span {
+	text-decoration: line-through
+}
+
+.remove-todo-item {
+	color: #ccc;
+	visibility: hidden
+}
+
+.remove-todo-item:hover {
+	color: #5f5f5f
+}
+
+.todo-item:hover .remove-todo-item {
+	visibility: visible
+}
+
+div.checker {
+	width: 18px;
+	height: 18px
+}
+
+div.checker input, div.checker span {
+	width: 18px;
+	height: 18px
+}
+
+div.checker span {
+	display: -moz-inline-box;
+	display: inline-block;
+	zoom: 1;
+	text-align: center;
+	background-position: 0 -260px;
+}
+
+div.checker, div.checker input, div.checker span {
+	width: 19px;
+	height: 19px;
+}
+
+div.checker, div.radio, div.uploader {
+	position: relative;
+}
+
+div.button, div.button *, div.checker, div.checker *, div.radio, div.radio *,
+	div.selector, div.selector *, div.uploader, div.uploader * {
+	margin: 0;
+	padding: 0;
+}
+
+div.button, div.checker, div.radio, div.selector, div.uploader {
+	display: -moz-inline-box;
+	display: inline-block;
+	zoom: 1;
+	vertical-align: middle;
+}
+
+.card {
+	padding: 25px;
+	margin-bottom: 20px;
+	border: initial;
+	background: #fff;
+	border-radius: calc(.15rem - 1px);
+	box-shadow: 0 1px 15px rgba(0, 0, 0, 0.04), 0 1px 6px
+		rgba(0, 0, 0, 0.04);
+}
+</style>
+<div th:replace="/ViewLayout/footer.html"></div>

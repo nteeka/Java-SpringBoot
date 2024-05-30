@@ -10,7 +10,7 @@
 <div class="main">
         <div class="main__header container">
             <div class="main__header__box">
-	            <a href="#" style="text-decoration: none">
+	            <a href="/Todo/listTodo" style="text-decoration: none">
 	                <svg enable-background="new 0 0 24 24" focusable="false" height="18" viewBox="0 0 24 24" width="18"
 	                    class=" NMm5M">
 	                    <g>
@@ -60,19 +60,19 @@
 		                    </div>
 		                    
 		                </div>
-		            
+		            	
 		                <div class="clasrooms__box__item__middle">
                 	
 		                    <img th:if="${class.account.image == null} " th:src="@{'/image/getImage/' + 'facebook default profile picture.jpg'}" alt="Created image">
 		                	<img th:unless="${class.account.image == null} " th:src="${class.account.image}" alt="Created image">
-		                	<div>
-		                		<br>	                		
-		                		<span> </span><span>Created by :</span>
-		                		<span th:text="${class.account.displayName}"></span>
-		                	</div>
+		                	<span>Created by : </span><span style="text-align: center;" th:text="${class.account.displayName}"></span>
+		                	
+		                	
 		                </div>
 		                <div class="clasrooms__box__item__bottom">
-		                	<a href="#" class="leave-class-btn" th:data-class-id="${class.classId}"><span>Leave</span></a>
+		                	<a th:href="'/Class/enterClass/' + ${class.classId}" class="btn btn-success">Enter</a>
+		                
+		                	<a href="#" class="btn btn-danger leave-class-btn" th:data-class-id="${class.classId}">Leave</a>
 		                	
 		                	
 		                    

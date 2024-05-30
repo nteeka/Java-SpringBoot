@@ -3,7 +3,6 @@ package com.example.demo.helpers;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import com.cloudinary.*;
 
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -12,22 +11,13 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import org.springframework.http.HttpStatus;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.ByteArrayResource;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.nio.file.Files;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-import com.cloudinary.utils.ObjectUtils;
+
 
 @RestController
 public class FileDownload {
@@ -64,8 +54,6 @@ public class FileDownload {
     public byte[] downloadFileCloud(@PathVariable String publicId) throws IOException {
         // Replace 'your_cloud_name', 'your_api_key', and 'your_api_secret' with your Cloudinary credentials
         String cloudName = "dccmckgvc";
-        String apiKey = "891328625785465";
-        String apiSecret = "szFBRogObiQHosinNgfK9pA1W0I";
         
         // Replace 'your_cloud_name' with your Cloudinary cloud name
         String url = "https://res.cloudinary.com/" + cloudName + "/raw/upload/" + publicId;

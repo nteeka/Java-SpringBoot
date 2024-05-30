@@ -1,14 +1,9 @@
 package com.example.demo.controllers;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,24 +19,15 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.demo.models.Account;
-import com.example.demo.models.ClassAccount;
 import com.example.demo.models.Classes;
-import com.example.demo.models.Comment;
-import com.example.demo.models.CommentLike;
 import com.example.demo.models.FileAttach;
 import com.example.demo.models.Homework;
-import com.example.demo.models.Notification;
-import com.example.demo.models.ReplyComment;
 import com.example.demo.models.SubmitHomework;
 import com.example.demo.repositories.AccountRepository;
 import com.example.demo.repositories.ClassAccountRepository;
 import com.example.demo.repositories.ClassRepository;
-import com.example.demo.repositories.CommentLikeRepository;
-import com.example.demo.repositories.CommentRepository;
 import com.example.demo.repositories.FileAttachRepository;
 import com.example.demo.repositories.HomeworkRepository;
-import com.example.demo.repositories.NotificationRepository;
-import com.example.demo.repositories.ReplyCommentRepository;
 import com.example.demo.repositories.SubmitHomeworkRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -50,8 +36,6 @@ import com.cloudinary.*;
 import java.util.HashMap;
 import java.util.Map;
 import com.cloudinary.utils.ObjectUtils;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 @Controller
 @RequestMapping("/Homework")
@@ -72,17 +56,7 @@ public class HomeworkController {
 	@Autowired
 	private ClassAccountRepository classAccountRepository;
 
-	@Autowired
-	private NotificationRepository notifyRepository;
-
-	@Autowired
-	private CommentRepository commentRepository;
-
-	@Autowired
-	private CommentLikeRepository commentLikeRepository;
-
-	@Autowired
-	private ReplyCommentRepository replyRepository;
+	
 
 	@Autowired
 	private FileAttachRepository fileAttachRepository;
@@ -238,7 +212,8 @@ public class HomeworkController {
 		m.addAttribute("homework", homework.get());
 
 		List<FileAttach> listFile = fileAttachRepository.findByHomeworkId(homeworkId);
-		m.addAttribute("listFile", listFile);
+		if(!listFile.isEmpty())
+			m.addAttribute("listFile", listFile);
 
 		return "/Homework/Homework-Edit";
 	}
@@ -373,39 +348,49 @@ public class HomeworkController {
 		}
 
 		submit.setDateSubmited(LocalDateTime.now());
-		submitHomeworkRepository.save(submit);
 
-		for (MultipartFile file : multipartFile) {
-			if (file.getSize() == 0) {
-				m.addAttribute("errorEmptyFile", "Can't upload an empty file");
-				return this.listHomework(homework.getClasses().getClassId(), m, request);
+		
+		if(multipartFile[0].getOriginalFilename().length() != 0)
+		{
+			submitHomeworkRepository.save(submit);
+			for (MultipartFile file : multipartFile) {
+				if (file.getSize() == 0) {
+					m.addAttribute("errorEmptyFile", "Can't upload an empty file");
+					return this.listHomework(homework.getClasses().getClassId(), m, request);
+				}
 			}
-			FileAttach fileAttach = new FileAttach();
-			fileAttach.setHomework(null);
-			fileAttach.setNotify(null);
-			fileAttach.setSubmitHomework(submit);
-			String originalFilename = file.getOriginalFilename();
+			for (MultipartFile file : multipartFile) {
+				if (file.getSize() == 0) {
+					m.addAttribute("errorEmptyFile", "Can't upload an empty file");
+					return this.listHomework(homework.getClasses().getClassId(), m, request);
+				}
+				FileAttach fileAttach = new FileAttach();
+				fileAttach.setHomework(null);
+				fileAttach.setNotify(null);
+				fileAttach.setSubmitHomework(submit);
+				String originalFilename = file.getOriginalFilename();
 
-			Map params = ObjectUtils.asMap("public_id",
-					submit.getSubmitHomeworkId() + "_submitHomework_" + originalFilename, // Specify public_id for
-																							// Cloudinary
-					"resource_type", "auto", // Treat uploaded files as raw data
-					"folder", "submitedhomework");
-			try {
-				// Upload to Cloudinary using byte array
-				byte[] fileBytes = file.getBytes();
-				Map result = cloudinary.uploader().upload(fileBytes, params);
-				String cloudinaryUrl = (String) result.get("url").toString();
-				fileAttach.setFilePath(cloudinaryUrl);
-				fileAttachRepository.save(fileAttach);
-			} catch (IOException exception) {
-				System.out.println("Error uploading file: " + exception.getMessage());
+				Map params = ObjectUtils.asMap("public_id",
+						submit.getSubmitHomeworkId() + "_submitHomework_" + originalFilename, // Specify public_id for
+																								// Cloudinary
+						"resource_type", "auto", // Treat uploaded files as raw data
+						"folder", "submitedhomework");
+				try {
+					// Upload to Cloudinary using byte array
+					byte[] fileBytes = file.getBytes();
+					Map result = cloudinary.uploader().upload(fileBytes, params);
+					String cloudinaryUrl = (String) result.get("url").toString();
+					fileAttach.setFilePath(cloudinaryUrl);
+					fileAttachRepository.save(fileAttach);
+				} catch (IOException exception) {
+					System.out.println("Error uploading file: " + exception.getMessage());
+				}
 			}
-		}
 
-		List<Long> listIdFile = fileAttachRepository.findIdBySubmitId(submit.getSubmitHomeworkId());
-		submit.setFilePath(listIdFile);
+			List<Long> listIdFile = fileAttachRepository.findIdBySubmitId(submit.getSubmitHomeworkId());
+			submit.setFilePath(listIdFile);
 
+		}		
 		submitHomeworkRepository.save(submit);
 		m.addAttribute("submitHomeworkSuccess", "Your homework has been submitted");
 		return this.listHomework(homework.getClasses().getClassId(), m, request);
@@ -465,7 +450,8 @@ public class HomeworkController {
 		m.addAttribute("submitHomework", submitHomework.get());
 
 		List<FileAttach> listFile = fileAttachRepository.findBySubmitHomeworkId(homeworkId);
-		m.addAttribute("listFile", listFile);
+		if(!listFile.isEmpty())
+			m.addAttribute("listFile", listFile);
 
 		m.addAttribute("c", submitHomework.get().getHomework().getClasses());
 		m.addAttribute("id", submitHomework.get().getHomework().getClasses().getClassId());
@@ -479,9 +465,15 @@ public class HomeworkController {
 			RedirectAttributes redirectAttributes, Model m, HttpServletRequest request) {
 
 		Optional<SubmitHomework> currentSubmitHomework = submitHomeworkRepository.findById(id);
+		if(currentSubmitHomework.get().getHomework().getDeadline().isBefore(LocalDate.now()))
+		{
+			m.addAttribute("errorUpdateSubmitHomework", "Can't update your Submit Homework because you submit late");
+			return this.listHomework(currentSubmitHomework.get().getHomework().getClasses().getClassId(), m, request);
+		}
+			
 		SubmitHomework newSubmit = currentSubmitHomework.get();
-
-		 List<FileAttach> fileAttachs = fileAttachRepository.findBySubmitId(newSubmit.getSubmitHomeworkId());
+		
+		List<FileAttach> fileAttachs = fileAttachRepository.findBySubmitId(newSubmit.getSubmitHomeworkId());
 
 		newSubmit.setLastModified(LocalDateTime.now());
 		newSubmit.setDescription(description);

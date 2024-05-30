@@ -272,7 +272,7 @@
 	        $.ajax({
 	            type: 'POST',
 	            url: '/Comment/updateComment/' + commentId,
-	            data: { content: updatedContent },
+	            data: { taskName: updatedContent },
 	            success: function(response) {
 	                // Xử lý phản hồi từ máy chủ nếu cần
 	                // Ví dụ: Hiển thị thông báo hoặc làm mới danh sách bình luận
